@@ -1,5 +1,5 @@
 {
-  "message_id": "dropkick",
+  "message_id": "kick",
   "scaling": "when_caused_by_living_non_player",
   "exhaustion": 0.1,
   "effects": "hurt",

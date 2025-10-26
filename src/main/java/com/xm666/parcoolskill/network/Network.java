@@ -1,7 +1,7 @@
 package com.xm666.parcoolskill.network;
 
 import com.xm666.parcoolskill.ParCoolSkill;
-import com.xm666.parcoolskill.handler.DropkickHandler;
+import com.xm666.parcoolskill.handler.KickHandler;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -14,11 +14,11 @@ public class Network {
     public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar("1");
         registrar.playBidirectional(
-                DropkickPayload.TYPE,
-                DropkickPayload.STREAM_CODEC,
+                KickPayload.TYPE,
+                KickPayload.STREAM_CODEC,
                 new DirectionalPayloadHandler<>(
-                        DropkickHandler::handlePayload,
-                        DropkickHandler::handlePayload
+                        KickHandler::handlePayload,
+                        KickHandler::handlePayload
                 )
         );
     }

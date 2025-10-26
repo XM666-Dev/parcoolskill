@@ -1,5 +1,7 @@
 package com.xm666.parcoolskill.handler;
 
+import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
+import com.alrex.parcool.common.action.impl.Dodge;
 import com.xm666.parcoolskill.ParCoolSkill;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.player.Player;
@@ -20,14 +22,11 @@ public class BackstabHandler {
             var sourcePosition = source.getSourcePosition();
             if (sourcePosition != null) {
                 var targetEntity = event.getEntity();
-                //var targetRotation = targetEntity.getPreciseBodyRotation(1.0F);
-                //var sourceRotation = sourceEntity.getYRot();
                 var targetEyePosition = targetEntity.getEyePosition(1.0F);
                 var targetViewVector = targetEntity.getViewVector(1.0F);
                 var sourcePositionDifference = sourcePosition.subtract(targetEyePosition);
                 var forward = new Vec2((float) targetViewVector.x, (float) targetViewVector.z);
                 var target = new Vec2((float) sourcePositionDifference.x, (float) sourcePositionDifference.z);
-                //flag |= Mth.degreesDifferenceAbs(targetRotation, sourceRotation) < 90.0F;
                 if (isBehind(forward, target)) {
                     event.setAmount(event.getAmount() * 2.0F);
                     player.magicCrit(targetEntity);
@@ -42,5 +41,17 @@ public class BackstabHandler {
         target = target.normalized();
         float dot = forward.dot(target);
         return dot < 0;
+    }
+
+    @SubscribeEvent
+    public static void onDodgeStart(ParCoolActionEvent.StartEvent event) {
+        if (!(event.getAction() instanceof Dodge)) return;
+        queueAttack = true;
+    }
+
+    @SubscribeEvent
+    public static void onDodgeStop(ParCoolActionEvent.StopEvent event) {
+        if (!(event.getAction() instanceof Dodge)) return;
+        queueAttack = false;
     }
 }
