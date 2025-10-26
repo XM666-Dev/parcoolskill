@@ -1,0 +1,12 @@
+{
+  "itemGroup.parcoolskill": "Example Mod Tab",
+  "block.parcoolskill.example_block": "Example Block",
+  "item.parcoolskill.example_item": "Example Item",
+  "parcoolskill.configuration.title": "ParCoolSkill Configs",
+  "parcoolskill.configuration.section.parcoolskill.common.toml": "ParCoolSkill Configs",
+  "parcoolskill.configuration.section.parcoolskill.common.toml.title": "ParCoolSkill Configs",
+  "parcoolskill.configuration.items": "Item List",
+  "parcoolskill.configuration.logDirtBlock": "Log Dirt Block",
+  "parcoolskill.configuration.magicNumberIntroduction": "Magic Number Text",
+  "parcoolskill.configuration.magicNumber": "Magic Number"
+}
