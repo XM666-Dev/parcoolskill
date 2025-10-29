@@ -3,6 +3,7 @@ package com.xm666.parcoolskill.handler;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.xm666.parcoolskill.ParCoolSkill;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -11,8 +12,8 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class LeapstrikeHandler {
-    public static boolean queueAttack;
-    public static boolean queueInvulnerable;
+    static boolean queueAttack;
+    static boolean queueInvulnerable;
 
     @SubscribeEvent
     static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
@@ -23,19 +24,19 @@ public class LeapstrikeHandler {
             player.magicCrit(event.getEntity());
             queueAttack = false;
             queueInvulnerable = true;
-        } else if (event.getEntity() instanceof Player && source.is(DamageTypes.MOB_ATTACK) && queueInvulnerable) {
+        } else if (event.getEntity() instanceof Player && !event.getSource().is(DamageTypeTags.BYPASSES_ARMOR) && queueInvulnerable) {
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent
-    public static void onCatLeapStart(ParCoolActionEvent.StartEvent event) {
+    static void onCatLeapStart(ParCoolActionEvent.StartEvent event) {
         if (!(event.getAction() instanceof CatLeap)) return;
         queueAttack = true;
     }
 
     @SubscribeEvent
-    public static void onCatLeapStop(ParCoolActionEvent.StopEvent event) {
+    static void onCatLeapStop(ParCoolActionEvent.StopEvent event) {
         if (!(event.getAction() instanceof CatLeap)) return;
         queueAttack = false;
         queueInvulnerable = false;

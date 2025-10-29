@@ -14,7 +14,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class SlidekickHandler {
     public static boolean queueAttack;
-    public static boolean queueInvulnerable;
+    static boolean queueInvulnerable;
 
     @SubscribeEvent
     static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
@@ -24,7 +24,7 @@ public class SlidekickHandler {
     }
 
     @SubscribeEvent
-    public static void onSlideStart(ParCoolActionEvent.StartEvent event) {
+    static void onSlideStart(ParCoolActionEvent.StartEvent event) {
         if (!(event.getAction() instanceof Slide)) return;
         if (!Parkourability.get(event.getPlayer()).get(Dodge.class).isDoing()) return;
         queueAttack = true;
@@ -32,7 +32,7 @@ public class SlidekickHandler {
     }
 
     @SubscribeEvent
-    public static void onSlideStop(ParCoolActionEvent.StopEvent event) {
+    static void onSlideStop(ParCoolActionEvent.StopEvent event) {
         if (!(event.getAction() instanceof Slide)) return;
         queueAttack = false;
         queueInvulnerable = false;

@@ -1,5 +1,6 @@
 package com.xm666.parcoolskill.handler;
 
+import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.damage.DamageTypes;
 import com.xm666.parcoolskill.network.KickPayload;
 import net.minecraft.core.Holder;
@@ -24,7 +25,7 @@ public class KickHandler {
         var source = level.getEntity(payload.sourceId());
         var type = KickPayload.Type.values()[payload.kickType()];
         if (target != null && source instanceof Player player) {
-            var amount = 7.0F;
+            var amount = Config.KICK_BASE_DAMAGE.get().floatValue();
             var baseArmor = player.getAttributeBaseValue(Attributes.ARMOR);
             var baseToughness = player.getAttributeBaseValue(Attributes.ARMOR_TOUGHNESS);
             amount += (float) baseArmor + (float) baseToughness;
@@ -45,20 +46,27 @@ public class KickHandler {
             );
             target.hurt(damageSource, amount);
 
-            if (target instanceof LivingEntity living) {
+            if (target instanceof LivingEntity livingTarget) {
                 switch (type) {
                     case DROPKICK -> {
-                        var strength = 2.0F;
+                        var strength = Config.DROPKICK_BASE_KNOCKBACK.get().floatValue();
                         strength += (float) player.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
-                        living.knockback(strength * 0.5F, Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float) Math.PI / 180F)));
+                        livingTarget.knockback(strength * 0.5F, Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float) Math.PI / 180F)));
                     }
                     case SLIDEKICK -> {
-                        living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 3));
+                        var duration = 60;
+                        var targetEffect = livingTarget.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
+                        duration += targetEffect != null ? targetEffect.getDuration() : 0;
+                        livingTarget.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 1, false, false), player);
                     }
                 }
             }
 
-            level.playSound(null, source.getX(), source.getY(), source.getZ(), SoundEvents.PLAYER_ATTACK_KNOCKBACK, source.getSoundSource(), 1.0F, 1.0F);
+            var sound = switch (type) {
+                case DROPKICK -> SoundEvents.PLAYER_ATTACK_KNOCKBACK;
+                case SLIDEKICK -> SoundEvents.PLAYER_ATTACK_STRONG;
+            };
+            level.playSound(null, source.getX(), source.getY(), source.getZ(), sound, source.getSoundSource(), 1.0F, 1.0F);
         }
     }
 
@@ -67,8 +75,8 @@ public class KickHandler {
         var modifiers = stack.getAttributeModifiers().modifiers();
         for (var entry : modifiers) {
             if (entry.slot().test(slot) && entry.attribute().equals(attribute)) {
-                double amount = entry.modifier().amount();
-                double addition = switch (entry.modifier().operation()) {
+                var amount = entry.modifier().amount();
+                var addition = switch (entry.modifier().operation()) {
                     case ADD_VALUE -> amount;
                     case ADD_MULTIPLIED_BASE -> amount * baseValue;
                     case ADD_MULTIPLIED_TOTAL -> amount * value;

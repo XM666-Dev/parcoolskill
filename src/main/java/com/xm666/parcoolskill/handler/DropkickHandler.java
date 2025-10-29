@@ -14,8 +14,8 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class DropkickHandler {
     public static boolean queueAttack;
-    public static boolean queueSlideInvulnerable;
-    public static boolean queueCatLeapInvulnerable;
+    static boolean queueSlideInvulnerable;
+    static boolean queueCatLeapInvulnerable;
 
     @SubscribeEvent
     static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
@@ -25,23 +25,25 @@ public class DropkickHandler {
     }
 
     @SubscribeEvent
-    public static void onSlideStart(ParCoolActionEvent.StartEvent event) {
+    static void onSlideStart(ParCoolActionEvent.StartEvent event) {
         if (!(event.getAction() instanceof Slide)) return;
         if (!Parkourability.get(event.getPlayer()).get(CatLeap.class).isDoing()) return;
         queueAttack = true;
         queueSlideInvulnerable = true;
         queueCatLeapInvulnerable = true;
+        var player = event.getPlayer();
+        player.setDeltaMovement(player.getDeltaMovement().add(0.0, 0.2, 0.0));
     }
 
     @SubscribeEvent
-    public static void onSlideStop(ParCoolActionEvent.StopEvent event) {
+    static void onSlideStop(ParCoolActionEvent.StopEvent event) {
         if (!(event.getAction() instanceof Slide)) return;
         queueAttack = false;
         queueSlideInvulnerable = false;
     }
 
     @SubscribeEvent
-    public static void onCatLeapStop(ParCoolActionEvent.StopEvent event) {
+    static void onCatLeapStop(ParCoolActionEvent.StopEvent event) {
         if (!(event.getAction() instanceof CatLeap)) return;
         queueCatLeapInvulnerable = false;
     }

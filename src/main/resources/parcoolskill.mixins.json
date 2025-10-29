@@ -3,6 +3,7 @@
   "package": "com.xm666.parcoolskill.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "BashMixin$ChargeJumpMixin",
     "DropkickMixin$SlideMixin"
   ],
   "injectors": {
@@ -16,6 +17,7 @@
   },
   "client": [
     "DropkickMixin$MinecraftMixin",
-    "SlidekickMixin$MinecraftMixin"
+    "SlidekickMixin$MinecraftMixin",
+    "SlideMixin$PlayerRendererMixin"
   ]
 }

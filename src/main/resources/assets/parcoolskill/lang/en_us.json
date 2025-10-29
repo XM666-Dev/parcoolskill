@@ -1,12 +1,9 @@
 {
-  "itemGroup.parcoolskill": "Example Mod Tab",
-  "block.parcoolskill.example_block": "Example Block",
-  "item.parcoolskill.example_item": "Example Item",
-  "parcoolskill.configuration.title": "ParCoolSkill Configs",
-  "parcoolskill.configuration.section.parcoolskill.common.toml": "ParCoolSkill Configs",
-  "parcoolskill.configuration.section.parcoolskill.common.toml.title": "ParCoolSkill Configs",
-  "parcoolskill.configuration.items": "Item List",
-  "parcoolskill.configuration.logDirtBlock": "Log Dirt Block",
-  "parcoolskill.configuration.magicNumberIntroduction": "Magic Number Text",
-  "parcoolskill.configuration.magicNumber": "Magic Number"
+  "parcoolskill.configuration.title": "ParCoolSkill Configuration",
+  "parcoolskill.configuration.section.parcoolskill.common.toml": "ParCoolSkill Configuration",
+  "parcoolskill.configuration.section.parcoolskill.common.toml.title": "ParCoolSkill Configuration",
+  "parcoolskill.configuration.kick_base_damage": "Kick base damage",
+  "parcoolskill.configuration.kick_base_damage.tooltip": "Kick base damage",
+  "parcoolskill.configuration.dropkick_base_knockback": "Dropkick base knockback",
+  "parcoolskill.configuration.dropkick_base_knockback.tooltip": "Dropkick base knockback"
 }

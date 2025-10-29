@@ -12,7 +12,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class BackstabHandler {
-    public static boolean queueAttack;
+    static boolean queueAttack;
 
     @SubscribeEvent
     static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
