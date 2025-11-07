@@ -1,37 +1,43 @@
 package com.xm666.parcoolskill.mixin;
 
+import com.alrex.parcool.common.action.AdditionalProperties;
 import com.alrex.parcool.common.action.impl.CatLeap;
+import com.alrex.parcool.common.action.impl.FastRun;
 import com.alrex.parcool.common.action.impl.Slide;
 import com.alrex.parcool.common.attachment.common.Parkourability;
-import com.llamalad7.mixinextras.expression.Definition;
-import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.xm666.parcoolskill.handler.DropkickHandler;
+import com.xm666.parcoolskill.action.DropkickSlide;
 import com.xm666.parcoolskill.network.KickPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class DropkickMixin {
     @Mixin(Slide.class)
-    private static class SlideMixin {
+    private static class SlideMixin implements DropkickSlide {
+        @Unique
+        private boolean parcoolskill$queueAttack;
+        @Unique
+        private boolean parcoolskill$queueSlideInvulnerable;
+        @Unique
+        private boolean parcoolskill$queueLeapInvulnerable;
+
         @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;onGround()Z"))
         private boolean modifyOnGround(boolean original, Player player) {
             return original || Parkourability.get(player).get(CatLeap.class).isDoing();
         }
 
-        @Definition(id = "getDashTick", method = "Lcom/alrex/parcool/common/action/impl/FastRun;getDashTick(Lcom/alrex/parcool/common/action/AdditionalProperties;)I")
-        @Expression("?.getDashTick(?) > 5")
-        @ModifyExpressionValue(method = "canStart", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
-        private boolean wrapDashCheck(boolean original, Player player) {
-            return original || Parkourability.get(player).get(CatLeap.class).isDoing();
+        @WrapOperation(method = "canStart", at = @At(value = "INVOKE", target = "Lcom/alrex/parcool/common/action/impl/FastRun;getDashTick(Lcom/alrex/parcool/common/action/AdditionalProperties;)I"))
+        private int wrapDashTick(FastRun instance, AdditionalProperties properties, Operation<Integer> original, Player player) {
+            return Parkourability.get(player).get(CatLeap.class).isDoing() ? Parkourability.get(player).get(Slide.class).getNotDoingTick() : original.call(instance, properties);
         }
 
         @WrapOperation(method = "onWorkingTickInLocalClient", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;scale(D)Lnet/minecraft/world/phys/Vec3;", ordinal = 1))
@@ -43,6 +49,36 @@ public class DropkickMixin {
         private double modifyMovementY(double original, Player player) {
             return Parkourability.get(player).get(CatLeap.class).isDoing() ? Math.max(original * 0.9, original) : original;
         }
+
+        @Override
+        public boolean parcoolskill$isQueueAttack() {
+            return parcoolskill$queueAttack;
+        }
+
+        @Override
+        public void parcoolskill$setQueueAttack(boolean queue) {
+            parcoolskill$queueAttack = queue;
+        }
+
+        @Override
+        public boolean parcoolskill$isQueueSlideInvulnerable() {
+            return parcoolskill$queueSlideInvulnerable;
+        }
+
+        @Override
+        public void parcoolskill$setQueueSlideInvulnerable(boolean queue) {
+            parcoolskill$queueSlideInvulnerable = queue;
+        }
+
+        @Override
+        public boolean parcoolskill$isQueueLeapInvulnerable() {
+            return parcoolskill$queueLeapInvulnerable;
+        }
+
+        @Override
+        public void parcoolskill$setQueueLeapInvulnerable(boolean queue) {
+            parcoolskill$queueLeapInvulnerable = queue;
+        }
     }
 
     @Mixin(Minecraft.class)
@@ -51,9 +87,11 @@ public class DropkickMixin {
         private void injectHandleKeybinds(CallbackInfo ci) {
             var mc = Minecraft.getInstance();
             var player = mc.player;
-            if (mc.crosshairPickEntity != null && player != null && DropkickHandler.queueAttack) {
+            if (mc.crosshairPickEntity != null && player != null) {
+                var slide = (DropkickSlide) Parkourability.get(player).get(Slide.class);
+                if (!slide.parcoolskill$isQueueAttack()) return;
                 PacketDistributor.sendToServer(new KickPayload(mc.crosshairPickEntity.getId(), player.getId(), KickPayload.Type.DROPKICK.ordinal()));
-                DropkickHandler.queueAttack = false;
+                slide.parcoolskill$setQueueAttack(false);
             }
         }
     }

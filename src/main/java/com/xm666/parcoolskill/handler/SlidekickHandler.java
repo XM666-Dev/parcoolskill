@@ -5,6 +5,7 @@ import com.alrex.parcool.common.action.impl.Dodge;
 import com.alrex.parcool.common.action.impl.Slide;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.ParCoolSkill;
+import com.xm666.parcoolskill.action.SlidekickSlide;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -13,28 +14,27 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class SlidekickHandler {
-    public static boolean queueAttack;
-    static boolean queueInvulnerable;
-
     @SubscribeEvent
     static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
-        if (event.getEntity() instanceof Player && !event.getSource().is(DamageTypeTags.BYPASSES_ARMOR) && queueInvulnerable) {
+        if (event.getEntity() instanceof Player player && !event.getSource().is(DamageTypeTags.BYPASSES_ARMOR)) {
+            var slide = (SlidekickSlide) Parkourability.get(player).get(Slide.class);
+            if (!slide.parcoolskill$isQueueInvulnerable()) return;
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent
     static void onSlideStart(ParCoolActionEvent.StartEvent event) {
-        if (!(event.getAction() instanceof Slide)) return;
+        if (!(event.getAction() instanceof SlidekickSlide slide)) return;
         if (!Parkourability.get(event.getPlayer()).get(Dodge.class).isDoing()) return;
-        queueAttack = true;
-        queueInvulnerable = true;
+        slide.parcoolskill$setQueueAttack(true);
+        slide.parcoolskill$setQueueInvulnerable(true);
     }
 
     @SubscribeEvent
     static void onSlideStop(ParCoolActionEvent.StopEvent event) {
-        if (!(event.getAction() instanceof Slide)) return;
-        queueAttack = false;
-        queueInvulnerable = false;
+        if (!(event.getAction() instanceof SlidekickSlide slide)) return;
+        slide.parcoolskill$setQueueAttack(false);
+        slide.parcoolskill$setQueueInvulnerable(false);
     }
 }

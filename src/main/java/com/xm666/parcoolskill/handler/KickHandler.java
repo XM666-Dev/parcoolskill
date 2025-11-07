@@ -5,18 +5,22 @@ import com.xm666.parcoolskill.damage.DamageTypes;
 import com.xm666.parcoolskill.network.KickPayload;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 public class KickHandler {
     public static void handlePayload(final KickPayload payload, final IPayloadContext context) {
@@ -25,18 +29,10 @@ public class KickHandler {
         var source = level.getEntity(payload.sourceId());
         var type = KickPayload.Type.values()[payload.kickType()];
         if (target != null && source instanceof Player player) {
-            var amount = Config.KICK_BASE_DAMAGE.get().floatValue();
-            var baseArmor = player.getAttributeBaseValue(Attributes.ARMOR);
-            var baseToughness = player.getAttributeBaseValue(Attributes.ARMOR_TOUGHNESS);
-            amount += (float) baseArmor + (float) baseToughness;
-
-            var feet = player.getItemBySlot(EquipmentSlot.FEET);
-            amount += (float) getAttributeValue(feet, EquipmentSlot.FEET, Attributes.ARMOR, baseArmor);
-            amount += (float) getAttributeValue(feet, EquipmentSlot.FEET, Attributes.ARMOR_TOUGHNESS, baseToughness);
-
-            var legs = player.getItemBySlot(EquipmentSlot.LEGS);
-            amount += (float) getAttributeValue(legs, EquipmentSlot.LEGS, Attributes.ARMOR, baseArmor);
-            amount += (float) getAttributeValue(legs, EquipmentSlot.LEGS, Attributes.ARMOR_TOUGHNESS, baseToughness);
+            var amount = (float) (Config.KICK_BASE_DAMAGE.get() +
+                    calculateValue(player, Attributes.ATTACK_DAMAGE, m -> !m.is(ResourceLocation.parse("minecraft:base_attack_damage"))) +
+                    calculateValue(player, Attributes.ARMOR, m -> m.is(ResourceLocation.parse("minecraft:armor.leggings")) || m.is(ResourceLocation.parse("minecraft:armor.boots"))) +
+                    calculateValue(player, Attributes.ARMOR_TOUGHNESS, m -> m.is(ResourceLocation.parse("minecraft:armor.leggings")) || m.is(ResourceLocation.parse("minecraft:armor.boots"))));
 
             DamageSource damageSource = new DamageSource(
                     level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.KICK_ATTACK),
@@ -70,21 +66,25 @@ public class KickHandler {
         }
     }
 
-    private static double getAttributeValue(ItemStack stack, EquipmentSlot slot, Holder<Attribute> attribute, double baseValue) {
-        var value = baseValue;
-        var modifiers = stack.getAttributeModifiers().modifiers();
-        for (var entry : modifiers) {
-            if (entry.slot().test(slot) && entry.attribute().equals(attribute)) {
-                var amount = entry.modifier().amount();
-                var addition = switch (entry.modifier().operation()) {
-                    case ADD_VALUE -> amount;
-                    case ADD_MULTIPLIED_BASE -> amount * baseValue;
-                    case ADD_MULTIPLIED_TOTAL -> amount * value;
-                };
-                value += addition;
-            }
+    private static double calculateValue(LivingEntity living, Holder<Attribute> attribute, Predicate<AttributeModifier> predicate) {
+        return calculateValue(attribute, living.getAttributeBaseValue(attribute), Objects.requireNonNull(living.getAttribute(attribute)).getModifiers().stream().filter(predicate).toArray(AttributeModifier[]::new));
+    }
+
+    private static double calculateValue(Holder<Attribute> attribute, double baseValue, AttributeModifier[] modifiers) {
+        for (AttributeModifier attributemodifier : Arrays.stream(modifiers).filter(m -> m.operation() == AttributeModifier.Operation.ADD_VALUE).toArray(AttributeModifier[]::new)) {
+            baseValue += attributemodifier.amount();
         }
-        value -= baseValue;
-        return value;
+
+        double value = baseValue;
+
+        for (AttributeModifier attributemodifier : Arrays.stream(modifiers).filter(m -> m.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_BASE).toArray(AttributeModifier[]::new)) {
+            value += baseValue * attributemodifier.amount();
+        }
+
+        for (AttributeModifier attributemodifier : Arrays.stream(modifiers).filter(m -> m.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL).toArray(AttributeModifier[]::new)) {
+            value *= 1.0 + attributemodifier.amount();
+        }
+
+        return attribute.value().sanitizeValue(value);
     }
 }

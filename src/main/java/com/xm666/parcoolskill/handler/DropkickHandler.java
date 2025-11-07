@@ -5,6 +5,7 @@ import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.action.impl.Slide;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.ParCoolSkill;
+import com.xm666.parcoolskill.action.DropkickSlide;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -13,38 +14,37 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class DropkickHandler {
-    public static boolean queueAttack;
-    static boolean queueSlideInvulnerable;
-    static boolean queueCatLeapInvulnerable;
-
     @SubscribeEvent
     static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
-        if (event.getEntity() instanceof Player && !event.getSource().is(DamageTypeTags.BYPASSES_ARMOR) && (queueSlideInvulnerable || queueCatLeapInvulnerable)) {
+        if (event.getEntity() instanceof Player player && !event.getSource().is(DamageTypeTags.BYPASSES_ARMOR)) {
+            var slide = (DropkickSlide) Parkourability.get(player).get(Slide.class);
+            if (!slide.parcoolskill$isQueueSlideInvulnerable() && !slide.parcoolskill$isQueueLeapInvulnerable()) return;
             event.setCanceled(true);
         }
     }
 
     @SubscribeEvent
     static void onSlideStart(ParCoolActionEvent.StartEvent event) {
-        if (!(event.getAction() instanceof Slide)) return;
+        if (!(event.getAction() instanceof DropkickSlide slide)) return;
         if (!Parkourability.get(event.getPlayer()).get(CatLeap.class).isDoing()) return;
-        queueAttack = true;
-        queueSlideInvulnerable = true;
-        queueCatLeapInvulnerable = true;
+        slide.parcoolskill$setQueueAttack(true);
+        slide.parcoolskill$setQueueSlideInvulnerable(true);
+        slide.parcoolskill$setQueueLeapInvulnerable(true);
         var player = event.getPlayer();
         player.setDeltaMovement(player.getDeltaMovement().add(0.0, 0.2, 0.0));
     }
 
     @SubscribeEvent
     static void onSlideStop(ParCoolActionEvent.StopEvent event) {
-        if (!(event.getAction() instanceof Slide)) return;
-        queueAttack = false;
-        queueSlideInvulnerable = false;
+        if (!(event.getAction() instanceof DropkickSlide slide)) return;
+        slide.parcoolskill$setQueueAttack(false);
+        slide.parcoolskill$setQueueSlideInvulnerable(false);
     }
 
     @SubscribeEvent
     static void onCatLeapStop(ParCoolActionEvent.StopEvent event) {
         if (!(event.getAction() instanceof CatLeap)) return;
-        queueCatLeapInvulnerable = false;
+        var slide = (DropkickSlide) Parkourability.get(event.getPlayer()).get(Slide.class);
+        slide.parcoolskill$setQueueLeapInvulnerable(false);
     }
 }

@@ -3,8 +3,11 @@
   "package": "com.xm666.parcoolskill.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "BackstabMixin$DodgeMixin",
     "BashMixin$ChargeJumpMixin",
-    "DropkickMixin$SlideMixin"
+    "DropkickMixin$SlideMixin",
+    "LeapstrikeMixin$CatLeapMixin",
+    "SlidekickMixin$SlideMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -12,12 +15,8 @@
   "overwrites": {
     "requireAnnotations": true
   },
-  "mixinextras": {
-    "minVersion": "0.5.0"
-  },
   "client": [
     "DropkickMixin$MinecraftMixin",
-    "SlidekickMixin$MinecraftMixin",
-    "SlideMixin$PlayerRendererMixin"
+    "SlidekickMixin$MinecraftMixin"
   ]
 }
