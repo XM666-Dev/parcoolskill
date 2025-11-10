@@ -18,23 +18,22 @@ public class SlidekickHandler {
     static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         if (event.getEntity() instanceof Player player && !event.getSource().is(DamageTypeTags.BYPASSES_ARMOR)) {
             var slide = (SlidekickSlide) Parkourability.get(player).get(Slide.class);
-            if (!slide.parcoolskill$isQueueInvulnerable()) return;
+            if (!slide.parcoolskill$isQueueInvulnerable() || !((Slide) slide).isDoing() && ((Slide) slide).getNotDoingTick() > 10)
+                return;
             event.setCanceled(true);
         }
     }
 
-    @SubscribeEvent
     static void onSlideStart(ParCoolActionEvent.StartEvent event) {
         if (!(event.getAction() instanceof SlidekickSlide slide)) return;
         if (!Parkourability.get(event.getPlayer()).get(Dodge.class).isDoing()) return;
-        slide.parcoolskill$setQueueAttack(true);
+        slide.parcoolskill$setQueueSlidekick(true);
         slide.parcoolskill$setQueueInvulnerable(true);
     }
 
     @SubscribeEvent
     static void onSlideStop(ParCoolActionEvent.StopEvent event) {
         if (!(event.getAction() instanceof SlidekickSlide slide)) return;
-        slide.parcoolskill$setQueueAttack(false);
-        slide.parcoolskill$setQueueInvulnerable(false);
+        slide.parcoolskill$setQueueSlidekick(false);
     }
 }

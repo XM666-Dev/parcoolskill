@@ -18,18 +18,17 @@ public class DropkickHandler {
     static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         if (event.getEntity() instanceof Player player && !event.getSource().is(DamageTypeTags.BYPASSES_ARMOR)) {
             var slide = (DropkickSlide) Parkourability.get(player).get(Slide.class);
-            if (!slide.parcoolskill$isQueueSlideInvulnerable() && !slide.parcoolskill$isQueueLeapInvulnerable()) return;
+            if (!slide.parcoolskill$isQueueInvulnerable() || !((Slide) slide).isDoing() && ((Slide) slide).getNotDoingTick() > 10)
+                return;
             event.setCanceled(true);
         }
     }
 
-    @SubscribeEvent
     static void onSlideStart(ParCoolActionEvent.StartEvent event) {
         if (!(event.getAction() instanceof DropkickSlide slide)) return;
         if (!Parkourability.get(event.getPlayer()).get(CatLeap.class).isDoing()) return;
-        slide.parcoolskill$setQueueAttack(true);
-        slide.parcoolskill$setQueueSlideInvulnerable(true);
-        slide.parcoolskill$setQueueLeapInvulnerable(true);
+        slide.parcoolskill$setQueueDropkick(true);
+        slide.parcoolskill$setQueueInvulnerable(true);
         var player = event.getPlayer();
         player.setDeltaMovement(player.getDeltaMovement().add(0.0, 0.2, 0.0));
     }
@@ -37,14 +36,6 @@ public class DropkickHandler {
     @SubscribeEvent
     static void onSlideStop(ParCoolActionEvent.StopEvent event) {
         if (!(event.getAction() instanceof DropkickSlide slide)) return;
-        slide.parcoolskill$setQueueAttack(false);
-        slide.parcoolskill$setQueueSlideInvulnerable(false);
-    }
-
-    @SubscribeEvent
-    static void onCatLeapStop(ParCoolActionEvent.StopEvent event) {
-        if (!(event.getAction() instanceof CatLeap)) return;
-        var slide = (DropkickSlide) Parkourability.get(event.getPlayer()).get(Slide.class);
-        slide.parcoolskill$setQueueLeapInvulnerable(false);
+        slide.parcoolskill$setQueueDropkick(false);
     }
 }

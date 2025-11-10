@@ -5,6 +5,7 @@
   "mixins": [
     "BackstabMixin$DodgeMixin",
     "BashMixin$ChargeJumpMixin",
+    "BulletTimeMixin$TickRateManagerMixin",
     "DropkickMixin$SlideMixin",
     "LeapstrikeMixin$CatLeapMixin",
     "SlidekickMixin$SlideMixin"
@@ -16,6 +17,10 @@
     "requireAnnotations": true
   },
   "client": [
+    "BulletTimeMixin$DeltaTrackerTimerMixin",
+    "BulletTimeMixin$GameRendererMixin",
+    "BulletTimeMixin$LevelRendererMixin",
+    "BulletTimeMixin$MinecraftMixin",
     "DropkickMixin$MinecraftMixin",
     "SlidekickMixin$MinecraftMixin"
   ]

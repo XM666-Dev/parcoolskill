@@ -5,5 +5,6 @@
   "parcoolskill.configuration.kick_base_damage": "Kick base damage",
   "parcoolskill.configuration.kick_base_damage.tooltip": "Kick base damage",
   "parcoolskill.configuration.dropkick_base_knockback": "Dropkick base knockback",
-  "parcoolskill.configuration.dropkick_base_knockback.tooltip": "Dropkick base knockback"
+  "parcoolskill.configuration.dropkick_base_knockback.tooltip": "Dropkick base knockback",
+  "effect.parcoolskill.vulnerable": "Vulnerable"
 }

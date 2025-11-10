@@ -24,11 +24,9 @@ public class DropkickMixin {
     @Mixin(Slide.class)
     private static class SlideMixin implements DropkickSlide {
         @Unique
-        private boolean parcoolskill$queueAttack;
+        private boolean parcoolskill$queueDropkick;
         @Unique
-        private boolean parcoolskill$queueSlideInvulnerable;
-        @Unique
-        private boolean parcoolskill$queueLeapInvulnerable;
+        private boolean parcoolskill$queueInvulnerable;
 
         @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;onGround()Z"))
         private boolean modifyOnGround(boolean original, Player player) {
@@ -51,33 +49,23 @@ public class DropkickMixin {
         }
 
         @Override
-        public boolean parcoolskill$isQueueAttack() {
-            return parcoolskill$queueAttack;
+        public boolean parcoolskill$isQueueDropkick() {
+            return parcoolskill$queueDropkick;
         }
 
         @Override
-        public void parcoolskill$setQueueAttack(boolean queue) {
-            parcoolskill$queueAttack = queue;
+        public void parcoolskill$setQueueDropkick(boolean queue) {
+            parcoolskill$queueDropkick = queue;
         }
 
         @Override
-        public boolean parcoolskill$isQueueSlideInvulnerable() {
-            return parcoolskill$queueSlideInvulnerable;
+        public boolean parcoolskill$isQueueInvulnerable() {
+            return parcoolskill$queueInvulnerable;
         }
 
         @Override
-        public void parcoolskill$setQueueSlideInvulnerable(boolean queue) {
-            parcoolskill$queueSlideInvulnerable = queue;
-        }
-
-        @Override
-        public boolean parcoolskill$isQueueLeapInvulnerable() {
-            return parcoolskill$queueLeapInvulnerable;
-        }
-
-        @Override
-        public void parcoolskill$setQueueLeapInvulnerable(boolean queue) {
-            parcoolskill$queueLeapInvulnerable = queue;
+        public void parcoolskill$setQueueInvulnerable(boolean queue) {
+            parcoolskill$queueInvulnerable = queue;
         }
     }
 
@@ -89,9 +77,9 @@ public class DropkickMixin {
             var player = mc.player;
             if (mc.crosshairPickEntity != null && player != null) {
                 var slide = (DropkickSlide) Parkourability.get(player).get(Slide.class);
-                if (!slide.parcoolskill$isQueueAttack()) return;
+                if (!slide.parcoolskill$isQueueDropkick()) return;
                 PacketDistributor.sendToServer(new KickPayload(mc.crosshairPickEntity.getId(), player.getId(), KickPayload.Type.DROPKICK.ordinal()));
-                slide.parcoolskill$setQueueAttack(false);
+                slide.parcoolskill$setQueueDropkick(false);
             }
         }
     }

@@ -16,18 +16,18 @@ public class SlidekickMixin {
     @Mixin(Slide.class)
     private static class SlideMixin implements SlidekickSlide {
         @Unique
-        private boolean parcoolskill$queueAttack;
+        private boolean parcoolskill$queueSlidekick;
         @Unique
         private boolean parcoolskill$queueInvulnerable;
 
         @Override
-        public boolean parcoolskill$isQueueAttack() {
-            return parcoolskill$queueAttack;
+        public boolean parcoolskill$isQueueSlidekick() {
+            return parcoolskill$queueSlidekick;
         }
 
         @Override
-        public void parcoolskill$setQueueAttack(boolean queue) {
-            parcoolskill$queueAttack = queue;
+        public void parcoolskill$setQueueSlidekick(boolean queue) {
+            parcoolskill$queueSlidekick = queue;
         }
 
         @Override
@@ -49,9 +49,9 @@ public class SlidekickMixin {
             var player = mc.player;
             if (mc.crosshairPickEntity != null && player != null) {
                 var slide = (SlidekickSlide) Parkourability.get(player).get(Slide.class);
-                if (!slide.parcoolskill$isQueueAttack()) return;
+                if (!slide.parcoolskill$isQueueSlidekick()) return;
                 PacketDistributor.sendToServer(new KickPayload(mc.crosshairPickEntity.getId(), player.getId(), KickPayload.Type.SLIDEKICK.ordinal()));
-                slide.parcoolskill$setQueueAttack(false);
+                slide.parcoolskill$setQueueSlidekick(false);
             }
         }
     }

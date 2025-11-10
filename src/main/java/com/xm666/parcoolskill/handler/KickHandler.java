@@ -1,11 +1,17 @@
 package com.xm666.parcoolskill.handler;
 
+import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.xm666.parcoolskill.Config;
+import com.xm666.parcoolskill.ParCoolSkill;
+import com.xm666.parcoolskill.action.SkillSlide;
 import com.xm666.parcoolskill.damage.DamageTypes;
+import com.xm666.parcoolskill.effect.Effects;
 import com.xm666.parcoolskill.network.KickPayload;
+import com.xm666.parcoolskill.network.StaminaRecoverPayload;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
@@ -16,13 +22,24 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.function.Predicate;
 
+@EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class KickHandler {
+    @SubscribeEvent
+    static void onSlideStart(ParCoolActionEvent.StartEvent event) {
+        if (!(event.getAction() instanceof SkillSlide slide)) return;
+        slide.parcoolskill$setQueueInvulnerable(false);
+        DropkickHandler.onSlideStart(event);
+        SlidekickHandler.onSlideStart(event);
+    }
+
     public static void handlePayload(final KickPayload payload, final IPayloadContext context) {
         var level = context.player().level();
         var target = level.getEntity(payload.targetId());
@@ -48,12 +65,22 @@ public class KickHandler {
                         var strength = Config.DROPKICK_BASE_KNOCKBACK.get().floatValue();
                         strength += (float) player.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
                         livingTarget.knockback(strength * 0.5F, Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float) Math.PI / 180F)));
+
+                        if (livingTarget.hasEffect(Effects.VULNERABLE)) {
+                            PacketDistributor.sendToPlayer((ServerPlayer) player, new StaminaRecoverPayload(200));
+                            BulletTimeHandler.addScale(0.5F, 60);
+                        }
                     }
                     case SLIDEKICK -> {
                         var duration = 60;
                         var targetEffect = livingTarget.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
                         duration += targetEffect != null ? targetEffect.getDuration() : 0;
-                        livingTarget.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 1, false, false), player);
+                        livingTarget.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 2, false, false), player);
+
+                        if (livingTarget.hasEffect(MobEffects.WEAKNESS)) {
+                            PacketDistributor.sendToPlayer((ServerPlayer) player, new StaminaRecoverPayload(80));
+                            BulletTimeHandler.addScale(0.5F, 60);
+                        }
                     }
                 }
             }
@@ -67,7 +94,8 @@ public class KickHandler {
     }
 
     private static double calculateValue(LivingEntity living, Holder<Attribute> attribute, Predicate<AttributeModifier> predicate) {
-        return calculateValue(attribute, living.getAttributeBaseValue(attribute), Objects.requireNonNull(living.getAttribute(attribute)).getModifiers().stream().filter(predicate).toArray(AttributeModifier[]::new));
+        var attributeInstance = living.getAttribute(attribute);
+        return calculateValue(attribute, living.getAttributeBaseValue(attribute), attributeInstance != null ? attributeInstance.getModifiers().stream().filter(predicate).toArray(AttributeModifier[]::new) : new AttributeModifier[]{});
     }
 
     private static double calculateValue(Holder<Attribute> attribute, double baseValue, AttributeModifier[] modifiers) {

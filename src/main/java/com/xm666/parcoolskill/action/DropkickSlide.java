@@ -1,15 +1,7 @@
 package com.xm666.parcoolskill.action;
 
-public interface DropkickSlide {
-    boolean parcoolskill$isQueueAttack();
+public interface DropkickSlide extends SkillSlide {
+    boolean parcoolskill$isQueueDropkick();
 
-    void parcoolskill$setQueueAttack(boolean queue);
-
-    boolean parcoolskill$isQueueSlideInvulnerable();
-
-    void parcoolskill$setQueueSlideInvulnerable(boolean queue);
-
-    boolean parcoolskill$isQueueLeapInvulnerable();
-
-    void parcoolskill$setQueueLeapInvulnerable(boolean queue);
+    void parcoolskill$setQueueDropkick(boolean queue);
 }
