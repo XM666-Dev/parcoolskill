@@ -5,7 +5,9 @@
   "mixins": [
     "BackstabMixin$DodgeMixin",
     "BashMixin$ChargeJumpMixin",
+    "BashMixin$PlayerMixin",
     "BulletTimeMixin$TickRateManagerMixin",
+    "CleaveMixin$PlayerMixin",
     "DropkickMixin$SlideMixin",
     "LeapstrikeMixin$CatLeapMixin",
     "SlidekickMixin$SlideMixin"

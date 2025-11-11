@@ -44,13 +44,13 @@ public class BackstabHandler {
     }
 
     @SubscribeEvent
-    public static void onDodgeStart(ParCoolActionEvent.StartEvent event) {
+    static void onDodgeStart(ParCoolActionEvent.StartEvent event) {
         if (!(event.getAction() instanceof BackstabDodge dodge)) return;
         dodge.parcoolskill$setQueueAttack(true);
     }
 
     @SubscribeEvent
-    public static void onDodgeStop(ParCoolActionEvent.StopEvent event) {
+    static void onDodgeStop(ParCoolActionEvent.StopEvent event) {
         if (!(event.getAction() instanceof BackstabDodge dodge)) return;
         dodge.parcoolskill$setQueueAttack(false);
     }
