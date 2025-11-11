@@ -57,7 +57,6 @@ public class BulletTimeHandler {
         public int timeScaleTicks;
         public float partialTick;
         public boolean runTick;
-        //public int freezeTicks;
 
         public float getDefaultTimeScale() {
             return 1.0F;
@@ -71,7 +70,6 @@ public class BulletTimeHandler {
             if (timeScaleTicks > 0) --timeScaleTicks;
             partialTick += getTimeScale();
             runTick = partialTick >= 1.0;
-            //freezeTicks = runsNormally ? 0 : freezeTicks + 1;
             partialTick -= Mth.floor(partialTick);
         }
     }

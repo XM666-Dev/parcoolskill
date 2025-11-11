@@ -59,8 +59,8 @@ public class DropkickMixin {
         }
 
         @Override
-        public boolean parcoolskill$isQueueInvulnerable() {
-            return parcoolskill$queueInvulnerable;
+        public boolean parcoolskill$isNotQueueInvulnerable() {
+            return !parcoolskill$queueInvulnerable;
         }
 
         @Override

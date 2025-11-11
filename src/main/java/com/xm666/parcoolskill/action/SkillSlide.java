@@ -1,7 +1,7 @@
 package com.xm666.parcoolskill.action;
 
 public interface SkillSlide {
-    boolean parcoolskill$isQueueInvulnerable();
+    boolean parcoolskill$isNotQueueInvulnerable();
 
     void parcoolskill$setQueueInvulnerable(boolean queue);
 }

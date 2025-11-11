@@ -18,7 +18,7 @@ public class DropkickHandler {
     static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         if (event.getEntity() instanceof Player player && !event.getSource().is(DamageTypeTags.BYPASSES_ARMOR)) {
             var slide = (DropkickSlide) Parkourability.get(player).get(Slide.class);
-            if (!slide.parcoolskill$isQueueInvulnerable() || !((Slide) slide).isDoing() && ((Slide) slide).getNotDoingTick() > 10)
+            if (slide.parcoolskill$isNotQueueInvulnerable() || !((Slide) slide).isDoing() && ((Slide) slide).getNotDoingTick() > 10)
                 return;
             event.setCanceled(true);
         }
