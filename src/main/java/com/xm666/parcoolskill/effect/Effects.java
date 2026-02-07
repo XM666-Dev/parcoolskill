@@ -21,4 +21,10 @@ public class Effects {
     public Effects(IEventBus modEventBus) {
         MOB_EFFECTS.register(modEventBus);
     }
+
+    public static class Vulnerable extends MobEffect {
+        public Vulnerable(MobEffectCategory category, int color) {
+            super(category, color);
+        }
+    }
 }

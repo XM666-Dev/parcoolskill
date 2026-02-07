@@ -2,8 +2,8 @@
   "parcoolskill.configuration.title": "ParCoolSkill Configuration",
   "parcoolskill.configuration.section.parcoolskill.common.toml": "ParCoolSkill Configuration",
   "parcoolskill.configuration.section.parcoolskill.common.toml.title": "ParCoolSkill Configuration",
-  "parcoolskill.configuration.kick_base_damage": "Kick base damage",
-  "parcoolskill.configuration.kick_base_damage.tooltip": "Kick base damage",
+  "parcoolskill.configuration.slide_skill_base_damage": "Slide skill base damage",
+  "parcoolskill.configuration.slide_skill_base_damage.tooltip": "Slide skill base damage",
   "parcoolskill.configuration.dropkick_base_knockback": "Dropkick base knockback",
   "parcoolskill.configuration.dropkick_base_knockback.tooltip": "Dropkick base knockback",
   "effect.parcoolskill.vulnerable": "Vulnerable"

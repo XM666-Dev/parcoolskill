@@ -13,17 +13,17 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class BulletTimeHandler {
-    public static Ticker clientTicker = new Ticker();
-    public static Ticker serverTicker = new Ticker();
+    public static final Ticker clientTicker = new Ticker();
+    public static final Ticker serverTicker = new Ticker();
     public static boolean modifyRunsNormally = true;
     public static boolean modifyGameTimeDeltaPartialTick = true;
     public static boolean canRunsNormally = true;
 
     @SubscribeEvent
     static void onClientTick(ClientTickEvent.Pre event) {
-        if (!Minecraft.getInstance().isPaused()) {
-            clientTicker.tick();
-        }
+        if (Minecraft.getInstance().isPaused()) return;
+
+        clientTicker.tick();
     }
 
     @SubscribeEvent
@@ -31,25 +31,18 @@ public class BulletTimeHandler {
         serverTicker.tick();
     }
 
-    //@SubscribeEvent
-    //static void onRender(RenderFrameEvent.Pre event) {
-    //    if (!Minecraft.getInstance().isPaused()) {
-    //        ParCoolSkill.LOGGER.info("partialTick = {}", event.getPartialTick().getGameTimeDeltaPartialTick(false));
-    //    }
-    //}
+    public static void handlePayload(final BulletTimePayload payload, final IPayloadContext context) {
+        addScale(clientTicker, payload.timeScale(), payload.timeScaleTicks());
+    }
 
     public static void addScale(float timeScale, int timeScaleTicks) {
         addScale(serverTicker, timeScale, timeScaleTicks);
         PacketDistributor.sendToAllPlayers(new BulletTimePayload(timeScale, timeScaleTicks));
     }
 
-    public static void handlePayload(final BulletTimePayload payload, final IPayloadContext context) {
-        addScale(clientTicker, payload.timeScale(), payload.timeScaleTicks());
-    }
-
     public static void addScale(Ticker ticker, float timeScale, int timeScaleTicks) {
-        ticker.timeScale = ticker.timeScaleTicks > 0 ? Math.min(ticker.timeScale, timeScale) : timeScale;
-        ticker.timeScaleTicks = Math.min(ticker.timeScaleTicks + timeScaleTicks, 600);
+        ticker.timeScale = ticker.timeScaleTicks > 0 ? ticker.timeScale * timeScale : timeScale;
+        ticker.timeScaleTicks = timeScaleTicks;
     }
 
     public static class Ticker {
@@ -58,12 +51,19 @@ public class BulletTimeHandler {
         public float partialTick;
         public boolean runTick;
 
+        private static float smoothstep(float input) {
+            return input * input * input * (input * (input * 6.0F - 15.0F) + 10.0F);
+        }
+
         public float getDefaultTimeScale() {
             return 1.0F;
         }
 
         public float getTimeScale() {
-            return timeScaleTicks > 0 ? timeScale : getDefaultTimeScale();
+            var delta = Mth.inverseLerp(timeScaleTicks, 20.0F, 0.0F);
+            delta = Mth.clamp(delta, 0.0F, 1.0F);
+            delta = smoothstep(delta);
+            return Mth.lerp(delta, timeScale, getDefaultTimeScale());
         }
 
         public void tick() {

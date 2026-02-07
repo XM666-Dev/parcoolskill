@@ -2,61 +2,40 @@ package com.xm666.parcoolskill.mixin;
 
 import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.attachment.common.Parkourability;
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.Share;
-import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
-import com.xm666.parcoolskill.action.SkillJump;
 import com.xm666.parcoolskill.handler.CleaveHandler;
-import com.xm666.parcoolskill.handler.StaminaHandler;
-import com.xm666.parcoolskill.network.StopChargePayload;
-import net.minecraft.server.level.ServerPlayer;
+import com.xm666.parcoolskill.network.SkillAttackPayload;
+import com.xm666.parcoolskill.skill.JumpSkill;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Arrays;
+
 public class CleaveMixin {
-    @Mixin(Player.class)
-    private static class PlayerMixin {
-        @Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
-        private void injectAttack(Entity target, CallbackInfo ci, @Local(ordinal = 3) boolean isSweeping, @Share("queueSweep") LocalBooleanRef queueSweep) {
-            if (isSweeping) {
-                if (!((Object) this instanceof ServerPlayer source)) return;
-                var jump = (SkillJump) Parkourability.get(source).get(ChargeJump.class);
-                if (jump.parcoolskill$getChargeTick() < ChargeJump.JUMP_ANIMATION_TICK) return;
-                if (!StaminaHandler.consumeStamina(source, 400)) return;
-                CleaveHandler.queueAttack = true;
-                queueSweep.set(true);
-                PacketDistributor.sendToPlayer(source, StopChargePayload.INSTANCE);
+    @Mixin(Minecraft.class)
+    private static class MinecraftMixin {
+        @Inject(method = "handleKeybinds", at = @At("HEAD"))
+        private void onHandleKeybinds(CallbackInfo ci) {
+            var mc = Minecraft.getInstance();
+            var player = mc.player;
+            if (player == null) return;
+
+            var skillJump = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
+            if (skillJump.parcoolskill$getAttackTime() == 0) return;
+
+            var entityInteractionRange = player.entityInteractionRange() * 2.0;
+            var eyePosition = player.getEyePosition();
+            var viewVector = player.getViewVector(1.0F);
+            var endPosition = eyePosition.add(viewVector.x * entityInteractionRange, viewVector.y * entityInteractionRange, viewVector.z * entityInteractionRange);
+            var aabb = player.getBoundingBox().expandTowards(viewVector.scale(entityInteractionRange)).inflate(1.0, 1.0, 1.0);
+            var entitiesHit = CleaveHandler.getEntitiesHit(player, eyePosition, endPosition, aabb, (entity) -> !entity.isSpectator() && entity.isPickable(), 1.0F);
+            for (var entity : Arrays.stream(entitiesHit).filter(CleaveHandler.entitiesHit::add).toArray(Entity[]::new)) {
+                PacketDistributor.sendToServer(new SkillAttackPayload(entity.getId(), player.getId(), SkillAttackPayload.SkillAttackType.CLEAVE.ordinal()));
             }
-        }
-
-        @ModifyExpressionValue(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getAttributeValue(Lnet/minecraft/core/Holder;)D", ordinal = 1))
-        private double modifySweepingDamageRatio(double original, @Share("queueSweep") LocalBooleanRef queueSweep) {
-            return queueSweep.get() ? original + 1.25F : original;
-        }
-
-        @ModifyExpressionValue(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;getSweepHitBox(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/phys/AABB;"))
-        private AABB modifySweepHitBox(AABB original, @Share("queueSweep") LocalBooleanRef queueSweep) {
-            if (queueSweep.get()) {
-                var scale = CleaveHandler.getCleaveScale();
-                var multiplier = scale * 0.5 - 0.5;
-                var width = (original.maxX - original.minX) * multiplier;
-                var height = (original.maxY - original.minY) * multiplier;
-                var depth = (original.maxZ - original.minZ) * multiplier;
-                original = new AABB(original.minX - width, original.minY - height, original.minZ - depth, original.maxX + width, original.maxY + height, original.maxZ + depth);
-            }
-            return original;
-        }
-
-        @ModifyExpressionValue(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;entityInteractionRange()D"))
-        private double modifyEntityInteractionRange(double original, @Share("queueSweep") LocalBooleanRef queueSweep) {
-            return queueSweep.get() ? original * 2.0 : original;
         }
     }
 }
