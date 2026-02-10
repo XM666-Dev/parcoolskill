@@ -2,6 +2,7 @@ package com.xm666.parcoolskill.mixin;
 
 import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.attachment.common.Parkourability;
+import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.handler.CleaveHandler;
 import com.xm666.parcoolskill.handler.SkillAttackHandler;
 import com.xm666.parcoolskill.network.SkillAttackPayload;
@@ -31,16 +32,22 @@ public class CleaveMixin {
             var skillJump = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
             if (skillJump.parcoolskill$getAttackTime() == 0) return;
 
-            var interactionRange = player.entityInteractionRange() * 2.0;
+            var cleaveInteractionMultiplier = Config.CLEAVE_INTERACTION_MULTIPLIER.get();
+            var cleaveBaseHitLimit = Config.CLEAVE_BASE_HIT_LIMIT.get();
+            var cleaveHitLimitIncrease = Config.CLEAVE_HIT_LIMIT_INCREASE.get();
+            var cleaveInteractionRadius = Config.CLEAVE_INTERACTION_RADIUS.get();
+
+            var interactionRange = player.entityInteractionRange() * cleaveInteractionMultiplier;
             var level = player.level();
             var sweepingEdge = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.SWEEPING_EDGE);
-            var hitLimit = player.getWeaponItem().getEnchantmentLevel(sweepingEdge) + 1;
+            var hitLimit = cleaveBaseHitLimit + player.getWeaponItem().getEnchantmentLevel(sweepingEdge) * cleaveHitLimitIncrease;
 
             var eyePosition = player.getEyePosition();
             var viewVector = player.getViewVector(1.0F);
             var interactionVector = viewVector.scale(interactionRange);
             var interactionPosition = eyePosition.add(interactionVector);
             var aabb = player.getBoundingBox().expandTowards(interactionVector).inflate(1.0);
+
             var entityHits = Stream.concat(
                             Arrays.stream(CleaveHandler.getEntityHits(
                                     player,
@@ -48,7 +55,7 @@ public class CleaveMixin {
                                     interactionPosition,
                                     aabb,
                                     (entity) -> !entity.isSpectator() && entity.isPickable(),
-                                    0.0F,
+                                    0.0,
                                     hitLimit
                             )), Arrays.stream(CleaveHandler.getEntityHits(
                                     player,
@@ -56,7 +63,7 @@ public class CleaveMixin {
                                     interactionPosition,
                                     aabb,
                                     (entity) -> !entity.isSpectator() && entity.isPickable(),
-                                    0.3F,
+                                    cleaveInteractionRadius,
                                     hitLimit
                             ))).filter(CleaveHandler.entityHits::add)
                     .toArray(Entity[]::new);

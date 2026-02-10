@@ -3,6 +3,7 @@ package com.xm666.parcoolskill.handler;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.attachment.common.Parkourability;
+import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.effect.Effects;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
@@ -38,8 +39,9 @@ public class BashHandler {
 
         if (!event.getCritEvent().isVanillaCritical()) return;
 
+        var bashVulnerableDuration = Config.BASH_VULNERABLE_DURATION.get();
         var target = event.getTarget();
-        SkillHandler.addEffect(target, player, Effects.VULNERABLE, 120);
+        SkillHandler.addEffect(target, player, Effects.VULNERABLE, bashVulnerableDuration);
     }
 
     @SubscribeEvent
@@ -51,6 +53,9 @@ public class BashHandler {
         var source = event.getSource();
         if (!source.is(Tags.DamageTypes.IS_PHYSICAL)) return;
 
-        event.setAmount(event.getAmount() * (1.5F + 0.25F * targetEffect.getAmplifier()));
+        var vulnerableBaseDamageMultiplier = Config.VULNERABLE_BASE_DAMAGE_MULTIPLIER.get().floatValue();
+        var vulnerableDamageMultiplierIncrease = Config.VULNERABLE_DAMAGE_MULTIPLIER_INCREASE.get().floatValue();
+        var multiplier = vulnerableBaseDamageMultiplier + targetEffect.getAmplifier() * vulnerableDamageMultiplierIncrease;
+        event.setAmount(event.getAmount() * multiplier);
     }
 }

@@ -44,6 +44,7 @@ public class TimeScaleHandler {
     }
 
     public static class ScalableTimer {
+        private static final int SCALE_SMOOTH_DURATION = 20;
         private float scale;
         private int scaleTicks;
         private float tickScale;
@@ -64,7 +65,7 @@ public class TimeScaleHandler {
         }
 
         private float calculateTimeScale() {
-            var delta = clampedInverseLerp(scaleTicks, 20.0F, 0.0F);
+            var delta = clampedInverseLerp(scaleTicks, SCALE_SMOOTH_DURATION, 0);
             delta = smoothstep(delta);
             return Mth.lerp(delta, scale, getDefaultTimeScale());
         }

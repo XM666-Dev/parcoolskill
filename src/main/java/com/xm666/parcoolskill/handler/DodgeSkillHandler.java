@@ -4,6 +4,7 @@ import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.Dodge;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
+import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.skill.DodgeSkill;
@@ -55,8 +56,9 @@ public class DodgeSkillHandler {
         var dodge = parkourability.get(Dodge.class);
         if (!dodge.isDoing() || dodge.getDoingTick() > 10) return;
 
+        var sneakyStrikeReadyDuration = Config.SNEAKY_STRIKE_READY_DURATION.get();
         var dodgeSkill = (DodgeSkill) dodge;
-        dodgeSkill.parcoolskill$setAttackReadyTime(20);
+        dodgeSkill.parcoolskill$setAttackReadyTime(sneakyStrikeReadyDuration);
     }
 
     @SubscribeEvent
@@ -77,13 +79,16 @@ public class DodgeSkillHandler {
         var targetDirection = directionFromBodyRotation(target.yBodyRot);
         var offset = new Vec2((float) sourceOffset.x, (float) sourceOffset.z);
         var direction = new Vec2((float) targetDirection.x, (float) targetDirection.z);
-        var damageMultiplier = isPositionBehind(offset, direction) ? 3.0F : 2.0F;
+
+        var sneakyStrikeDamageMultiplier = Config.SNEAKY_STRIKE_DAMAGE_MULTIPLIER.get().floatValue();
+        var backstabDamageMultiplier = Config.BACKSTAB_DAMAGE_MULTIPLIER.get().floatValue();
+        var damageMultiplier = isPositionBehind(offset, direction) ? backstabDamageMultiplier : sneakyStrikeDamageMultiplier;
         event.setAmount(event.getAmount() * damageMultiplier);
         StaminaHandler.recoverStaminaOf(player, Dodge.class);
     }
 
-    static Vec3 directionFromBodyRotation(float yBodyRot) {
-        var radian = yBodyRot * Mth.DEG_TO_RAD;
+    static Vec3 directionFromBodyRotation(float rotation) {
+        var radian = rotation * Mth.DEG_TO_RAD;
 
         var x = -Mth.sin(radian);
         var z = Mth.cos(radian);

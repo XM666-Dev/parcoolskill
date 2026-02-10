@@ -4,6 +4,7 @@ import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.attachment.common.Parkourability;
+import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import net.minecraft.client.Minecraft;
@@ -49,17 +50,22 @@ public class CleaveHandler {
             return;
         }
 
-        if (!player.getWeaponItem().canPerformAction(ItemAbilities.SWORD_SWEEP) || jump.getChargingTick() < ChargeJump.JUMP_ANIMATION_TICK)
+        var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
+        if (!player.getWeaponItem().canPerformAction(ItemAbilities.SWORD_SWEEP) || jump.getChargingTick() < cleaveChargeDuration)
             return;
         ChargeCooldownHandler.cooldown = true;
 
+        var cleaveStaminaConsumption = Config.CLEAVE_STAMINA_CONSUMPTION.get();
         var stamina = Stamina.get(player);
-        stamina.consume(400);
+        stamina.consume(cleaveStaminaConsumption);
         if (stamina.isExhausted()) return;
 
-        jumpSkill.parcoolskill$setAttackTime(10);
+        var cleaveAttackDuration = Config.CLEAVE_ATTACK_DURATION.get();
+        var cleaveBulletTimeScale = Config.CLEAVE_BULLET_TIME_SCALE.get().floatValue();
+        var cleaveBulletTimeDuration = Config.CLEAVE_BULLET_TIME_DURATION.get();
+        jumpSkill.parcoolskill$setAttackTime(cleaveAttackDuration);
+        TimeScaleHandler.applyScale(cleaveBulletTimeScale, cleaveBulletTimeDuration);
         entityHits.clear();
-        TimeScaleHandler.applyScale(0.25F, 20);
         event.setCanceled(true);
     }
 
@@ -68,7 +74,7 @@ public class CleaveHandler {
         player.attack(target);
     }
 
-    public static Entity[] getEntityHits(Entity shooter, Vec3 startPosition, Vec3 endPosition, AABB boundingBox, Predicate<Entity> filter, float inflationAmount, long hitLimit) {
+    public static Entity[] getEntityHits(Entity shooter, Vec3 startPosition, Vec3 endPosition, AABB boundingBox, Predicate<Entity> filter, double inflationAmount, long hitLimit) {
         record HitResult(Entity entity, double distanceSquare) {
         }
 

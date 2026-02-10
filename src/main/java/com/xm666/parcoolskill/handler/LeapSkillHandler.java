@@ -3,6 +3,7 @@ package com.xm666.parcoolskill.handler;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.attachment.common.Parkourability;
+import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.skill.LeapSkill;
@@ -45,7 +46,9 @@ public class LeapSkillHandler {
 
         if (!event.isFullStrength()) return;
 
-        event.setAmount(event.getAmount() * 2.0F);
-        skillLeap.parcoolskill$setParryTime(20);
+        var wildStrikeDamageMultiplier = Config.WILD_STRIKE_DAMAGE_MULTIPLIER.get().floatValue();
+        var wildStrikeParryDuration = Config.WILD_STRIKE_PARRY_DURATION.get();
+        event.setAmount(event.getAmount() * wildStrikeDamageMultiplier);
+        skillLeap.parcoolskill$setParryTime(wildStrikeParryDuration);
     }
 }

@@ -1,7 +1,7 @@
 package com.xm666.parcoolskill.handler;
 
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
-import com.alrex.parcool.common.action.impl.ChargeJump;
+import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -15,7 +15,8 @@ public class ChargeCooldownHandler {
     static void onChargeTryToStart(ParCoolActionEvent.TryToStart event) {
         if (!(event.getAction() instanceof JumpSkill jump)) return;
 
-        cooldown &= jump.parcoolskill$getNotChargeTick() < ChargeJump.JUMP_ANIMATION_TICK;
+        var cleaveCooldownDuration = Config.CLEAVE_COOLDOWN_DURATION.get();
+        cooldown &= jump.parcoolskill$getNotChargeTick() < cleaveCooldownDuration;
         if (!cooldown) return;
 
         event.setCanceled(true);

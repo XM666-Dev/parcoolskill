@@ -15,7 +15,7 @@ public class SkillAttackHandler {
         if (!(targetEntity instanceof Entity target) || !(sourceEntity instanceof Player player)) return;
 
         if (skillAttackType == SkillAttackPayload.SkillAttackType.DROPKICK || skillAttackType == SkillAttackPayload.SkillAttackType.HEEL_HOOK) {
-            SlideSkillHandler.handleAttack(target, player, level, skillAttackType);
+            SlideSkillHandler.handleAttack(target, player, skillAttackType);
         } else if (skillAttackType == SkillAttackPayload.SkillAttackType.CLEAVE) {
             CleaveHandler.handleAttack(target, player);
         }

@@ -27,7 +27,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -61,8 +60,9 @@ public class SlideSkillHandler {
             readyAttackType = SlideSkill.ReadyAttackType.HEEL_HOOK;
         }
 
+        var slideSkillInvulnerableDuration = Config.SLIDE_SKILL_INVULNERABLE_DURATION.get();
         slideSkill.parcoolskill$setReadyAttackType(readyAttackType);
-        slideSkill.parcoolskill$setInvulnerableTime(10);
+        slideSkill.parcoolskill$setInvulnerableTime(slideSkillInvulnerableDuration);
     }
 
     @SubscribeEvent
@@ -94,38 +94,43 @@ public class SlideSkillHandler {
         event.setCanceled(true);
     }
 
-    public static void handleAttack(Entity target, Player player, Level level, SkillAttackPayload.SkillAttackType skillAttackType) {
-        var amount = (float) (Config.SLIDE_SKILL_BASE_DAMAGE.get() +
-                calculateAttribute(player, Attributes.ATTACK_DAMAGE, m -> !m.is(ResourceLocation.parse("minecraft:base_attack_damage"))) +
-                calculateAttribute(player, Attributes.ARMOR, m -> m.is(ResourceLocation.parse("minecraft:armor.leggings")) || m.is(ResourceLocation.parse("minecraft:armor.boots"))) +
-                calculateAttribute(player, Attributes.ARMOR_TOUGHNESS, m -> m.is(ResourceLocation.parse("minecraft:armor.leggings")) || m.is(ResourceLocation.parse("minecraft:armor.boots"))));
-        DamageSource damageSource = new DamageSource(
-                level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.SLIDE_ATTACK),
-                player,
-                player,
-                player.position()
-        );
-        target.hurt(damageSource, amount);
+    public static void handleAttack(Entity target, Player player, SkillAttackPayload.SkillAttackType skillAttackType) {
+        var slideSkillBaseDamage = Config.SLIDE_SKILL_BASE_DAMAGE.get();
+        var level = target.level();
+        var attackModifierPredicate = (Predicate<AttributeModifier>) m -> !m.is(ResourceLocation.parse("minecraft:base_attack_damage"));
+        var lowerArmorPredicate = (Predicate<AttributeModifier>) m -> m.is(ResourceLocation.parse("minecraft:armor.leggings")) || m.is(ResourceLocation.parse("minecraft:armor.boots"));
+        var damage = (float) (slideSkillBaseDamage +
+                calculateAttribute(player, Attributes.ATTACK_DAMAGE, attackModifierPredicate) +
+                calculateAttribute(player, Attributes.ARMOR, lowerArmorPredicate) +
+                calculateAttribute(player, Attributes.ARMOR_TOUGHNESS, lowerArmorPredicate));
+        var slideAttack = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.SLIDE_ATTACK);
+        var damageSource = new DamageSource(slideAttack, player, player, player.position());
+        target.hurt(damageSource, damage);
         player.resetAttackStrengthTicker();
 
         if (target instanceof LivingEntity living) {
+            var slideSkillBulletTimeScale = Config.SLIDE_SKILL_BULLET_TIME_SCALE.get().floatValue();
+            var slideSkillBulletTimeDuration = Config.SLIDE_SKILL_BULLET_TIME_DURATION.get();
             switch (skillAttackType) {
                 case DROPKICK -> {
-                    var strength = Config.DROPKICK_BASE_KNOCKBACK.get().floatValue();
-                    strength += (float) player.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
-                    living.knockback(strength * 0.5F, Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float) Math.PI / 180F)));
+                    var dropkickBaseKnockback = Config.DROPKICK_BASE_KNOCKBACK.get();
+                    var knockback = dropkickBaseKnockback + player.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
+                    var rotation = player.getYRot() * Mth.DEG_TO_RAD;
+                    living.knockback(knockback * 0.5, Mth.sin(rotation), -Mth.cos(rotation));
 
                     if (living.hasEffect(Effects.VULNERABLE)) {
                         StaminaHandler.recoverStaminaOf(player, CatLeap.class);
-                        TimeScaleHandler.applyScale(0.25F, 80);
+                        TimeScaleHandler.applyScale(slideSkillBulletTimeScale, slideSkillBulletTimeDuration);
                     }
                 }
                 case HEEL_HOOK -> {
-                    SkillHandler.addEffect(living, player, MobEffects.MOVEMENT_SLOWDOWN, 60, 2);
+                    var heelHookSlowdownDuration = Config.HEEL_HOOK_SLOWDOWN_DURATION.get();
+                    var heelHookSlowdownAmplifier = Config.HEEL_HOOK_SLOWDOWN_AMPLIFIER.get();
+                    SkillHandler.addEffect(living, player, MobEffects.MOVEMENT_SLOWDOWN, heelHookSlowdownDuration, heelHookSlowdownAmplifier);
 
                     if (living.hasEffect(MobEffects.WEAKNESS)) {
                         StaminaHandler.recoverStaminaOf(player, Dodge.class);
-                        TimeScaleHandler.applyScale(0.25F, 80);
+                        TimeScaleHandler.applyScale(slideSkillBulletTimeScale, slideSkillBulletTimeDuration);
                     }
                 }
             }
@@ -141,21 +146,25 @@ public class SlideSkillHandler {
 
     private static double calculateAttribute(LivingEntity living, Holder<Attribute> attribute, Predicate<AttributeModifier> predicate) {
         var attributeInstance = living.getAttribute(attribute);
-        return calculateAttribute(attribute, living.getAttributeBaseValue(attribute), attributeInstance != null ? attributeInstance.getModifiers().stream().filter(predicate).toArray(AttributeModifier[]::new) : new AttributeModifier[]{});
+        var baseValue = living.getAttributeBaseValue(attribute);
+        var modifiers = attributeInstance != null
+                ? attributeInstance.getModifiers().stream().filter(predicate).toArray(AttributeModifier[]::new)
+                : new AttributeModifier[]{};
+        return calculateAttribute(attribute, baseValue, modifiers);
     }
 
     private static double calculateAttribute(Holder<Attribute> attribute, double baseValue, AttributeModifier[] modifiers) {
-        for (AttributeModifier attributeModifier : Arrays.stream(modifiers).filter(m -> m.operation() == AttributeModifier.Operation.ADD_VALUE).toArray(AttributeModifier[]::new)) {
+        for (var attributeModifier : Arrays.stream(modifiers).filter(m -> m.operation() == AttributeModifier.Operation.ADD_VALUE).toArray(AttributeModifier[]::new)) {
             baseValue += attributeModifier.amount();
         }
 
-        double value = baseValue;
+        var value = baseValue;
 
-        for (AttributeModifier attributeModifier : Arrays.stream(modifiers).filter(m -> m.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_BASE).toArray(AttributeModifier[]::new)) {
+        for (var attributeModifier : Arrays.stream(modifiers).filter(m -> m.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_BASE).toArray(AttributeModifier[]::new)) {
             value += baseValue * attributeModifier.amount();
         }
 
-        for (AttributeModifier attributeModifier : Arrays.stream(modifiers).filter(m -> m.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL).toArray(AttributeModifier[]::new)) {
+        for (var attributeModifier : Arrays.stream(modifiers).filter(m -> m.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL).toArray(AttributeModifier[]::new)) {
             value *= 1.0 + attributeModifier.amount();
         }
 
