@@ -21,6 +21,7 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -93,7 +94,7 @@ public class SlideSkillHandler {
         event.setCanceled(true);
     }
 
-    public static void handleAttack(LivingEntity target, Player player, Level level, SkillAttackPayload.SkillAttackType skillAttackType) {
+    public static void handleAttack(Entity target, Player player, Level level, SkillAttackPayload.SkillAttackType skillAttackType) {
         var amount = (float) (Config.SLIDE_SKILL_BASE_DAMAGE.get() +
                 calculateAttribute(player, Attributes.ATTACK_DAMAGE, m -> !m.is(ResourceLocation.parse("minecraft:base_attack_damage"))) +
                 calculateAttribute(player, Attributes.ARMOR, m -> m.is(ResourceLocation.parse("minecraft:armor.leggings")) || m.is(ResourceLocation.parse("minecraft:armor.boots"))) +
@@ -107,23 +108,25 @@ public class SlideSkillHandler {
         target.hurt(damageSource, amount);
         player.resetAttackStrengthTicker();
 
-        switch (skillAttackType) {
-            case DROPKICK -> {
-                var strength = Config.DROPKICK_BASE_KNOCKBACK.get().floatValue();
-                strength += (float) player.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
-                target.knockback(strength * 0.5F, Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float) Math.PI / 180F)));
+        if (target instanceof LivingEntity living) {
+            switch (skillAttackType) {
+                case DROPKICK -> {
+                    var strength = Config.DROPKICK_BASE_KNOCKBACK.get().floatValue();
+                    strength += (float) player.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
+                    living.knockback(strength * 0.5F, Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float) Math.PI / 180F)));
 
-                if (target.hasEffect(Effects.VULNERABLE)) {
-                    StaminaHandler.recoverStaminaOf(player, CatLeap.class);
-                    TimeScaleHandler.applyScale(0.25F, 80);
+                    if (living.hasEffect(Effects.VULNERABLE)) {
+                        StaminaHandler.recoverStaminaOf(player, CatLeap.class);
+                        TimeScaleHandler.applyScale(0.25F, 80);
+                    }
                 }
-            }
-            case HEEL_HOOK -> {
-                SkillHandler.addEffect(target, player, MobEffects.MOVEMENT_SLOWDOWN, 60, 2);
+                case HEEL_HOOK -> {
+                    SkillHandler.addEffect(living, player, MobEffects.MOVEMENT_SLOWDOWN, 60, 2);
 
-                if (target.hasEffect(MobEffects.WEAKNESS)) {
-                    StaminaHandler.recoverStaminaOf(player, Dodge.class);
-                    TimeScaleHandler.applyScale(0.25F, 80);
+                    if (living.hasEffect(MobEffects.WEAKNESS)) {
+                        StaminaHandler.recoverStaminaOf(player, Dodge.class);
+                        TimeScaleHandler.applyScale(0.25F, 80);
+                    }
                 }
             }
         }

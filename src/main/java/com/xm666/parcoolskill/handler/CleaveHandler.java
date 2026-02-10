@@ -8,7 +8,6 @@ import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -64,7 +63,7 @@ public class CleaveHandler {
         event.setCanceled(true);
     }
 
-    public static void handleAttack(LivingEntity target, Player player) {
+    public static void handleAttack(Entity target, Player player) {
         player.attackStrengthTicker = (int) player.getCurrentItemAttackStrengthDelay();
         player.attack(target);
     }

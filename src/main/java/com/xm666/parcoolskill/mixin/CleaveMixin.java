@@ -3,6 +3,7 @@ package com.xm666.parcoolskill.mixin;
 import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.handler.CleaveHandler;
+import com.xm666.parcoolskill.handler.SkillAttackHandler;
 import com.xm666.parcoolskill.network.SkillAttackPayload;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import net.minecraft.client.Minecraft;
@@ -10,7 +11,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -61,7 +61,7 @@ public class CleaveMixin {
                             ))).filter(CleaveHandler.entityHits::add)
                     .toArray(Entity[]::new);
             for (var entityHit : entityHits) {
-                PacketDistributor.sendToServer(new SkillAttackPayload(entityHit.getId(), player.getId(), SkillAttackPayload.SkillAttackType.CLEAVE.ordinal()));
+                SkillAttackHandler.attack(entityHit, player, SkillAttackPayload.SkillAttackType.CLEAVE);
             }
         }
     }

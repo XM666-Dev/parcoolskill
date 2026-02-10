@@ -2,11 +2,11 @@ package com.xm666.parcoolskill.mixin;
 
 import com.alrex.parcool.common.action.impl.Slide;
 import com.alrex.parcool.common.attachment.common.Parkourability;
+import com.xm666.parcoolskill.handler.SkillAttackHandler;
 import com.xm666.parcoolskill.network.SkillAttackPayload;
 import com.xm666.parcoolskill.skill.SlideSkill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.EntityHitResult;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -56,7 +56,8 @@ public class SlideSkillMixin {
             skillSlide.parcoolskill$setReadyAttackType(SlideSkill.ReadyAttackType.NONE);
 
             var target = entityHitResult.getEntity();
-            PacketDistributor.sendToServer(new SkillAttackPayload(target.getId(), player.getId(), readyAttackType.ordinal()));
+            var skillAttackType = SkillAttackPayload.SkillAttackType.values()[readyAttackType.ordinal()];
+            SkillAttackHandler.attack(target, player, skillAttackType);
             player.resetAttackStrengthTicker();
         }
     }
