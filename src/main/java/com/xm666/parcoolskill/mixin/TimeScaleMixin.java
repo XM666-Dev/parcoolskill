@@ -9,6 +9,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.server.ServerTickRateManager;
 import net.minecraft.world.TickRateManager;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Final;
@@ -22,7 +23,8 @@ public class TimeScaleMixin {
     private static class TickRateManagerMixin {
         @ModifyReturnValue(method = "runsNormally", at = @At("RETURN"))
         private boolean modifyRunsNormally(boolean original) {
-            return original && (!TimeScaleHandler.modifyRunsNormally || TimeScaleHandler.timer.runsTicking()) && TimeScaleHandler.enableRunsNormally;
+            var timer = (Object) this instanceof ServerTickRateManager ? TimeScaleHandler.serverTimer : TimeScaleHandler.clientTimer;
+            return original && (!TimeScaleHandler.modifyRunsNormally || timer.runsTicking()) && TimeScaleHandler.enableRunsNormally;
         }
     }
 
@@ -31,7 +33,7 @@ public class TimeScaleMixin {
         @ModifyReturnValue(method = "getGameTimeDeltaPartialTick", at = @At(value = "RETURN", ordinal = 1))
         private float modifyGameTimeDeltaPartialTick(float original) {
             return TimeScaleHandler.modifyGameTimeDeltaPartialTick
-                    ? Math.min(TimeScaleHandler.deltaTickRunning + original * TimeScaleHandler.timer.getScale(), 1.0F)
+                    ? Math.min(TimeScaleHandler.deltaTickRunning + original * TimeScaleHandler.clientTimer.getScale(), 1.0F)
                     : original;
         }
     }

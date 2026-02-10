@@ -13,40 +13,33 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class TimeScaleHandler {
-    public static final ScalableTimer timer = new ScalableTimer();
+    public static final ScalableTimer clientTimer = new ScalableTimer();
+    public static final ScalableTimer serverTimer = new ScalableTimer();
     public static boolean modifyRunsNormally = true;
     public static boolean enableRunsNormally = true;
     public static boolean modifyGameTimeDeltaPartialTick = true;
     public static float deltaTickRunning;
 
-    //@SubscribeEvent
-    //static void onRenderFrame(RenderFrameEvent.Pre event) {
-    //    if (Minecraft.getInstance().isPaused()) return;
-//
-    //    ParCoolSkill.LOGGER.info("partialTick = {}", event.getPartialTick().getGameTimeDeltaPartialTick(true));
-    //}
-
     @SubscribeEvent
     static void onClientTick(ClientTickEvent.Pre event) {
-        if (Minecraft.getInstance().isPaused()) return;
+        var mc = Minecraft.getInstance();
+        if (mc.level == null || mc.isPaused()) return;
 
-        timer.tick();
-        deltaTickRunning = timer.runsTicking() ? 0.0F : deltaTickRunning + timer.getScale();
+        clientTimer.tick();
+        deltaTickRunning = clientTimer.runsTicking() ? 0.0F : deltaTickRunning + clientTimer.getScale();
     }
 
     @SubscribeEvent
     static void onServerTick(ServerTickEvent.Pre event) {
-        if (event.getServer().isPaused() || Minecraft.getInstance().isSingleplayer()) return;
-
-        timer.tick();
+        serverTimer.tick();
     }
 
     public static void handlePayload(final TimeScalePayload payload, final IPayloadContext context) {
-        timer.applyScale(payload.scale(), payload.scaleTicks());
+        clientTimer.applyScale(payload.scale(), payload.scaleTicks());
     }
 
     public static void applyScale(float scale, int scaleTicks) {
-        timer.applyScale(scale, scaleTicks);
+        serverTimer.applyScale(scale, scaleTicks);
         PacketDistributor.sendToAllPlayers(new TimeScalePayload(scale, scaleTicks));
     }
 
