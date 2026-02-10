@@ -5,6 +5,7 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.network.SkillAttackPayload;
 import com.xm666.parcoolskill.skill.SlideSkill;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -47,14 +48,15 @@ public class SlideSkillMixin {
         private void onHandleKeybinds(CallbackInfo ci) {
             var mc = Minecraft.getInstance();
             var player = mc.player;
-            if (mc.crosshairPickEntity == null || player == null) return;
+            if (!(mc.hitResult instanceof EntityHitResult entityHitResult) || player == null) return;
 
             var skillSlide = (SlideSkill) Parkourability.get(player).get(Slide.class);
             var readyAttackType = skillSlide.parcoolskill$getReadyAttackType();
             if (readyAttackType == SlideSkill.ReadyAttackType.NONE) return;
             skillSlide.parcoolskill$setReadyAttackType(SlideSkill.ReadyAttackType.NONE);
 
-            PacketDistributor.sendToServer(new SkillAttackPayload(mc.crosshairPickEntity.getId(), player.getId(), readyAttackType.ordinal()));
+            var target = entityHitResult.getEntity();
+            PacketDistributor.sendToServer(new SkillAttackPayload(target.getId(), player.getId(), readyAttackType.ordinal()));
             player.resetAttackStrengthTicker();
         }
     }

@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public record SkillAttackPayload(int targetEntityId, int sourceEntityId,
                                  int skillAttackType) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<SkillAttackPayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "kick"));
+    public static final CustomPacketPayload.Type<SkillAttackPayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "skill_attack"));
     public static final StreamCodec<ByteBuf, SkillAttackPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             SkillAttackPayload::targetEntityId,

@@ -20,6 +20,7 @@ public class PlayerAttackMixin {
         private boolean wrapHurt(Entity target, DamageSource source, float amount, Operation<Boolean> original, @Local CriticalHitEvent critEvent) {
             var player = (Player) (Object) this;
             var livingTarget = target instanceof LivingEntity ? (LivingEntity) target : null;
+
             if (livingTarget != null) {
                 var playerAttackEvent = new PlayerAttackEvent.Pre(player, livingTarget, critEvent, amount);
                 NeoForge.EVENT_BUS.post(playerAttackEvent);
@@ -30,6 +31,7 @@ public class PlayerAttackMixin {
                 var playerAttackEvent = new PlayerAttackEvent.Post(player, livingTarget, critEvent, amount);
                 NeoForge.EVENT_BUS.post(playerAttackEvent);
             }
+
             return hurt;
         }
     }

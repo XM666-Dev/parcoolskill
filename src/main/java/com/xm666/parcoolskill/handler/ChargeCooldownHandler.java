@@ -16,6 +16,8 @@ public class ChargeCooldownHandler {
         if (!(event.getAction() instanceof JumpSkill jump)) return;
 
         cooldown &= jump.parcoolskill$getNotChargeTick() < ChargeJump.JUMP_ANIMATION_TICK;
-        event.setCanceled(cooldown);
+        if (!cooldown) return;
+
+        event.setCanceled(true);
     }
 }
