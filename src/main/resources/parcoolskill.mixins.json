@@ -3,14 +3,14 @@
   "package": "com.xm666.parcoolskill.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "BulletTimeMixin$TickRateManagerMixin",
     "DodgeSkillMixin$DodgeMixin",
     "DropkickMixin$SlideMixin",
     "JumpSkillMixin$ChargeJumpMixin",
     "LeapSkillMixin$CatLeapMixin",
     "LeapSkillMixin$PlayerMixin",
     "PlayerAttackMixin$PlayerMixin",
-    "SlideSkillMixin$SlideMixin"
+    "SlideSkillMixin$SlideMixin",
+    "TimeScaleMixin$TickRateManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -19,12 +19,12 @@
     "requireAnnotations": true
   },
   "client": [
-    "BulletTimeMixin$DeltaTrackerTimerMixin",
-    "BulletTimeMixin$GameRendererMixin",
-    "BulletTimeMixin$LevelRendererMixin",
-    "BulletTimeMixin$MinecraftMixin",
     "CleaveMixin$MinecraftMixin",
-    "SlideSkillMixin$MinecraftMixin"
+    "SlideSkillMixin$MinecraftMixin",
+    "TimeScaleMixin$DeltaTrackerTimerMixin",
+    "TimeScaleMixin$GameRendererMixin",
+    "TimeScaleMixin$LevelRendererMixin",
+    "TimeScaleMixin$MinecraftMixin"
   ],
   "mixinextras": {
     "minVersion": "0.5.0"

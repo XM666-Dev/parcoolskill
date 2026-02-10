@@ -1,15 +1,15 @@
-package com.xm666.parcoolskill.network;
+package com.xm666.parcoolskill.handler;
 
 import com.xm666.parcoolskill.ParCoolSkill;
-import com.xm666.parcoolskill.handler.BulletTimeHandler;
-import com.xm666.parcoolskill.handler.SkillAttackHandler;
-import com.xm666.parcoolskill.handler.StaminaHandler;
+import com.xm666.parcoolskill.network.SkillAttackPayload;
+import com.xm666.parcoolskill.network.StaminaPayload;
+import com.xm666.parcoolskill.network.TimeScalePayload;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
-public class Payloads {
+public class PayloadHandler {
     @SubscribeEvent
     static void register(RegisterPayloadHandlersEvent event) {
         var registrar = event.registrar("1");
@@ -24,9 +24,9 @@ public class Payloads {
                 StaminaHandler::handlePayload
         );
         registrar.playToClient(
-                BulletTimePayload.TYPE,
-                BulletTimePayload.STREAM_CODEC,
-                BulletTimeHandler::handlePayload
+                TimeScalePayload.TYPE,
+                TimeScalePayload.STREAM_CODEC,
+                TimeScaleHandler::handlePayload
         );
     }
 }

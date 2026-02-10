@@ -6,9 +6,7 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
-import com.xm666.parcoolskill.network.StaminaPayload;
 import com.xm666.parcoolskill.skill.DodgeSkill;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +16,6 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class DodgeSkillHandler {
@@ -82,7 +79,7 @@ public class DodgeSkillHandler {
         var direction = new Vec2((float) targetDirection.x, (float) targetDirection.z);
         var damageMultiplier = isPositionBehind(offset, direction) ? 3.0F : 2.0F;
         event.setAmount(event.getAmount() * damageMultiplier);
-        PacketDistributor.sendToPlayer((ServerPlayer) player, new StaminaPayload(80));
+        StaminaHandler.recoverStaminaOf(player, Dodge.class);
     }
 
     static Vec3 directionFromBodyRotation(float yBodyRot) {

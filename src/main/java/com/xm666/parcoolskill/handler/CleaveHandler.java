@@ -15,14 +15,16 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.common.ItemAbilities;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.function.Predicate;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class CleaveHandler {
-    public static HashSet<Entity> entitiesHit = new HashSet<>();
+    public static HashSet<Entity> entityHits = new HashSet<>();
 
     @SubscribeEvent
     static void onJumpTick(ParCoolActionEvent.Tick.Pre event) {
@@ -48,16 +50,17 @@ public class CleaveHandler {
             return;
         }
 
-        if (jump.getChargingTick() < ChargeJump.JUMP_ANIMATION_TICK) return;
+        if (!player.getWeaponItem().canPerformAction(ItemAbilities.SWORD_SWEEP) || jump.getChargingTick() < ChargeJump.JUMP_ANIMATION_TICK)
+            return;
         ChargeCooldownHandler.cooldown = true;
 
         var stamina = Stamina.get(player);
-        if (stamina.getValue() < 200) return;
-        stamina.consume(200);
+        stamina.consume(400);
+        if (stamina.isExhausted()) return;
 
         jumpSkill.parcoolskill$setAttackTime(10);
-        entitiesHit.clear();
-        BulletTimeHandler.addScale(0.25F, 20);
+        entityHits.clear();
+        TimeScaleHandler.applyScale(0.25F, 20);
         event.setCanceled(true);
     }
 
@@ -66,18 +69,32 @@ public class CleaveHandler {
         player.attack(target);
     }
 
-    public static Entity[] getEntitiesHit(Entity shooter, Vec3 startVec, Vec3 endVec, AABB boundingBox, Predicate<Entity> filter, float inflationAmount) {
+    public static Entity[] getEntityHits(Entity shooter, Vec3 startPosition, Vec3 endPosition, AABB boundingBox, Predicate<Entity> filter, float inflationAmount, long hitLimit) {
+        record HitResult(Entity entity, double distanceSquare) {
+        }
+
         var level = shooter.level();
-        var entities = new ArrayList<Entity>();
+        var hitResults = new ArrayList<HitResult>();
 
         for (Entity entity : level.getEntities(shooter, boundingBox, filter)) {
             var aabb = entity.getBoundingBox().inflate(entity.getPickRadius() + inflationAmount);
-            var optionalPoint = aabb.clip(startVec, endVec);
-            if (aabb.contains(startVec) || optionalPoint.isPresent()) {
-                entities.add(entity);
+            var optionalPoint = aabb.clip(startPosition, endPosition);
+            double distanceSquare;
+            if (aabb.contains(startPosition)) {
+                distanceSquare = 0.0;
+            } else if (optionalPoint.isPresent()) {
+                var point = optionalPoint.get();
+                distanceSquare = startPosition.distanceToSqr(point);
+            } else {
+                continue;
             }
+            hitResults.add(new HitResult(entity, distanceSquare));
         }
 
-        return entities.toArray(Entity[]::new);
+        return hitResults.stream()
+                .sorted(Comparator.comparingDouble((HitResult hitResult) -> hitResult.distanceSquare))
+                .map(hitResult -> hitResult.entity)
+                .limit(hitLimit)
+                .toArray(Entity[]::new);
     }
 }

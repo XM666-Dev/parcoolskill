@@ -10,19 +10,16 @@ import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.damage.DamageTypes;
 import com.xm666.parcoolskill.effect.Effects;
 import com.xm666.parcoolskill.network.SkillAttackPayload;
-import com.xm666.parcoolskill.network.StaminaPayload;
 import com.xm666.parcoolskill.skill.DodgeSkill;
 import com.xm666.parcoolskill.skill.LeapSkill;
 import com.xm666.parcoolskill.skill.SlideSkill;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -33,7 +30,6 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Arrays;
 import java.util.function.Predicate;
@@ -118,19 +114,16 @@ public class SlideSkillHandler {
                 target.knockback(strength * 0.5F, Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), -Mth.cos(player.getYRot() * ((float) Math.PI / 180F)));
 
                 if (target.hasEffect(Effects.VULNERABLE)) {
-                    PacketDistributor.sendToPlayer((ServerPlayer) player, new StaminaPayload(200));
-                    BulletTimeHandler.addScale(0.25F, 80);
+                    StaminaHandler.recoverStaminaOf(player, CatLeap.class);
+                    TimeScaleHandler.applyScale(0.25F, 80);
                 }
             }
             case HEEL_HOOK -> {
-                var duration = 60;
-                var targetEffect = target.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
-                duration += targetEffect != null ? targetEffect.getDuration() : 0;
-                target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 2), player);
+                SkillHandler.addEffect(target, player, MobEffects.MOVEMENT_SLOWDOWN, 60, 2);
 
                 if (target.hasEffect(MobEffects.WEAKNESS)) {
-                    PacketDistributor.sendToPlayer((ServerPlayer) player, new StaminaPayload(80));
-                    BulletTimeHandler.addScale(0.25F, 80);
+                    StaminaHandler.recoverStaminaOf(player, Dodge.class);
+                    TimeScaleHandler.applyScale(0.25F, 80);
                 }
             }
         }

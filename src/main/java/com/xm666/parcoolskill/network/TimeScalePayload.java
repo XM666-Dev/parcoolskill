@@ -8,14 +8,14 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-public record BulletTimePayload(float timeScale, int timeScaleTicks) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<BulletTimePayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "bullet_time"));
-    public static final StreamCodec<ByteBuf, BulletTimePayload> STREAM_CODEC = StreamCodec.composite(
+public record TimeScalePayload(float scale, int scaleTicks) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<TimeScalePayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "time_scale"));
+    public static final StreamCodec<ByteBuf, TimeScalePayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.FLOAT,
-            BulletTimePayload::timeScale,
+            TimeScalePayload::scale,
             ByteBufCodecs.VAR_INT,
-            BulletTimePayload::timeScaleTicks,
-            BulletTimePayload::new
+            TimeScalePayload::scaleTicks,
+            TimeScalePayload::new
     );
 
     @Override

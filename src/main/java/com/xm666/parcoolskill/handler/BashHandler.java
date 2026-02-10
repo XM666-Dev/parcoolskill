@@ -7,7 +7,6 @@ import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.effect.Effects;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.skill.JumpSkill;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
@@ -40,10 +39,7 @@ public class BashHandler {
         if (!event.getCritEvent().isVanillaCritical()) return;
 
         var target = event.getTarget();
-        var duration = 120;
-        var targetEffect = target.getEffect(Effects.VULNERABLE);
-        duration += targetEffect != null ? targetEffect.getDuration() : 0;
-        target.addEffect(new MobEffectInstance(Effects.VULNERABLE, duration), player);
+        SkillHandler.addEffect(target, player, Effects.VULNERABLE, 120);
     }
 
     @SubscribeEvent
