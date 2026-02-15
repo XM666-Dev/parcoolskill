@@ -6,6 +6,7 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
+import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.skill.LeapSkill;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -13,21 +14,21 @@ import net.neoforged.fml.common.EventBusSubscriber;
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class LeapSkillHandler {
     @SubscribeEvent
-    static void onLeapStart(ParCoolActionEvent.Start.Pre event) {
+    public static void onLeapStart(ParCoolActionEvent.Start.Pre event) {
         if (!(event.getAction() instanceof LeapSkill leapSkill)) return;
 
         leapSkill.parcoolskill$setAttackReady(true);
     }
 
     @SubscribeEvent
-    static void onLeapFinish(ParCoolActionEvent.Finish.Pre event) {
+    public static void onLeapFinish(ParCoolActionEvent.Finish.Pre event) {
         if (!(event.getAction() instanceof LeapSkill leapSkill)) return;
 
         leapSkill.parcoolskill$setAttackReady(false);
     }
 
     @SubscribeEvent
-    static void onLeapTick(ParCoolActionEvent.Tick.Pre event) {
+    public static void onLeapTick(ParCoolActionEvent.Tick.Pre event) {
         if (!(event.getAction() instanceof LeapSkill leapSkill)) return;
 
         var parryTime = leapSkill.parcoolskill$getParryTime();
@@ -37,18 +38,21 @@ public class LeapSkillHandler {
     }
 
     @SubscribeEvent
-    static void onPlayerAttack(PlayerAttackEvent.Pre event) {
+    public static void onPlayerAttack(PlayerAttackEvent.Pre event) {
         var player = event.getEntity();
 
-        var skillLeap = (LeapSkill) Parkourability.get(player).get(CatLeap.class);
-        if (!skillLeap.parcoolskill$isAttackReady()) return;
-        skillLeap.parcoolskill$setAttackReady(false);
+        var leapSkill = (LeapSkill) Parkourability.get(player).get(CatLeap.class);
+        if (!leapSkill.parcoolskill$isAttackReady()) return;
+        leapSkill.parcoolskill$setAttackReady(false);
 
         if (!event.isFullStrength()) return;
 
         var wildStrikeDamageMultiplier = Config.WILD_STRIKE_DAMAGE_MULTIPLIER.get().floatValue();
         var wildStrikeParryDuration = Config.WILD_STRIKE_PARRY_DURATION.get();
         event.setAmount(event.getAmount() * wildStrikeDamageMultiplier);
-        skillLeap.parcoolskill$setParryTime(wildStrikeParryDuration);
+        leapSkill.parcoolskill$setParryTime(wildStrikeParryDuration);
+
+        var target = event.getTarget();
+        SkillParticleHandler.emit(SkillParticlePayload.Type.RED, target);
     }
 }

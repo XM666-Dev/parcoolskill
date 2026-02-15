@@ -7,6 +7,7 @@ import com.alrex.parcool.config.ParCoolConfig;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
+import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.skill.DodgeSkill;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
@@ -21,21 +22,21 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class DodgeSkillHandler {
     @SubscribeEvent
-    static void onDodgeStart(ParCoolActionEvent.Start.Pre event) {
+    public static void onDodgeStart(ParCoolActionEvent.Start.Pre event) {
         if (!(event.getAction() instanceof DodgeSkill dodgeSkill)) return;
 
         dodgeSkill.parcoolskill$setAttackReady(true);
     }
 
     @SubscribeEvent
-    static void onDodgeFinish(ParCoolActionEvent.Finish.Pre event) {
+    public static void onDodgeFinish(ParCoolActionEvent.Finish.Pre event) {
         if (!(event.getAction() instanceof DodgeSkill dodgeSkill)) return;
 
         dodgeSkill.parcoolskill$setAttackReady(false);
     }
 
     @SubscribeEvent
-    static void onDodgeTick(ParCoolActionEvent.Tick.Pre event) {
+    public static void onDodgeTick(ParCoolActionEvent.Tick.Pre event) {
         if (!(event.getAction() instanceof DodgeSkill dodgeSkill)) return;
 
         var attackReadyTime = dodgeSkill.parcoolskill$getAttackReadyTime();
@@ -45,7 +46,7 @@ public class DodgeSkillHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
-    static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
+    public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
             return;
 
@@ -62,13 +63,13 @@ public class DodgeSkillHandler {
     }
 
     @SubscribeEvent
-    static void onPlayerAttack(PlayerAttackEvent.Pre event) {
+    public static void onPlayerAttack(PlayerAttackEvent.Pre event) {
         var player = event.getEntity();
-        var skillDodge = (DodgeSkill) Parkourability.get(player).get(Dodge.class);
-        skillDodge.parcoolskill$setAttackReady(false);
+        var dodgeSkill = (DodgeSkill) Parkourability.get(player).get(Dodge.class);
+        dodgeSkill.parcoolskill$setAttackReady(false);
 
-        if (skillDodge.parcoolskill$getAttackReadyTime() == 0) return;
-        skillDodge.parcoolskill$setAttackReadyTime(0);
+        if (dodgeSkill.parcoolskill$getAttackReadyTime() == 0) return;
+        dodgeSkill.parcoolskill$setAttackReadyTime(0);
 
         if (!event.isFullStrength()) return;
 
@@ -85,6 +86,8 @@ public class DodgeSkillHandler {
         var damageMultiplier = isPositionBehind(offset, direction) ? backstabDamageMultiplier : sneakyStrikeDamageMultiplier;
         event.setAmount(event.getAmount() * damageMultiplier);
         StaminaHandler.recoverStaminaOf(player, Dodge.class);
+
+        SkillParticleHandler.emit(SkillParticlePayload.Type.GREEN, target);
     }
 
     static Vec3 directionFromBodyRotation(float rotation) {

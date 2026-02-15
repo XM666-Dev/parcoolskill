@@ -4,10 +4,10 @@ import org.spongepowered.asm.mixin.Unique;
 
 public interface SlideSkill {
     @Unique
-    ReadyAttackType parcoolskill$getReadyAttackType();
+    Type parcoolskill$getReadyType();
 
     @Unique
-    void parcoolskill$setReadyAttackType(ReadyAttackType readyAttackType);
+    void parcoolskill$setReadyType(Type type);
 
     @Unique
     int parcoolskill$getInvulnerableTime();
@@ -15,7 +15,7 @@ public interface SlideSkill {
     @Unique
     void parcoolskill$setInvulnerableTime(int invulnerableTime);
 
-    enum ReadyAttackType {
+    enum Type {
         DROPKICK,
         HEEL_HOOK,
         NONE

@@ -61,8 +61,8 @@ public class LeapSkillMixin {
             if (super.isBlocking()) return true;
 
             var player = (Player) (Object) this;
-            var skillLeap = (LeapSkill) Parkourability.get(player).get(CatLeap.class);
-            return skillLeap.parcoolskill$getParryTime() > 0;
+            var leapSkill = (LeapSkill) Parkourability.get(player).get(CatLeap.class);
+            return leapSkill.parcoolskill$getParryTime() > 0;
         }
     }
 }

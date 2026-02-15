@@ -9,7 +9,7 @@ import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.damage.DamageTypes;
 import com.xm666.parcoolskill.effect.Effects;
-import com.xm666.parcoolskill.network.SkillAttackPayload;
+import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.skill.DodgeSkill;
 import com.xm666.parcoolskill.skill.LeapSkill;
 import com.xm666.parcoolskill.skill.SlideSkill;
@@ -37,64 +37,69 @@ import java.util.function.Predicate;
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class SlideSkillHandler {
     @SubscribeEvent
-    static void onSlideStart(ParCoolActionEvent.Start.Pre event) {
+    public static void onSlideStart(ParCoolActionEvent.Start.Pre event) {
         if (!(event.getAction() instanceof SlideSkill slideSkill)) return;
 
         var player = event.getPlayer();
-        var readyAttackType = SlideSkill.ReadyAttackType.NONE;
+        var readyType = SlideSkill.Type.NONE;
 
         var catleap = Parkourability.get(player).get(CatLeap.class);
         if (catleap.isDoing()) {
-            var skillLeap = (LeapSkill) catleap;
-            if (!skillLeap.parcoolskill$isAttackReady()) return;
+            var leapSkill = (LeapSkill) catleap;
+            if (!leapSkill.parcoolskill$isAttackReady()) return;
 
-            readyAttackType = SlideSkill.ReadyAttackType.DROPKICK;
+            readyType = SlideSkill.Type.DROPKICK;
             player.setDeltaMovement(player.getDeltaMovement().add(0.0, 0.2, 0.0));
         } else {
             var dodge = Parkourability.get(player).get(Dodge.class);
             if (!dodge.isDoing()) return;
 
-            var skillDodge = (DodgeSkill) dodge;
-            if (!skillDodge.parcoolskill$isAttackReady()) return;
+            var dodgeSkill = (DodgeSkill) dodge;
+            if (!dodgeSkill.parcoolskill$isAttackReady()) return;
 
-            readyAttackType = SlideSkill.ReadyAttackType.HEEL_HOOK;
+            readyType = SlideSkill.Type.HEEL_HOOK;
         }
 
         var slideSkillInvulnerableDuration = Config.SLIDE_SKILL_INVULNERABLE_DURATION.get();
-        slideSkill.parcoolskill$setReadyAttackType(readyAttackType);
+        slideSkill.parcoolskill$setReadyType(readyType);
         slideSkill.parcoolskill$setInvulnerableTime(slideSkillInvulnerableDuration);
     }
 
     @SubscribeEvent
-    static void onSlideFinish(ParCoolActionEvent.Finish.Pre event) {
+    public static void onSlideFinish(ParCoolActionEvent.Finish.Pre event) {
         if (!(event.getAction() instanceof SlideSkill slideSkill)) return;
 
-        slideSkill.parcoolskill$setReadyAttackType(SlideSkill.ReadyAttackType.NONE);
+        slideSkill.parcoolskill$setReadyType(SlideSkill.Type.NONE);
     }
 
     @SubscribeEvent
-    static void onSlideTick(ParCoolActionEvent.Tick.Pre event) {
+    public static void onSlideTick(ParCoolActionEvent.Tick.Pre event) {
         if (!(event.getAction() instanceof Slide slide) || slide.isDoing()) return;
 
-        var skillSlide = (SlideSkill) slide;
-        var invulnerableTime = skillSlide.parcoolskill$getInvulnerableTime();
+        var slideSkill = (SlideSkill) slide;
+        var invulnerableTime = slideSkill.parcoolskill$getInvulnerableTime();
         if (invulnerableTime == 0) return;
 
-        skillSlide.parcoolskill$setInvulnerableTime(invulnerableTime - 1);
+        slideSkill.parcoolskill$setInvulnerableTime(invulnerableTime - 1);
     }
 
     @SubscribeEvent
-    static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
+    public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
             return;
 
-        var skillSlide = (SlideSkill) Parkourability.get(player).get(Slide.class);
-        if (skillSlide.parcoolskill$getInvulnerableTime() == 0) return;
+        var slideSkill = (SlideSkill) Parkourability.get(player).get(Slide.class);
+        if (slideSkill.parcoolskill$getInvulnerableTime() == 0) return;
 
         event.setCanceled(true);
     }
 
-    public static void handleAttack(Entity target, Player player, SkillAttackPayload.SkillAttackType skillAttackType) {
+    public static void handleAttack(Player player, Entity target, SlideSkill.Type type) {
+        if (!isReadyForAttack(player, type)) return;
+
+        var aabb = target.getBoundingBox();
+        if (!player.canInteractWithEntity(aabb, 1.0)) return;
+
         var slideSkillBaseDamage = Config.SLIDE_SKILL_BASE_DAMAGE.get();
         var level = target.level();
         var attackModifierPredicate = (Predicate<AttributeModifier>) m -> !m.is(ResourceLocation.parse("minecraft:base_attack_damage"));
@@ -111,7 +116,7 @@ public class SlideSkillHandler {
         if (target instanceof LivingEntity living) {
             var slideSkillBulletTimeScale = Config.SLIDE_SKILL_BULLET_TIME_SCALE.get().floatValue();
             var slideSkillBulletTimeDuration = Config.SLIDE_SKILL_BULLET_TIME_DURATION.get();
-            switch (skillAttackType) {
+            switch (type) {
                 case DROPKICK -> {
                     var dropkickBaseKnockback = Config.DROPKICK_BASE_KNOCKBACK.get();
                     var knockback = dropkickBaseKnockback + player.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
@@ -122,6 +127,8 @@ public class SlideSkillHandler {
                         StaminaHandler.recoverStaminaOf(player, CatLeap.class);
                         TimeScaleHandler.applyScale(slideSkillBulletTimeScale, slideSkillBulletTimeDuration);
                     }
+
+                    SkillParticleHandler.emit(SkillParticlePayload.Type.RED, target);
                 }
                 case HEEL_HOOK -> {
                     var heelHookSlowdownDuration = Config.HEEL_HOOK_SLOWDOWN_DURATION.get();
@@ -132,16 +139,36 @@ public class SlideSkillHandler {
                         StaminaHandler.recoverStaminaOf(player, Dodge.class);
                         TimeScaleHandler.applyScale(slideSkillBulletTimeScale, slideSkillBulletTimeDuration);
                     }
+
+                    SkillParticleHandler.emit(SkillParticlePayload.Type.GREEN, target);
                 }
             }
         }
 
-        var sound = switch (skillAttackType) {
+        var sound = switch (type) {
             case DROPKICK -> SoundEvents.PLAYER_ATTACK_KNOCKBACK;
             case HEEL_HOOK -> SoundEvents.PLAYER_ATTACK_STRONG;
             default -> null;
         };
         level.playSound(null, player.getX(), player.getY(), player.getZ(), sound, player.getSoundSource(), 1.0F, 1.0F);
+    }
+
+    public static boolean isReadyForAttack(Player player, SlideSkill.Type type) {
+        var slideSkill = (SlideSkill) Parkourability.get(player).get(Slide.class);
+        var readyType = slideSkill.parcoolskill$getReadyType();
+        if (readyType != type) return false;
+
+        slideSkill.parcoolskill$setReadyType(SlideSkill.Type.NONE);
+        return true;
+    }
+
+    public static boolean isReadyForAttack(Player player) {
+        var slideSkill = (SlideSkill) Parkourability.get(player).get(Slide.class);
+        var readyType = slideSkill.parcoolskill$getReadyType();
+        if (readyType == SlideSkill.Type.NONE) return false;
+
+        slideSkill.parcoolskill$setReadyType(SlideSkill.Type.NONE);
+        return true;
     }
 
     private static double calculateAttribute(LivingEntity living, Holder<Attribute> attribute, Predicate<AttributeModifier> predicate) {

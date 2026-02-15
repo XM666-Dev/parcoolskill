@@ -4,7 +4,6 @@ import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.common.action.Action;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.network.StaminaPayload;
-import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -12,8 +11,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class StaminaHandler {
     public static void handlePayload(final StaminaPayload payload, final IPayloadContext context) {
-        var mc = Minecraft.getInstance();
-        var player = mc.player;
+        var player = context.player();
         var stamina = Stamina.get(player);
         var value = payload.value();
         if (value < 0) {

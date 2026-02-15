@@ -7,6 +7,7 @@ import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.effect.Effects;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
+import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -16,36 +17,38 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class BashHandler {
     @SubscribeEvent
-    static void onJumpStart(ParCoolActionEvent.Start.Pre event) {
+    public static void onJumpStart(ParCoolActionEvent.Start.Pre event) {
         if (!(event.getAction() instanceof JumpSkill jumpSkill)) return;
 
         jumpSkill.parcoolskill$setAttackReady(true);
     }
 
     @SubscribeEvent
-    static void onJumpFinish(ParCoolActionEvent.Finish.Pre event) {
+    public static void onJumpFinish(ParCoolActionEvent.Finish.Pre event) {
         if (!(event.getAction() instanceof JumpSkill jumpSkill)) return;
 
         jumpSkill.parcoolskill$setAttackReady(false);
     }
 
     @SubscribeEvent
-    static void onPlayerAttack(PlayerAttackEvent.Post event) {
+    public static void onPlayerAttack(PlayerAttackEvent.Post event) {
         var player = event.getEntity();
 
-        var skillJump = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
-        if (!skillJump.parcoolskill$isAttackReady()) return;
-        skillJump.parcoolskill$setAttackReady(false);
+        var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
+        if (!jumpSkill.parcoolskill$isAttackReady()) return;
+        jumpSkill.parcoolskill$setAttackReady(false);
 
         if (!event.getCritEvent().isVanillaCritical()) return;
 
         var bashVulnerableDuration = Config.BASH_VULNERABLE_DURATION.get();
         var target = event.getTarget();
         SkillHandler.addEffect(target, player, Effects.VULNERABLE, bashVulnerableDuration);
+
+        SkillParticleHandler.emit(SkillParticlePayload.Type.RED, target);
     }
 
     @SubscribeEvent
-    static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
+    public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         var target = event.getEntity();
         var targetEffect = target.getEffect(Effects.VULNERABLE);
         if (targetEffect == null) return;

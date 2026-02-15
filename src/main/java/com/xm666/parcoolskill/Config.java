@@ -47,9 +47,6 @@ public class Config {
     public static final ModConfigSpec.IntValue CLEAVE_CHARGE_DURATION = BUILDER
             .defineInRange("cleave_charge_duration", 10, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue CLEAVE_COOLDOWN_DURATION = BUILDER
-            .defineInRange("cleave_cooldown_duration", 10, 0, Integer.MAX_VALUE);
-
     public static final ModConfigSpec.IntValue CLEAVE_STAMINA_CONSUMPTION = BUILDER
             .defineInRange("cleave_stamina_consumption", 400, 0, Integer.MAX_VALUE);
 

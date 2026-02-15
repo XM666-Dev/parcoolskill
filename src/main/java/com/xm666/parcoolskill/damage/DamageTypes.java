@@ -7,6 +7,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageType;
 
 public class DamageTypes {
-    public static final ResourceKey<DamageType> SLIDE_ATTACK =
-            ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "slide_attack"));
+    public static final ResourceKey<DamageType> SLIDE_ATTACK = ResourceKey.create(
+            Registries.DAMAGE_TYPE,
+            ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "slide_attack")
+    );
 }

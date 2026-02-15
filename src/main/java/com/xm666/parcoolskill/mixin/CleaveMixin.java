@@ -1,17 +1,13 @@
 package com.xm666.parcoolskill.mixin;
 
-import com.alrex.parcool.common.action.impl.ChargeJump;
-import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.handler.CleaveHandler;
-import com.xm666.parcoolskill.handler.SkillAttackHandler;
-import com.xm666.parcoolskill.network.SkillAttackPayload;
-import com.xm666.parcoolskill.skill.JumpSkill;
+import com.xm666.parcoolskill.handler.SkillHandler;
+import com.xm666.parcoolskill.network.SkillPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.neoforged.neoforge.common.ItemAbilities;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,10 +23,7 @@ public class CleaveMixin {
         private void onHandleKeybinds(CallbackInfo ci) {
             var mc = Minecraft.getInstance();
             var player = mc.player;
-            if (player == null || !player.getWeaponItem().canPerformAction(ItemAbilities.SWORD_SWEEP)) return;
-
-            var skillJump = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
-            if (skillJump.parcoolskill$getAttackTime() == 0) return;
+            if (player == null || !CleaveHandler.isReadyForAttack(player)) return;
 
             var cleaveInteractionMultiplier = Config.CLEAVE_INTERACTION_MULTIPLIER.get();
             var cleaveBaseHitLimit = Config.CLEAVE_BASE_HIT_LIMIT.get();
@@ -48,7 +41,7 @@ public class CleaveMixin {
             var interactionPosition = eyePosition.add(interactionVector);
             var aabb = player.getBoundingBox().expandTowards(interactionVector).inflate(1.0);
 
-            var entityHits = Stream.concat(
+            var targets = Stream.concat(
                             Arrays.stream(CleaveHandler.getEntityHits(
                                     player,
                                     eyePosition,
@@ -65,10 +58,12 @@ public class CleaveMixin {
                                     (entity) -> !entity.isSpectator() && entity.isPickable(),
                                     cleaveInteractionRadius,
                                     hitLimit
-                            ))).filter(CleaveHandler.entityHits::add)
+                            ))).filter(CleaveHandler.clientEntityHits::add)
                     .toArray(Entity[]::new);
-            for (var entityHit : entityHits) {
-                SkillAttackHandler.attack(entityHit, player, SkillAttackPayload.SkillAttackType.CLEAVE);
+
+            for (var target : targets) {
+                SkillHandler.use(SkillPayload.Type.CLEAVE_ATTACK, player, target);
+                player.resetAttackStrengthTicker();
             }
         }
     }

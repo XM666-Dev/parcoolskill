@@ -2,8 +2,9 @@ package com.xm666.parcoolskill.mixin;
 
 import com.alrex.parcool.common.action.impl.Slide;
 import com.alrex.parcool.common.attachment.common.Parkourability;
-import com.xm666.parcoolskill.handler.SkillAttackHandler;
-import com.xm666.parcoolskill.network.SkillAttackPayload;
+import com.xm666.parcoolskill.handler.SkillHandler;
+import com.xm666.parcoolskill.handler.SlideSkillHandler;
+import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.SlideSkill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.EntityHitResult;
@@ -17,18 +18,18 @@ public class SlideSkillMixin {
     @Mixin(Slide.class)
     public static class SlideMixin implements SlideSkill {
         @Unique
-        private ReadyAttackType parcoolskill$readyAttackType = ReadyAttackType.NONE;
+        private Type parcoolskill$readyType = Type.NONE;
         @Unique
         private int parcoolskill$invulnerableTime;
 
         @Override
-        public ReadyAttackType parcoolskill$getReadyAttackType() {
-            return parcoolskill$readyAttackType;
+        public Type parcoolskill$getReadyType() {
+            return parcoolskill$readyType;
         }
 
         @Override
-        public void parcoolskill$setReadyAttackType(ReadyAttackType readyAttackType) {
-            this.parcoolskill$readyAttackType = readyAttackType;
+        public void parcoolskill$setReadyType(Type readyType) {
+            this.parcoolskill$readyType = readyType;
         }
 
         @Override
@@ -47,17 +48,18 @@ public class SlideSkillMixin {
         @Inject(method = "handleKeybinds", at = @At("HEAD"))
         private void onHandleKeybinds(CallbackInfo ci) {
             var mc = Minecraft.getInstance();
+            if (!(mc.hitResult instanceof EntityHitResult entityHitResult)) return;
+
             var player = mc.player;
-            if (!(mc.hitResult instanceof EntityHitResult entityHitResult) || player == null) return;
+            if (player == null) return;
 
-            var skillSlide = (SlideSkill) Parkourability.get(player).get(Slide.class);
-            var readyAttackType = skillSlide.parcoolskill$getReadyAttackType();
-            if (readyAttackType == SlideSkill.ReadyAttackType.NONE) return;
-            skillSlide.parcoolskill$setReadyAttackType(SlideSkill.ReadyAttackType.NONE);
+            var slideSkill = (SlideSkill) Parkourability.get(player).get(Slide.class);
+            var readyType = slideSkill.parcoolskill$getReadyType();
+            if (!SlideSkillHandler.isReadyForAttack(player)) return;
 
+            var type = SkillPayload.Type.values()[readyType.ordinal()];
             var target = entityHitResult.getEntity();
-            var skillAttackType = SkillAttackPayload.SkillAttackType.values()[readyAttackType.ordinal()];
-            SkillAttackHandler.attack(target, player, skillAttackType);
+            SkillHandler.use(type, player, target);
             player.resetAttackStrengthTicker();
         }
     }

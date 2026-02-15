@@ -21,7 +21,7 @@ public class TimeScaleHandler {
     public static float deltaTickRunning;
 
     @SubscribeEvent
-    static void onClientTick(ClientTickEvent.Pre event) {
+    public static void onClientTick(ClientTickEvent.Pre event) {
         var mc = Minecraft.getInstance();
         if (mc.level == null || mc.isPaused()) return;
 
@@ -30,7 +30,7 @@ public class TimeScaleHandler {
     }
 
     @SubscribeEvent
-    static void onServerTick(ServerTickEvent.Pre event) {
+    public static void onServerTick(ServerTickEvent.Pre event) {
         serverTimer.tick();
     }
 
