@@ -20,11 +20,11 @@ public class Config {
     public static final ModConfigSpec.DoubleValue BACKSTAB_DAMAGE_MULTIPLIER = BUILDER
             .defineInRange("backstab_damage_multiplier", 3.0, 0.0, Double.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue SLIDE_SKILL_BASE_DAMAGE = BUILDER
-            .defineInRange("slide_skill_base_damage", 4.0, 0.0, Double.MAX_VALUE);
+    public static final ModConfigSpec.DoubleValue SLIDE_SKILL_DAMAGE_ADDITION = BUILDER
+            .defineInRange("slide_skill_damage_addition", 4.0, 0.0, Double.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue SLIDE_SKILL_INVULNERABLE_DURATION = BUILDER
-            .defineInRange("slide_skill_invulnerable_duration", 10, 0, Integer.MAX_VALUE);
+    public static final ModConfigSpec.IntValue SLIDE_SKILL_EXTRA_INVULNERABLE_DURATION = BUILDER
+            .defineInRange("slide_skill_extra_invulnerable_duration", 10, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue SLIDE_SKILL_BULLET_TIME_SCALE = BUILDER
             .defineInRange("slide_skill_bullet_time_scale", 0.25, 0.0, Double.MAX_VALUE);
@@ -32,8 +32,8 @@ public class Config {
     public static final ModConfigSpec.IntValue SLIDE_SKILL_BULLET_TIME_DURATION = BUILDER
             .defineInRange("slide_skill_bullet_time_duration", 80, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue DROPKICK_BASE_KNOCKBACK = BUILDER
-            .defineInRange("dropkick_base_knockback", 2.0, 0.0, Double.MAX_VALUE);
+    public static final ModConfigSpec.DoubleValue DROPKICK_KNOCKBACK_BASE = BUILDER
+            .defineInRange("dropkick_knockback_base", 2.0, 0.0, Double.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue HEEL_HOOK_SLOWDOWN_DURATION = BUILDER
             .defineInRange("heel_hook_slowdown_duration", 60, 0, Integer.MAX_VALUE);
@@ -59,23 +59,44 @@ public class Config {
     public static final ModConfigSpec.IntValue CLEAVE_BULLET_TIME_DURATION = BUILDER
             .defineInRange("cleave_bullet_time_duration", 20, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue CLEAVE_INTERACTION_MULTIPLIER = BUILDER
-            .defineInRange("cleave_interaction_multiplier", 2.0, 0, Double.MAX_VALUE);
+    public static final ModConfigSpec.DoubleValue CLEAVE_HIT_RANGE_MULTIPLIER = BUILDER
+            .defineInRange("cleave_hit_range_multiplier", 2.0, 0, Double.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue CLEAVE_INTERACTION_RADIUS = BUILDER
-            .defineInRange("cleave_interaction_radius", 0.3, 0, Double.MAX_VALUE);
+    public static final ModConfigSpec.DoubleValue CLEAVE_HIT_RADIUS = BUILDER
+            .defineInRange("cleave_hit_radius", 0.3, 0, Double.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue CLEAVE_BASE_HIT_LIMIT = BUILDER
-            .defineInRange("cleave_base_hit_limit", 1, 0, Integer.MAX_VALUE);
+    public static final ModConfigSpec.IntValue CLEAVE_HIT_LIMIT_BASE = BUILDER
+            .defineInRange("cleave_hit_limit_base", 1, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue CLEAVE_HIT_LIMIT_INCREASE = BUILDER
-            .defineInRange("cleave_hit_limit_increase", 1, 0, Integer.MAX_VALUE);
+    public static final ModConfigSpec.IntValue BACKFLIP_SKILL_DURATION = BUILDER
+            .defineInRange("backflip_skill_duration", 60, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue VULNERABLE_BASE_DAMAGE_MULTIPLIER = BUILDER
-            .defineInRange("vulnerable_base_damage_multiplier", 1.5, 0.0, Double.MAX_VALUE);
+    public static final ModConfigSpec.IntValue BACKFLIP_SKILL_COOLDOWN = BUILDER
+            .defineInRange("backflip_skill_cooldown", 60, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue VULNERABLE_DAMAGE_MULTIPLIER_INCREASE = BUILDER
-            .defineInRange("vulnerable_damage_multiplier_increase", 0.25, 0.0, Double.MAX_VALUE);
+    public static final ModConfigSpec.DoubleValue BACKFLIP_BULLET_TIME_SCALE = BUILDER
+            .defineInRange("backflip_bullet_time_scale", 0.25, 0.0, Double.MAX_VALUE);
+
+    public static final ModConfigSpec.IntValue BACKFLIP_BULLET_TIME_DURATION = BUILDER
+            .defineInRange("backflip_bullet_time_duration", 60, 0, Integer.MAX_VALUE);
+
+    public static final ModConfigSpec.IntValue LEG_SWEEP_NEUTRALIZED_DURATION = BUILDER
+            .defineInRange("leg_sweep_neutralized_duration", 120, 0, Integer.MAX_VALUE);
+
+    public static final ModConfigSpec.DoubleValue LEG_SWEEP_KNOCKBACK_BASE = BUILDER
+            .defineInRange("leg_sweep_knockback_base", 1.0, 0.0, Double.MAX_VALUE);
+
+    public static final ModConfigSpec.DoubleValue VULNERABLE_DAMAGE_MULTIPLIER_ADDITION = BUILDER
+            .defineInRange("vulnerable_damage_multiplier_addition", 0.5, 0.0, Double.MAX_VALUE);
+
+    public static final ModConfigSpec.DoubleValue VULNERABLE_DAMAGE_MULTIPLIER_ADDITION_GROWTH = BUILDER
+            .defineInRange("vulnerable_damage_multiplier_addition_growth", 0.25, 0.0, Double.MAX_VALUE);
+
+    public static final ModConfigSpec.DoubleValue NEUTRALIZED_DAMAGE_MULTIPLIER_REDUCTION = BUILDER
+            .defineInRange("neutralized_damage_multiplier_reduction", 0.25, 0.0, Double.MAX_VALUE);
+
+    public static final ModConfigSpec.DoubleValue NEUTRALIZED_DAMAGE_MULTIPLIER_REDUCTION_GROWTH = BUILDER
+            .defineInRange("neutralized_damage_multiplier_reduction_growth", 0.15, 0.0, Double.MAX_VALUE);
 
     static final ModConfigSpec SPEC = BUILDER.build();
 }

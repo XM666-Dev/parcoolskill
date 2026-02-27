@@ -15,9 +15,14 @@ public interface SlideSkill {
     @Unique
     void parcoolskill$setInvulnerableTime(int invulnerableTime);
 
+    boolean parcoolskill$isDisableSliding();
+
+    void parcoolskill$setDisableSliding(boolean disableSliding);
+
     enum Type {
         DROPKICK,
         HEEL_HOOK,
+        LEG_SWEEP,
         NONE
     }
 }

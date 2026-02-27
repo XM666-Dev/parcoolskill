@@ -1,9 +1,12 @@
 package com.xm666.parcoolskill.mixin;
 
+import com.alrex.parcool.common.action.impl.ChargeJump;
+import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.handler.CleaveHandler;
 import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.network.SkillPayload;
+import com.xm666.parcoolskill.skill.JumpSkill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
@@ -25,42 +28,17 @@ public class CleaveMixin {
             var player = mc.player;
             if (player == null || !CleaveHandler.isReadyForAttack(player)) return;
 
-            var cleaveInteractionMultiplier = Config.CLEAVE_INTERACTION_MULTIPLIER.get();
-            var cleaveBaseHitLimit = Config.CLEAVE_BASE_HIT_LIMIT.get();
-            var cleaveHitLimitIncrease = Config.CLEAVE_HIT_LIMIT_INCREASE.get();
-            var cleaveInteractionRadius = Config.CLEAVE_INTERACTION_RADIUS.get();
-
-            var interactionRange = player.entityInteractionRange() * cleaveInteractionMultiplier;
-            var level = player.level();
-            var sweepingEdge = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.SWEEPING_EDGE);
-            var hitLimit = cleaveBaseHitLimit + player.getWeaponItem().getEnchantmentLevel(sweepingEdge) * cleaveHitLimitIncrease;
-
-            var eyePosition = player.getEyePosition();
-            var viewVector = player.getViewVector(1.0F);
-            var interactionVector = viewVector.scale(interactionRange);
-            var interactionPosition = eyePosition.add(interactionVector);
-            var aabb = player.getBoundingBox().expandTowards(interactionVector).inflate(1.0);
-
+            var cleaveHitRangeMultiplier = Config.CLEAVE_HIT_RANGE_MULTIPLIER.get();
+            var cleaveHitRadius = Config.CLEAVE_HIT_RADIUS.get();
+            var cleaveHitLimitBase = Config.CLEAVE_HIT_LIMIT_BASE.get();
+            var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
+            var sweepingEdge = player.level().registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.SWEEPING_EDGE);
+            var range = SkillHandler.getEntityHitRange(player, player.entityInteractionRange() * cleaveHitRangeMultiplier);
+            var limit = cleaveHitLimitBase + player.getWeaponItem().getEnchantmentLevel(sweepingEdge);
             var targets = Stream.concat(
-                            Arrays.stream(CleaveHandler.getEntityHits(
-                                    player,
-                                    eyePosition,
-                                    interactionPosition,
-                                    aabb,
-                                    (entity) -> !entity.isSpectator() && entity.isPickable(),
-                                    0.0,
-                                    hitLimit
-                            )), Arrays.stream(CleaveHandler.getEntityHits(
-                                    player,
-                                    eyePosition,
-                                    interactionPosition,
-                                    aabb,
-                                    (entity) -> !entity.isSpectator() && entity.isPickable(),
-                                    cleaveInteractionRadius,
-                                    hitLimit
-                            ))).filter(CleaveHandler.clientEntityHits::add)
-                    .toArray(Entity[]::new);
-
+                    Arrays.stream(SkillHandler.getEntityHits(player, range, 0.0, limit)),
+                    Arrays.stream(SkillHandler.getEntityHits(player, range, cleaveHitRadius, 1))
+            ).filter(jumpSkill::parcoolskill$addEntityHit).toArray(Entity[]::new);
             for (var target : targets) {
                 SkillHandler.use(SkillPayload.Type.CLEAVE_ATTACK, player, target);
                 player.resetAttackStrengthTicker();

@@ -52,5 +52,7 @@
   "parcoolskill.configuration.vulnerable_base_damage_multiplier.tooltip": "目标处于易伤状态时的基础伤害倍率",
   "parcoolskill.configuration.vulnerable_damage_multiplier_increase": "易伤伤害倍率增量",
   "parcoolskill.configuration.vulnerable_damage_multiplier_increase.tooltip": "易伤效果随等级提升的伤害倍率",
-  "effect.parcoolskill.vulnerable": "易伤"
+  "death.attack.slide_attack": "%1$s被%2$s用下肢攻击杀死了",
+  "effect.parcoolskill.vulnerable": "易伤",
+  "effect.parcoolskill.neutralized": "中和"
 }

@@ -8,16 +8,14 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
-public class ChargeCooldownHandler {
-    public static boolean cooldown = false;
-
+public class JumpSkillHandler {
     @SubscribeEvent
     public static void onChargeTryToStart(ParCoolActionEvent.TryToStart event) {
-        if (!(event.getAction() instanceof JumpSkill jump)) return;
+        if (!(event.getAction() instanceof JumpSkill jumpSkill)) return;
 
-        if (!cooldown) return;
+        if (!jumpSkill.parcoolskill$isCoolingDown()) return;
 
-        cooldown = jump.parcoolskill$getNotChargeTick() < ChargeJump.JUMP_ANIMATION_TICK;
         event.setCanceled(true);
+        jumpSkill.parcoolskill$setCoolingDown(jumpSkill.parcoolskill$getNotChargeTick() < ChargeJump.JUMP_ANIMATION_TICK);
     }
 }

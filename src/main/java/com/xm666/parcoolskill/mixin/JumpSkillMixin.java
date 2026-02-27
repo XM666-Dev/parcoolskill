@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.xm666.parcoolskill.skill.JumpSkill;
+import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,15 +16,21 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
+import java.util.HashSet;
+
 public class JumpSkillMixin {
     @Mixin(ChargeJump.class)
     private static class ChargeJumpMixin implements JumpSkill {
+        @Unique
+        private final HashSet<Entity> parcoolskill$entityHits = new HashSet<>();
         @Shadow
         private int notChargeTick;
         @Unique
         private boolean parcoolskill$attackReady;
         @Unique
         private int parcoolskill$attackTime;
+        @Unique
+        private boolean parcoolskill$coolingDown;
 
         @Override
         public int parcoolskill$getNotChargeTick() {
@@ -48,6 +55,26 @@ public class JumpSkillMixin {
         @Override
         public void parcoolskill$setAttackTime(int attackTime) {
             this.parcoolskill$attackTime = attackTime;
+        }
+
+        @Override
+        public boolean parcoolskill$addEntityHit(Entity entity) {
+            return parcoolskill$entityHits.add(entity);
+        }
+
+        @Override
+        public void parcoolskill$clearEntityHits() {
+            parcoolskill$entityHits.clear();
+        }
+
+        @Override
+        public boolean parcoolskill$isCoolingDown() {
+            return parcoolskill$coolingDown;
+        }
+
+        @Override
+        public void parcoolskill$setCoolingDown(boolean coolingDown) {
+            parcoolskill$coolingDown = coolingDown;
         }
 
         @OnlyIn(Dist.CLIENT)

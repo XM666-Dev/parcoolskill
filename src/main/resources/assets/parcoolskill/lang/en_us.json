@@ -52,5 +52,7 @@
   "parcoolskill.configuration.vulnerable_base_damage_multiplier.tooltip": "Base damage multiplier applied to targets affected by Vulnerable",
   "parcoolskill.configuration.vulnerable_damage_multiplier_increase": "Vulnerable Damage Multiplier Increase",
   "parcoolskill.configuration.vulnerable_damage_multiplier_increase.tooltip": "Additional damage multiplier gained per level of Vulnerable",
-  "effect.parcoolskill.vulnerable": "Vulnerable"
+  "death.attack.slide_attack": "%1$s was slain by %2$s using a leg strike",
+  "effect.parcoolskill.vulnerable": "Vulnerable",
+  "effect.parcoolskill.neutralized": "Neutralized"
 }

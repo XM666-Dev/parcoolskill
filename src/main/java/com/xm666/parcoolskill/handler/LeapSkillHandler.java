@@ -53,6 +53,6 @@ public class LeapSkillHandler {
         leapSkill.parcoolskill$setParryTime(wildStrikeParryDuration);
 
         var target = event.getTarget();
-        SkillParticleHandler.emit(SkillParticlePayload.Type.RED, target);
+        SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
     }
 }

@@ -3,7 +3,6 @@ package com.xm666.parcoolskill.mixin;
 import com.alrex.parcool.common.action.impl.Slide;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.handler.SkillHandler;
-import com.xm666.parcoolskill.handler.SlideSkillHandler;
 import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.SlideSkill;
 import net.minecraft.client.Minecraft;
@@ -21,6 +20,8 @@ public class SlideSkillMixin {
         private Type parcoolskill$readyType = Type.NONE;
         @Unique
         private int parcoolskill$invulnerableTime;
+        @Unique
+        private boolean parcoolskill$disableSliding;
 
         @Override
         public Type parcoolskill$getReadyType() {
@@ -41,6 +42,16 @@ public class SlideSkillMixin {
         public void parcoolskill$setInvulnerableTime(int invulnerableTime) {
             this.parcoolskill$invulnerableTime = invulnerableTime;
         }
+
+        @Override
+        public boolean parcoolskill$isDisableSliding() {
+            return parcoolskill$disableSliding;
+        }
+
+        @Override
+        public void parcoolskill$setDisableSliding(boolean disableSliding) {
+            parcoolskill$disableSliding = disableSliding;
+        }
     }
 
     @Mixin(Minecraft.class)
@@ -55,7 +66,8 @@ public class SlideSkillMixin {
 
             var slideSkill = (SlideSkill) Parkourability.get(player).get(Slide.class);
             var readyType = slideSkill.parcoolskill$getReadyType();
-            if (!SlideSkillHandler.isReadyForAttack(player)) return;
+            if (readyType == SlideSkill.Type.NONE) return;
+            slideSkill.parcoolskill$setReadyType(SlideSkill.Type.NONE);
 
             var type = SkillPayload.Type.values()[readyType.ordinal()];
             var target = entityHitResult.getEntity();

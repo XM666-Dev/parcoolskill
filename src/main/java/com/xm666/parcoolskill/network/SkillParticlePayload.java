@@ -24,7 +24,9 @@ public record SkillParticlePayload(int particleType, int entity) implements Cust
     }
 
     public enum Type {
-        RED,
-        GREEN
+        IRONCLAD_HIT,
+        IRONCLAD_EFFECT,
+        SILENT_HIT,
+        SILENT_EFFECT
     }
 }

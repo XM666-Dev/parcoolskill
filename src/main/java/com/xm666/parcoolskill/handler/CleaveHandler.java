@@ -12,8 +12,6 @@ import com.xm666.parcoolskill.skill.JumpSkill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -21,16 +19,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.common.ItemAbilities;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.function.Predicate;
-
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class CleaveHandler {
-    public static HashSet<Entity> clientEntityHits = new HashSet<>();
-    public static HashSet<Entity> serverEntityHits = new HashSet<>();
-
     @SubscribeEvent
     public static void onJumpTick(ParCoolActionEvent.Tick.Pre event) {
         if (!(event.getAction() instanceof JumpSkill jumpSkill)) return;
@@ -55,10 +45,11 @@ public class CleaveHandler {
             return;
         }
 
-        ChargeCooldownHandler.cooldown = true;
+        var jump = Parkourability.get(player).get(ChargeJump.class);
+        var jumpSkill = (JumpSkill) jump;
+        jumpSkill.parcoolskill$setCoolingDown(true);
 
         var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
-        var jump = Parkourability.get(player).get(ChargeJump.class);
         if (jump.getChargingTick() < cleaveChargeDuration) return;
 
         var cleaveStaminaConsumption = Config.CLEAVE_STAMINA_CONSUMPTION.get();
@@ -67,10 +58,9 @@ public class CleaveHandler {
         if (stamina.isExhausted()) return;
 
         var cleaveAttackDuration = Config.CLEAVE_ATTACK_DURATION.get();
-        var jumpSkill = (JumpSkill) jump;
         SkillHandler.use(SkillPayload.Type.CLEAVE_READY, player);
         jumpSkill.parcoolskill$setAttackTime(cleaveAttackDuration);
-        clientEntityHits.clear();
+        jumpSkill.parcoolskill$clearEntityHits();
         event.setCanceled(true);
     }
 
@@ -81,22 +71,25 @@ public class CleaveHandler {
         var jump = Parkourability.get(player).get(ChargeJump.class);
         var jumpSkill = (JumpSkill) jump;
         jumpSkill.parcoolskill$setAttackTime(cleaveAttackDuration);
-        serverEntityHits.clear();
-        TimeScaleHandler.applyScale(cleaveBulletTimeScale, cleaveBulletTimeDuration);
+        jumpSkill.parcoolskill$clearEntityHits();
+        TimeScaleHandler.applyScale(player, cleaveBulletTimeScale, cleaveBulletTimeDuration);
     }
 
     public static void handleAttack(Player player, Entity target) {
         if (!isReadyForAttack(player)) return;
 
-        var cleaveInteractionMultiplier = Config.CLEAVE_INTERACTION_MULTIPLIER.get();
+        var cleaveHitRangeMultiplier = Config.CLEAVE_HIT_RANGE_MULTIPLIER.get();
         var aabb = target.getBoundingBox();
-        var distance = player.entityInteractionRange() * (cleaveInteractionMultiplier - 1.0) + 1.0;
-        if (!player.canInteractWithEntity(aabb, distance) || !serverEntityHits.add(target)) return;
+        var distance = player.entityInteractionRange() * (cleaveHitRangeMultiplier - 1.0) + 1.0;
+        if (!player.canInteractWithEntity(aabb, distance)) return;
+
+        var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
+        if (!jumpSkill.parcoolskill$addEntityHit(target)) return;
 
         player.attackStrengthTicker = (int) player.getCurrentItemAttackStrengthDelay();
         player.attack(target);
 
-        SkillParticleHandler.emit(SkillParticlePayload.Type.RED, target);
+        SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
     }
 
     public static boolean isReadyForAttack(Player player) {
@@ -107,34 +100,5 @@ public class CleaveHandler {
     public static boolean hasCorrectWeapon(Player player) {
         var weapon = player.getWeaponItem();
         return weapon.canPerformAction(ItemAbilities.SWORD_SWEEP);
-    }
-
-    public static Entity[] getEntityHits(Entity shooter, Vec3 startPosition, Vec3 endPosition, AABB boundingBox, Predicate<Entity> filter, double inflationAmount, long hitLimit) {
-        record HitResult(Entity entity, double distanceSquare) {
-        }
-
-        var level = shooter.level();
-        var hitResults = new ArrayList<HitResult>();
-
-        for (Entity entity : level.getEntities(shooter, boundingBox, filter)) {
-            var aabb = entity.getBoundingBox().inflate(entity.getPickRadius() + inflationAmount);
-            var optionalPoint = aabb.clip(startPosition, endPosition);
-            double distanceSquare;
-            if (aabb.contains(startPosition)) {
-                distanceSquare = 0.0;
-            } else if (optionalPoint.isPresent()) {
-                var point = optionalPoint.get();
-                distanceSquare = startPosition.distanceToSqr(point);
-            } else {
-                continue;
-            }
-            hitResults.add(new HitResult(entity, distanceSquare));
-        }
-
-        return hitResults.stream()
-                .sorted(Comparator.comparingDouble((HitResult hitResult) -> hitResult.distanceSquare))
-                .map(hitResult -> hitResult.entity)
-                .limit(hitLimit)
-                .toArray(Entity[]::new);
     }
 }

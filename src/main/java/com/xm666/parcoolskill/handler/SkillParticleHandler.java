@@ -16,8 +16,10 @@ public class SkillParticleHandler {
         var mc = Minecraft.getInstance();
         var type = SkillParticlePayload.Type.values()[payload.particleType()];
         var particleType = (switch (type) {
-            case RED -> ParticleTypes.RED_SKILL;
-            case GREEN -> ParticleTypes.GREEN_SKILL;
+            case IRONCLAD_HIT -> ParticleTypes.IRONCLAD_HIT;
+            case IRONCLAD_EFFECT -> ParticleTypes.IRONCLAD_EFFECT;
+            case SILENT_HIT -> ParticleTypes.SILENT_HIT;
+            case SILENT_EFFECT -> ParticleTypes.SILENT_EFFECT;
         }).get();
         mc.particleEngine.createTrackingEmitter(entity, particleType);
     }
@@ -25,6 +27,6 @@ public class SkillParticleHandler {
     public static void emit(SkillParticlePayload.Type type, Entity entity) {
         if (entity.level().isClientSide()) return;
 
-        PacketDistributor.sendToPlayersTrackingEntity(entity, new SkillParticlePayload(type.ordinal(), entity.getId()));
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new SkillParticlePayload(type.ordinal(), entity.getId()));
     }
 }

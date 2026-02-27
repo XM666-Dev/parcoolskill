@@ -11,8 +11,6 @@ import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class BashHandler {
@@ -44,21 +42,6 @@ public class BashHandler {
         var target = event.getTarget();
         SkillHandler.addEffect(target, player, Effects.VULNERABLE, bashVulnerableDuration);
 
-        SkillParticleHandler.emit(SkillParticlePayload.Type.RED, target);
-    }
-
-    @SubscribeEvent
-    public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
-        var target = event.getEntity();
-        var targetEffect = target.getEffect(Effects.VULNERABLE);
-        if (targetEffect == null) return;
-
-        var source = event.getSource();
-        if (!source.is(Tags.DamageTypes.IS_PHYSICAL)) return;
-
-        var vulnerableBaseDamageMultiplier = Config.VULNERABLE_BASE_DAMAGE_MULTIPLIER.get().floatValue();
-        var vulnerableDamageMultiplierIncrease = Config.VULNERABLE_DAMAGE_MULTIPLIER_INCREASE.get().floatValue();
-        var multiplier = vulnerableBaseDamageMultiplier + targetEffect.getAmplifier() * vulnerableDamageMultiplierIncrease;
-        event.setAmount(event.getAmount() * multiplier);
+        SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
     }
 }

@@ -8,13 +8,22 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-public record TimeScalePayload(float scale, int scaleTicks) implements CustomPacketPayload {
+public record TimeScalePayload(
+        float scale,
+        int duration,
+        int transition,
+        int targetEntity
+) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<TimeScalePayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "time_scale"));
     public static final StreamCodec<ByteBuf, TimeScalePayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.FLOAT,
             TimeScalePayload::scale,
             ByteBufCodecs.VAR_INT,
-            TimeScalePayload::scaleTicks,
+            TimeScalePayload::duration,
+            ByteBufCodecs.VAR_INT,
+            TimeScalePayload::transition,
+            ByteBufCodecs.VAR_INT,
+            TimeScalePayload::targetEntity,
             TimeScalePayload::new
     );
 

@@ -87,7 +87,7 @@ public class DodgeSkillHandler {
         event.setAmount(event.getAmount() * damageMultiplier);
         StaminaHandler.recoverStaminaOf(player, Dodge.class);
 
-        SkillParticleHandler.emit(SkillParticlePayload.Type.GREEN, target);
+        SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
     }
 
     static Vec3 directionFromBodyRotation(float rotation) {

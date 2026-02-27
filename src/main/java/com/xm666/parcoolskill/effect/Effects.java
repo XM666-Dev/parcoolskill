@@ -21,12 +21,23 @@ public class Effects {
             () -> new Vulnerable(MobEffectCategory.HARMFUL, 0x736156)
     );
 
+    public static final DeferredHolder<MobEffect, Neutralized> NEUTRALIZED = MOB_EFFECTS.register(
+            "neutralized",
+            () -> new Neutralized(MobEffectCategory.HARMFUL, 0x484D48)
+    );
+
     public Effects(IEventBus modEventBus) {
         MOB_EFFECTS.register(modEventBus);
     }
 
     public static class Vulnerable extends MobEffect {
         public Vulnerable(MobEffectCategory category, int color) {
+            super(category, color);
+        }
+    }
+
+    public static class Neutralized extends MobEffect {
+        public Neutralized(MobEffectCategory category, int color) {
             super(category, color);
         }
     }

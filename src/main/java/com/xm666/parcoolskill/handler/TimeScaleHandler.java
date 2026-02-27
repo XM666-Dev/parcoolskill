@@ -2,23 +2,36 @@ package com.xm666.parcoolskill.handler;
 
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.network.TimeScalePayload;
+import com.xm666.parcoolskill.timer.ScalableTimer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class TimeScaleHandler {
-    public static final ScalableTimer clientTimer = new ScalableTimer();
-    public static final ScalableTimer serverTimer = new ScalableTimer();
-    public static boolean modifyRunsNormally = true;
-    public static boolean enableRunsNormally = true;
-    public static boolean modifyGameTimeDeltaPartialTick = true;
+    public static ScalableTimer clientTimer;
+    public static ScalableTimer serverTimer;
+    public static boolean scaleRunNormally = true;
+    public static boolean disableRunNormally = false;
+    public static boolean scalePartialTick = true;
     public static float deltaTickRunning;
+
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        clientTimer = new ScalableTimer.Client();
+    }
+
+    @SubscribeEvent
+    public static void onServerStarting(ServerStartingEvent event) {
+        serverTimer = new ScalableTimer.Server(event.getServer());
+    }
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Pre event) {
@@ -35,60 +48,79 @@ public class TimeScaleHandler {
     }
 
     public static void handlePayload(final TimeScalePayload payload, final IPayloadContext context) {
-        clientTimer.applyScale(payload.scale(), payload.scaleTicks());
+        var level = context.player().level();
+        var target = level.getEntity(payload.targetEntity());
+        if (target != null) {
+            clientTimer.addScaler(payload.scale(), payload.duration(), payload.transition(), target);
+            return;
+        }
+        clientTimer.addScaler(payload.scale(), payload.duration(), payload.transition());
     }
 
     public static void applyScale(float scale, int scaleTicks) {
-        serverTimer.applyScale(scale, scaleTicks);
-        PacketDistributor.sendToAllPlayers(new TimeScalePayload(scale, scaleTicks));
+        applyScale(scale, scaleTicks, serverTimer.getDefaultTransition());
     }
 
-    public static class ScalableTimer {
-        private static final int SCALE_SMOOTH_DURATION = 20;
-        private float scale;
-        private int scaleTicks;
-        private float tickScale;
-        private boolean runTick;
-        private float deltaTickResidual;
+    public static void applyScale(float scale, int scaleTicks, int transition) {
+        serverTimer.addScaler(scale, scaleTicks, transition);
+        PacketDistributor.sendToAllPlayers(new TimeScalePayload(scale, scaleTicks, transition, 0));
+    }
 
-        private static float clampedInverseLerp(float delta, float start, float end) {
-            var inverseDelta = Mth.inverseLerp(delta, start, end);
-            return Mth.clamp(inverseDelta, 0.0F, 1.0F);
-        }
+    public static void applyScale(Entity entity, float scale, int scaleTicks) {
+        applyScale(entity, scale, scaleTicks, serverTimer.getDefaultTransition());
+    }
 
-        private static float smoothstep(float input) {
-            return input * input * input * (input * (input * 6.0F - 15.0F) + 10.0F);
-        }
+    public static void applyScale(Entity entity, float scale, int scaleTicks, int transition) {
+        serverTimer.addScaler(scale, scaleTicks, transition, entity);
+        PacketDistributor.sendToAllPlayers(new TimeScalePayload(scale, scaleTicks, transition, entity.getId()));
+    }
 
-        private float getDefaultTimeScale() {
-            return 1.0F;
-        }
+    @SuppressWarnings("DataFlowIssue")
+    public static boolean isOriginalEntityFrozen(Entity entity) {
+        var mc = Minecraft.getInstance();
 
-        private float calculateTimeScale() {
-            var delta = clampedInverseLerp(scaleTicks, SCALE_SMOOTH_DURATION, 0);
-            delta = smoothstep(delta);
-            return Mth.lerp(delta, scale, getDefaultTimeScale());
-        }
+        TimeScaleHandler.scaleRunNormally = false;
+        var frozen = mc.level.tickRateManager().isEntityFrozen(entity);
+        TimeScaleHandler.scaleRunNormally = true;
 
-        public void tick() {
-            tickScale = calculateTimeScale();
-            scaleTicks = scaleTicks > 0 ? --scaleTicks : 0;
-            var nextDeltaTickResidual = deltaTickResidual + tickScale;
-            runTick = nextDeltaTickResidual >= 1.0F;
-            deltaTickResidual = Mth.frac(nextDeltaTickResidual);
-        }
+        return frozen;
+    }
 
-        public void applyScale(float scale, int scaleTicks) {
-            this.scale = this.scaleTicks > 0 ? this.scale * scale : scale;
-            this.scaleTicks = scaleTicks;
-        }
+    @SuppressWarnings("DataFlowIssue")
+    public static boolean isDefaultEntityFrozen(Entity entity) {
+        var mc = Minecraft.getInstance();
 
-        public boolean runsTicking() {
-            return runTick;
-        }
+        TimeScaleHandler.disableRunNormally = true;
+        var frozen = mc.level.tickRateManager().isEntityFrozen(entity);
+        TimeScaleHandler.disableRunNormally = false;
 
-        public float getScale() {
-            return tickScale;
-        }
+        return frozen;
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    public static boolean isPlayerEntityFrozen(Entity entity) {
+        var mc = Minecraft.getInstance();
+
+        TimeScaleHandler.disableRunNormally = true;
+        var frozen = mc.level.tickRateManager().isEntityFrozen(entity) || TimeScaleHandler.clientTimer.scalesTravelling(entity);
+        TimeScaleHandler.disableRunNormally = false;
+
+        return frozen;
+    }
+
+    public static float getOriginalPartialTick(boolean runsNormally) {
+        var mc = Minecraft.getInstance();
+
+        TimeScaleHandler.scalePartialTick = false;
+        var partialTick = mc.getTimer().getGameTimeDeltaPartialTick(runsNormally);
+        TimeScaleHandler.scalePartialTick = true;
+
+        return partialTick;
+    }
+
+    public static float getDefaultPartialTick(boolean runsNormally) {
+        var mc = Minecraft.getInstance();
+
+        return mc.getTimer().getGameTimeDeltaPartialTick(runsNormally);
     }
 }

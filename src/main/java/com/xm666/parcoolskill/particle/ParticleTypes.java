@@ -20,15 +20,28 @@ public class ParticleTypes {
             ParCoolSkill.MODID
     );
 
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> RED_SKILL = PARTICLE_TYPES.register(
-            "red_skill",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> IRONCLAD_HIT = PARTICLE_TYPES.register(
+            "ironclad_hit",
             () -> new SimpleParticleType(false)
     );
 
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GREEN_SKILL = PARTICLE_TYPES.register(
-            "green_skill",
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> IRONCLAD_EFFECT = PARTICLE_TYPES.register(
+            "ironclad_effect",
             () -> new SimpleParticleType(false)
     );
+
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SILENT_HIT = PARTICLE_TYPES.register(
+            "silent_hit",
+            () -> new SimpleParticleType(false)
+    );
+
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SILENT_EFFECT = PARTICLE_TYPES.register(
+            "silent_effect",
+            () -> new SimpleParticleType(false)
+    );
+
+    public static final int IRONCLAD_COLOR = 0xBF3030;
+    public static final int SILENT_COLOR = 0x30BF30;
 
     public ParticleTypes(IEventBus modEventBus) {
         PARTICLE_TYPES.register(modEventBus);
@@ -36,7 +49,9 @@ public class ParticleTypes {
 
     @SubscribeEvent
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(ParticleTypes.RED_SKILL.get(), SkillParticle.RedProvider::new);
-        event.registerSpriteSet(ParticleTypes.GREEN_SKILL.get(), SkillParticle.GreenProvider::new);
+        event.registerSpriteSet(ParticleTypes.IRONCLAD_HIT.get(), SkillParticleProvider.with(HitParticle::new, IRONCLAD_COLOR));
+        event.registerSpriteSet(ParticleTypes.IRONCLAD_EFFECT.get(), SkillParticleProvider.with(EffectParticle::new, IRONCLAD_COLOR));
+        event.registerSpriteSet(ParticleTypes.SILENT_HIT.get(), SkillParticleProvider.with(HitParticle::new, SILENT_COLOR));
+        event.registerSpriteSet(ParticleTypes.SILENT_EFFECT.get(), SkillParticleProvider.with(EffectParticle::new, SILENT_COLOR));
     }
 }
