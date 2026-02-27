@@ -3,7 +3,6 @@
   "package": "com.xm666.parcoolskill.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "BackflipMixin$ActionProcessorMixin",
     "BackflipMixin$FlippingMixin",
     "BackflipMixin$ProjectileMixin",
     "DodgeSkillMixin$DodgeMixin",
@@ -24,6 +23,7 @@
     "requireAnnotations": true
   },
   "client": [
+    "BackflipMixin$ActionProcessorMixin",
     "BackflipMixin$PlayerModelRotatorMixin",
     "BackflipMixin$PlayerModelTransformerMixin",
     "CleaveMixin$MinecraftMixin",

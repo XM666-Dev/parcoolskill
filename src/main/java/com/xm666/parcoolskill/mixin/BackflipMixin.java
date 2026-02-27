@@ -123,6 +123,7 @@ public class BackflipMixin {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Mixin(ActionProcessor.class)
     private static class ActionProcessorMixin {
         @WrapMethod(method = "onTick$doPreprocessInClient")
