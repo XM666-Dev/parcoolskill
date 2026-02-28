@@ -49,47 +49,22 @@ public class TimeScaleMixin {
     private static class DeltaTrackerTimerMixin {
         @ModifyReturnValue(method = "getGameTimeDeltaPartialTick", at = @At(value = "RETURN", ordinal = 1))
         private float modifyPartialTick(float original) {
-            return TimeScaleHandler.scalePartialTick
-                    ? Math.min(TimeScaleHandler.deltaTickRunning + original * TimeScaleHandler.clientTimer.getScale(), 1.0F)
-                    : original;
+            if (!TimeScaleHandler.scalePartialTick) return original;
+
+            var scale = TimeScaleHandler.clientTimer != null ? TimeScaleHandler.clientTimer.getScale() : 1.0F;
+            return Math.min(TimeScaleHandler.deltaTickRunning + original * scale, 1.0F);
         }
     }
 
-    @Mixin(LevelRenderer.class)
-    private static class LevelRendererMixin {
-        @WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/TickRateManager;isEntityFrozen(Lnet/minecraft/world/entity/Entity;)Z"))
-        private boolean wrapEntityFrozen(TickRateManager instance, Entity entity, Operation<Boolean> original) {
-            return TimeScaleHandler.isOriginalEntityFrozen(entity);
-        }
+    @Mixin(Minecraft.class)
+    private static class MinecraftMixin {
+        @WrapOperation(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isLevelRunningNormally()Z"))
+        private boolean wrapRunNormally(Minecraft instance, Operation<Boolean> original) {
+            TimeScaleHandler.scaleRunNormally = false;
+            var normally = original.call(instance);
+            TimeScaleHandler.scaleRunNormally = true;
 
-        @WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/DeltaTracker;getGameTimeDeltaPartialTick(Z)F", ordinal = 1))
-        private float wrapEntityPartialTick(DeltaTracker instance, boolean runsNormally, Operation<Float> original, @Local Entity entity) {
-            return TimeScaleHandler.isDefaultEntityFrozen(entity)
-                    ? original.call(instance, runsNormally)
-                    : TimeScaleHandler.getOriginalPartialTick(true);
-        }
-
-        @Inject(method = "renderEntity", at = @At("HEAD"))
-        private void onRenderEntity(Entity entity, double camX, double camY, double camZ, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, CallbackInfo ci, @Share("playerPartialTick") LocalFloatRef playerPartialTickRef) {
-            var playerPartialTick = TimeScaleHandler.isPlayerEntityFrozen(entity)
-                    ? TimeScaleHandler.getDefaultPartialTick(!TimeScaleHandler.isOriginalEntityFrozen(entity))
-                    : partialTick;
-            playerPartialTickRef.set(playerPartialTick);
-        }
-
-        @ModifyArg(method = "renderEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(DDD)D"), index = 0)
-        private double wrapLerpPartialTick(double delta, @Share("playerPartialTick") LocalFloatRef playerPartialTickRef) {
-            return playerPartialTickRef.get();
-        }
-    }
-
-    @Mixin(EntityRenderDispatcher.class)
-    private static class EntityRenderDispatcherMixin {
-        @ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/EntityRenderDispatcher;renderShadow(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/entity/Entity;FFLnet/minecraft/world/level/LevelReader;F)V"), index = 4)
-        private float modifyPartialTick(float partialTick, @Local(argsOnly = true) Entity entity) {
-            return TimeScaleHandler.isPlayerEntityFrozen(entity)
-                    ? TimeScaleHandler.getDefaultPartialTick(!TimeScaleHandler.isOriginalEntityFrozen(entity))
-                    : partialTick;
+            return normally;
         }
     }
 
@@ -145,15 +120,41 @@ public class TimeScaleMixin {
         }
     }
 
-    @Mixin(Minecraft.class)
-    private static class MinecraftMixin {
-        @WrapOperation(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isLevelRunningNormally()Z"))
-        private boolean wrapRunNormally(Minecraft instance, Operation<Boolean> original) {
-            TimeScaleHandler.scaleRunNormally = false;
-            var normally = original.call(instance);
-            TimeScaleHandler.scaleRunNormally = true;
+    @Mixin(LevelRenderer.class)
+    private static class LevelRendererMixin {
+        @WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/TickRateManager;isEntityFrozen(Lnet/minecraft/world/entity/Entity;)Z"))
+        private boolean wrapEntityFrozen(TickRateManager instance, Entity entity, Operation<Boolean> original) {
+            return TimeScaleHandler.isOriginalEntityFrozen(entity);
+        }
 
-            return normally;
+        @WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/DeltaTracker;getGameTimeDeltaPartialTick(Z)F", ordinal = 1))
+        private float wrapEntityPartialTick(DeltaTracker instance, boolean runsNormally, Operation<Float> original, @Local Entity entity) {
+            return TimeScaleHandler.isDefaultEntityFrozen(entity)
+                    ? original.call(instance, runsNormally)
+                    : TimeScaleHandler.getOriginalPartialTick(true);
+        }
+
+        @Inject(method = "renderEntity", at = @At("HEAD"))
+        private void onRenderEntity(Entity entity, double camX, double camY, double camZ, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, CallbackInfo ci, @Share("playerPartialTick") LocalFloatRef playerPartialTickRef) {
+            var playerPartialTick = TimeScaleHandler.isPlayerEntityFrozen(entity)
+                    ? TimeScaleHandler.getDefaultPartialTick(!TimeScaleHandler.isOriginalEntityFrozen(entity))
+                    : partialTick;
+            playerPartialTickRef.set(playerPartialTick);
+        }
+
+        @ModifyArg(method = "renderEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(DDD)D"), index = 0)
+        private double wrapLerpPartialTick(double delta, @Share("playerPartialTick") LocalFloatRef playerPartialTickRef) {
+            return playerPartialTickRef.get();
+        }
+    }
+
+    @Mixin(EntityRenderDispatcher.class)
+    private static class EntityRenderDispatcherMixin {
+        @ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/EntityRenderDispatcher;renderShadow(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/entity/Entity;FFLnet/minecraft/world/level/LevelReader;F)V"), index = 4)
+        private float modifyPartialTick(float partialTick, @Local(argsOnly = true) Entity entity) {
+            return TimeScaleHandler.isPlayerEntityFrozen(entity)
+                    ? TimeScaleHandler.getDefaultPartialTick(!TimeScaleHandler.isOriginalEntityFrozen(entity))
+                    : partialTick;
         }
     }
 
