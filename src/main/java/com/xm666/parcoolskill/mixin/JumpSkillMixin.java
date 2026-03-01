@@ -54,7 +54,7 @@ public class JumpSkillMixin {
 
         @Override
         public void parcoolskill$setAttackTime(int attackTime) {
-            this.parcoolskill$attackTime = attackTime;
+            parcoolskill$attackTime = attackTime;
         }
 
         @Override

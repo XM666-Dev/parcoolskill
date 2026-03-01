@@ -72,6 +72,8 @@ public class SlideSkillHandler {
             }
         }
 
+        if (readyType == SlideSkill.Type.NONE) return;
+
         var slideSkillExtraInvulnerableDuration = Config.SLIDE_SKILL_EXTRA_INVULNERABLE_DURATION.get();
         slideSkill.parcoolskill$setReadyType(readyType);
         slideSkill.parcoolskill$setInvulnerableTime(slideSkillExtraInvulnerableDuration);

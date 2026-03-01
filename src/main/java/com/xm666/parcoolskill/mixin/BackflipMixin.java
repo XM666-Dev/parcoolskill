@@ -53,7 +53,7 @@ public class BackflipMixin {
 
         @Override
         public void parcoolskill$setSkillTime(int skillTime) {
-            this.parcoolskill$skillTime = skillTime;
+            parcoolskill$skillTime = skillTime;
         }
 
         @Override

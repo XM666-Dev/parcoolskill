@@ -30,7 +30,7 @@ public class SlideSkillMixin {
 
         @Override
         public void parcoolskill$setReadyType(Type readyType) {
-            this.parcoolskill$readyType = readyType;
+            parcoolskill$readyType = readyType;
         }
 
         @Override
@@ -40,7 +40,7 @@ public class SlideSkillMixin {
 
         @Override
         public void parcoolskill$setInvulnerableTime(int invulnerableTime) {
-            this.parcoolskill$invulnerableTime = invulnerableTime;
+            parcoolskill$invulnerableTime = invulnerableTime;
         }
 
         @Override

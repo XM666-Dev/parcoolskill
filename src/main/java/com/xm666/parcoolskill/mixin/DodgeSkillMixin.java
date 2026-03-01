@@ -30,7 +30,7 @@ public class DodgeSkillMixin {
 
         @Override
         public void parcoolskill$setAttackReadyTime(int attackReadyTime) {
-            this.parcoolskill$attackReadyTime = attackReadyTime;
+            parcoolskill$attackReadyTime = attackReadyTime;
         }
     }
 }
