@@ -5,7 +5,7 @@ import com.alrex.parcool.common.action.impl.Flipping;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
-import com.xm666.parcoolskill.skill.FlippingSkill;
+import com.xm666.parcoolskill.skill.FlipSkill;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,32 +29,32 @@ public class BackflipHandler {
 
     @SubscribeEvent
     public static void onFlippingFinish(ParCoolActionEvent.Finish.Pre event) {
-        if (!(event.getAction() instanceof FlippingSkill flippingSkill)) return;
+        if (!(event.getAction() instanceof FlipSkill flipSkill)) return;
 
-        flippingSkill.parcoolskill$setSkillTime(0);
+        flipSkill.parcoolskill$setSkillTime(0);
     }
 
     @SubscribeEvent
     public static void onFlippingTick(ParCoolActionEvent.Tick.Pre event) {
-        if (!(event.getAction() instanceof FlippingSkill flippingSkill)) return;
+        if (!(event.getAction() instanceof FlipSkill flipSkill)) return;
 
-        var skillTime = flippingSkill.parcoolskill$getSkillTime();
+        var skillTime = flipSkill.parcoolskill$getSkillTime();
         if (skillTime > 0) {
-            flippingSkill.parcoolskill$setSkillTime(skillTime - 1);
+            flipSkill.parcoolskill$setSkillTime(skillTime - 1);
         }
 
-        var coolTime = flippingSkill.parcoolskill$getCooldown();
+        var coolTime = flipSkill.parcoolskill$getCooldown();
         if (coolTime == 0) return;
 
-        flippingSkill.parcoolskill$setCooldown(coolTime - 1);
+        flipSkill.parcoolskill$setCooldown(coolTime - 1);
     }
 
     @SubscribeEvent
     public static void onUseItemTick(LivingEntityUseItemEvent.Tick event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
-        var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
-        if (flippingSkill.parcoolskill$getSkillTime() == 0) return;
+        var flipSkill = (FlipSkill) Parkourability.get(player).get(Flipping.class);
+        if (flipSkill.parcoolskill$getSkillTime() == 0) return;
 
         var duration = event.getDuration() - 1;
         event.setDuration(duration);
@@ -76,8 +76,8 @@ public class BackflipHandler {
         if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
             return;
 
-        var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
-        if (flippingSkill.parcoolskill$getSkillTime() == 0) return;
+        var flipSkill = (FlipSkill) Parkourability.get(player).get(Flipping.class);
+        if (flipSkill.parcoolskill$getSkillTime() == 0) return;
 
         event.setCanceled(true);
     }
@@ -87,16 +87,16 @@ public class BackflipHandler {
         return startInfo.getInt(Integer.BYTES * 2) != 0;
     }
 
-    public static void onStart(Player player, FlippingSkill flippingSkill) {
+    public static void onStart(Player player, FlipSkill flipSkill) {
         var backflipSkillDuration = Config.BACKFLIP_SKILL_DURATION.get();
         var backflipSkillCooldown = Config.BACKFLIP_SKILL_COOLDOWN.get();
-        flippingSkill.parcoolskill$setSkillTime(backflipSkillDuration);
-        flippingSkill.parcoolskill$setCooldown(backflipSkillCooldown);
+        flipSkill.parcoolskill$setSkillTime(backflipSkillDuration);
+        flipSkill.parcoolskill$setCooldown(backflipSkillCooldown);
 
         var movement = player.getDeltaMovement();
         var movementVector = new Vec2((float) movement.x, (float) movement.z);
         var movementDirection = movementVector.normalized().scale(0.75F);
-        player.setDeltaMovement(movementDirection.x, movement.y() * 1.125, movementDirection.y);
+        player.setDeltaMovement(movementDirection.x, movement.y * 1.125, movementDirection.y);
     }
 
     public static int getChargeDuration(ItemStack stack, LivingEntity shooter) {

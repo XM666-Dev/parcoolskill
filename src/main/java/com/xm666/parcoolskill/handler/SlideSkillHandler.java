@@ -4,7 +4,6 @@ import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.BehaviorEnforcer;
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.action.impl.Dodge;
-import com.alrex.parcool.common.action.impl.Flipping;
 import com.alrex.parcool.common.action.impl.Slide;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
@@ -63,12 +62,6 @@ public class SlideSkillHandler {
                 if (!parkourability.getClientInfo().get(ParCoolConfig.Client.Booleans.CanGetOffStepsWhileDodge)) {
                     parkourability.getBehaviorEnforcer().addMarkerCancellingDescendFromEdge(ID_DESCEND_EDGE, slide::isDoing);
                 }
-            } else {
-                var flipping = parkourability.get(Flipping.class);
-                if (flipping.isDoing()) {
-                    readyType = SlideSkill.Type.LEG_SWEEP;
-                    slideSkill.parcoolskill$setDisableSliding(true);
-                }
             }
         }
 
@@ -95,7 +88,6 @@ public class SlideSkillHandler {
         if (!(event.getAction() instanceof SlideSkill slideSkill)) return;
 
         slideSkill.parcoolskill$setReadyType(SlideSkill.Type.NONE);
-        slideSkill.parcoolskill$setDisableSliding(false);
     }
 
     @SubscribeEvent
@@ -173,22 +165,12 @@ public class SlideSkillHandler {
 
                     SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
                 }
-                case LEG_SWEEP -> {
-                    var legSweepNeutralizedDuration = Config.LEG_SWEEP_NEUTRALIZED_DURATION.get();
-                    SkillHandler.addEffect(living, player, Effects.NEUTRALIZED, legSweepNeutralizedDuration);
-
-                    var legSweepKnockbackBase = Config.LEG_SWEEP_KNOCKBACK_BASE.get();
-                    SkillHandler.knockback(living, player, legSweepKnockbackBase);
-
-                    SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
-                    player.sweepAttack();
-                }
             }
         }
 
         var sound = switch (type) {
             case DROPKICK -> SoundEvents.PLAYER_ATTACK_KNOCKBACK;
-            case HEEL_HOOK, LEG_SWEEP -> SoundEvents.PLAYER_ATTACK_STRONG;
+            case HEEL_HOOK -> SoundEvents.PLAYER_ATTACK_STRONG;
             default -> null;
         };
         level.playSound(null, player.getX(), player.getY(), player.getZ(), sound, player.getSoundSource(), 1.0F, 1.0F);

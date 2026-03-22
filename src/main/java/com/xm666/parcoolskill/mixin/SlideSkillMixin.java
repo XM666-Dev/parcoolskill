@@ -42,16 +42,6 @@ public class SlideSkillMixin {
         public void parcoolskill$setInvulnerableTime(int invulnerableTime) {
             parcoolskill$invulnerableTime = invulnerableTime;
         }
-
-        @Override
-        public boolean parcoolskill$isDisableSliding() {
-            return parcoolskill$disableSliding;
-        }
-
-        @Override
-        public void parcoolskill$setDisableSliding(boolean disableSliding) {
-            parcoolskill$disableSliding = disableSliding;
-        }
     }
 
     @Mixin(Minecraft.class)

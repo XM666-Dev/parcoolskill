@@ -18,7 +18,7 @@ import com.xm666.parcoolskill.handler.BackflipHandler;
 import com.xm666.parcoolskill.handler.SkillParticleHandler;
 import com.xm666.parcoolskill.handler.TimeScaleHandler;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
-import com.xm666.parcoolskill.skill.FlippingSkill;
+import com.xm666.parcoolskill.skill.FlipSkill;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -39,33 +39,7 @@ import java.nio.ByteBuffer;
 
 public class BackflipMixin {
     @Mixin(Flipping.class)
-    private static class FlippingMixin implements FlippingSkill {
-        @Unique
-        private int parcoolskill$skillTime;
-
-        @Unique
-        private int parcoolskill$cooldown;
-
-        @Override
-        public int parcoolskill$getSkillTime() {
-            return parcoolskill$skillTime;
-        }
-
-        @Override
-        public void parcoolskill$setSkillTime(int skillTime) {
-            parcoolskill$skillTime = skillTime;
-        }
-
-        @Override
-        public int parcoolskill$getCooldown() {
-            return parcoolskill$cooldown;
-        }
-
-        @Override
-        public void parcoolskill$setCooldown(int cooldown) {
-            parcoolskill$cooldown = cooldown;
-        }
-
+    private static class FlippingMixin {
         @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isShiftKeyDown()Z"))
         private boolean modifyShiftKeyDown(boolean original, @Local(name = "fDirection") Flipping.Direction fDirection) {
             return original && fDirection != Flipping.Direction.Back;
@@ -73,14 +47,14 @@ public class BackflipMixin {
 
         @Inject(method = "canStart", at = @At("TAIL"))
         private void onStart(Player player, Parkourability parkourability, ByteBuffer startInfo, CallbackInfoReturnable<Boolean> cir) {
-            startInfo.putInt(player.isShiftKeyDown() && parcoolskill$cooldown == 0 ? 1 : 0);
+            startInfo.putInt(player.isShiftKeyDown() && ((FlipSkill) this).parcoolskill$getCooldown() == 0 ? 1 : 0);
         }
 
         @Inject(method = "onStartInLocalClient", at = @At("TAIL"))
         private void onStartInLocal(Player player, Parkourability parkourability, ByteBuffer startInfo, CallbackInfo ci) {
             if (!BackflipHandler.canStart(startInfo)) return;
 
-            BackflipHandler.onStart(player, this);
+            BackflipHandler.onStart(player, (FlipSkill) this);
 
             if (!ParCoolConfig.Client.Booleans.EnableActionSounds.get()) return;
 
@@ -100,7 +74,7 @@ public class BackflipMixin {
         public void onStartInServer(Player player, Parkourability parkourability, ByteBuffer startInfo) {
             if (!BackflipHandler.canStart(startInfo)) return;
 
-            BackflipHandler.onStart(player, this);
+            BackflipHandler.onStart(player, (FlipSkill) this);
 
             var backflipBulletTimeScale = Config.BACKFLIP_BULLET_TIME_SCALE.get().floatValue();
             var backflipBulletTimeDuration = Config.BACKFLIP_BULLET_TIME_DURATION.get();
@@ -116,8 +90,8 @@ public class BackflipMixin {
         private Vec3 wrapKnownMovement(Entity instance, Operation<Vec3> original) {
             if (!(instance instanceof Player player)) return original.call(instance);
 
-            var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
-            if (flippingSkill.parcoolskill$getSkillTime() == 0) return original.call(instance);
+            var flipSkill = (FlipSkill) Parkourability.get(player).get(Flipping.class);
+            if (flipSkill.parcoolskill$getSkillTime() == 0) return original.call(instance);
 
             return Vec3.ZERO;
         }

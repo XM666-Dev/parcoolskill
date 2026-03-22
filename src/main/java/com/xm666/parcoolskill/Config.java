@@ -80,11 +80,14 @@ public class Config {
     public static final ModConfigSpec.IntValue BACKFLIP_BULLET_TIME_DURATION = BUILDER
             .defineInRange("backflip_bullet_time_duration", 60, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue LEG_SWEEP_NEUTRALIZED_DURATION = BUILDER
-            .defineInRange("leg_sweep_neutralized_duration", 120, 0, Integer.MAX_VALUE);
+    public static final ModConfigSpec.DoubleValue FLIP_SKILL_DAMAGE_ADDITION = BUILDER
+            .defineInRange("flip_skill_damage_addition", 4.0, 0.0, Double.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue LEG_SWEEP_KNOCKBACK_BASE = BUILDER
-            .defineInRange("leg_sweep_knockback_base", 1.0, 0.0, Double.MAX_VALUE);
+    public static final ModConfigSpec.IntValue FLICK_FLACK_STAMINA_CONSUMPTION = BUILDER
+            .defineInRange("flick_flack_stamina_consumption", 100, 0, Integer.MAX_VALUE);
+
+    public static final ModConfigSpec.IntValue FLICK_FLACK_NEUTRALIZED_DURATION = BUILDER
+            .defineInRange("flick_flack_neutralized_duration", 60, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue VULNERABLE_DAMAGE_MULTIPLIER_ADDITION = BUILDER
             .defineInRange("vulnerable_damage_multiplier_addition", 0.5, 0.0, Double.MAX_VALUE);

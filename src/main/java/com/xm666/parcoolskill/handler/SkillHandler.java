@@ -38,10 +38,14 @@ public class SkillHandler {
 
         if (!(targetEntity instanceof Entity target)) return;
 
-        if (type == SkillPayload.Type.DROPKICK || type == SkillPayload.Type.HEEL_HOOK || type == SkillPayload.Type.LEG_SWEEP) {
+        if (type == SkillPayload.Type.DROPKICK || type == SkillPayload.Type.HEEL_HOOK) {
             var slideSkillType = SlideSkill.Type.values()[type.ordinal()];
             SlideSkillHandler.handleAttack(player, target, slideSkillType);
             return;
+        }
+
+        if (type == SkillPayload.Type.FLICK_FLACK) {
+            FlickFlackHandler.handleAttack(player, target);
         }
 
         if (type == SkillPayload.Type.CLEAVE_ATTACK) {
