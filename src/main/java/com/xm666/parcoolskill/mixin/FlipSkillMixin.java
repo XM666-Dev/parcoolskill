@@ -15,7 +15,7 @@ public class FlipSkillMixin {
         private int parcoolskill$cooldown;
 
         @Unique
-        private boolean parcoolskill$attackReady;
+        private Type parcoolskill$readyType = Type.NONE;
 
         @Unique
         private int parcoolskill$invulnerableTime;
@@ -41,13 +41,13 @@ public class FlipSkillMixin {
         }
 
         @Override
-        public boolean parcoolskill$isAttackReady() {
-            return parcoolskill$attackReady;
+        public Type parcoolskill$getReadyType() {
+            return parcoolskill$readyType;
         }
 
         @Override
-        public void parcoolskill$setAttackReady(boolean attackReady) {
-            parcoolskill$attackReady = attackReady;
+        public void parcoolskill$setReadyType(Type type) {
+            parcoolskill$readyType = type;
         }
 
         @Override

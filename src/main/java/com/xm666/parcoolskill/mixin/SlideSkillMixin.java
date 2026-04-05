@@ -20,8 +20,6 @@ public class SlideSkillMixin {
         private Type parcoolskill$readyType = Type.NONE;
         @Unique
         private int parcoolskill$invulnerableTime;
-        @Unique
-        private boolean parcoolskill$disableSliding;
 
         @Override
         public Type parcoolskill$getReadyType() {

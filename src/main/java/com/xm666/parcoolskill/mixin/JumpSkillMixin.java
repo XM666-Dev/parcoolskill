@@ -86,7 +86,7 @@ public class JumpSkillMixin {
         }
 
         @ModifyConstant(method = "onJump", constant = @Constant(doubleValue = 0.5))
-        public double modifyStartThreshold(double constant) {
+        public double modifyJumpThreshold(double constant) {
             return 1.0 / ChargeJump.JUMP_MAX_CHARGE_TICK;
         }
     }

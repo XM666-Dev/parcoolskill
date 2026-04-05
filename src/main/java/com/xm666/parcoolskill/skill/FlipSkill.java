@@ -9,11 +9,17 @@ public interface FlipSkill {
 
     void parcoolskill$setCooldown(int cooldown);
 
-    boolean parcoolskill$isAttackReady();
+    Type parcoolskill$getReadyType();
 
-    void parcoolskill$setAttackReady(boolean attackReady);
+    void parcoolskill$setReadyType(Type type);
 
     int parcoolskill$getInvulnerableTime();
 
     void parcoolskill$setInvulnerableTime(int invulnerableTime);
+
+    enum Type {
+        VAULT,
+        ATTACK,
+        NONE
+    }
 }
