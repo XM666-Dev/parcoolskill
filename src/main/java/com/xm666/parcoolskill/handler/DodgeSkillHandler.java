@@ -11,6 +11,7 @@ import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.skill.DodgeSkill;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -47,7 +48,7 @@ public class DodgeSkillHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
-        if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
+        if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR) || !Config.SNEAKY_STRIKE_ENABLED.get())
             return;
 
         var parkourability = Parkourability.get(player);
@@ -62,6 +63,7 @@ public class DodgeSkillHandler {
         dodgeSkill.parcoolskill$setAttackReadyTime(sneakyStrikeReadyDuration);
     }
 
+    @SuppressWarnings("WrapperTypeMayBePrimitive")
     @SubscribeEvent
     public static void onPlayerAttack(PlayerAttackEvent.Pre event) {
         var player = event.getEntity();
@@ -73,19 +75,29 @@ public class DodgeSkillHandler {
 
         if (!event.isFullStrength()) return;
 
+        var sneakyStrikeStaminaConsumption = Config.SNEAKY_STRIKE_STAMINA_CONSUMPTION.get();
+        StaminaHandler.consume(player, sneakyStrikeStaminaConsumption);
+        StaminaHandler.recover(player, StaminaHandler.getConsumptionOf(player, Dodge.class) + sneakyStrikeStaminaConsumption);
+
+        var behind = false;
         var target = event.getTarget();
-        var sourcePosition = player.getEyePosition();
-        var targetPosition = target.position();
-        var sourceOffset = sourcePosition.subtract(targetPosition);
-        var targetDirection = directionFromBodyRotation(target.yBodyRot);
-        var offset = new Vec2((float) sourceOffset.x, (float) sourceOffset.z);
-        var direction = new Vec2((float) targetDirection.x, (float) targetDirection.z);
+        if (target instanceof LivingEntity living) {
+            var sourcePosition = player.getEyePosition();
+            var targetPosition = target.position();
+            var sourceOffset = sourcePosition.subtract(targetPosition);
+            var targetDirection = directionFromBodyRotation(living.yBodyRot);
+            var offset = new Vec2((float) sourceOffset.x, (float) sourceOffset.z);
+            var direction = new Vec2((float) targetDirection.x, (float) targetDirection.z);
+            behind = isPositionBehind(offset, direction);
+        }
 
         var sneakyStrikeDamageMultiplier = Config.SNEAKY_STRIKE_DAMAGE_MULTIPLIER.get().floatValue();
         var backstabDamageMultiplier = Config.BACKSTAB_DAMAGE_MULTIPLIER.get().floatValue();
-        var damageMultiplier = isPositionBehind(offset, direction) ? backstabDamageMultiplier : sneakyStrikeDamageMultiplier;
-        event.setAmount(event.getAmount() * damageMultiplier);
-        StaminaHandler.recoverStaminaOf(player, Dodge.class);
+        var damageMultiplier = behind ? backstabDamageMultiplier : sneakyStrikeDamageMultiplier;
+        event.setCriticalHit(true);
+        event.setDisableCrit(true);
+        event.setDisableSweep(false);
+        event.setDamageMultiplier(event.getDamageMultiplier() * damageMultiplier);
 
         SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
     }

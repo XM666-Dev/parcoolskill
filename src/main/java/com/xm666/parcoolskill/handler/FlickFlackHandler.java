@@ -12,8 +12,7 @@ import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.effect.Effects;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
-import com.xm666.parcoolskill.network.SkillPayload;
-import com.xm666.parcoolskill.skill.FlipSkill;
+import com.xm666.parcoolskill.skill.FlippingSkill;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -21,7 +20,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec2;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -30,7 +28,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 public class FlickFlackHandler {
     @SubscribeEvent
     public static void onFlippingStart(ParCoolActionEvent.Start.Post event) {
-        if (!(event.getAction() instanceof FlipSkill flipSkill)) return;
+        if (!(event.getAction() instanceof FlippingSkill flippingSkill)) return;
 
         var player = event.getPlayer();
         var parkourability = Parkourability.get(player);
@@ -40,33 +38,33 @@ public class FlickFlackHandler {
         var flickFlackStaminaConsumption = Config.FLICK_FLACK_STAMINA_CONSUMPTION.get();
         var stamina = Stamina.get(player);
         stamina.consume(flickFlackStaminaConsumption);
-        if (stamina.isExhausted()) return;
 
-        flipSkill.parcoolskill$setReadyType(FlipSkill.Type.VAULT);
-        flipSkill.parcoolskill$setInvulnerableTime(20);
+        flippingSkill.parcoolskill$setAttackReady(true);
+        flippingSkill.parcoolskill$setInvulnerableTime(20);
 
         var movement = player.getDeltaMovement();
-        var movementVector = new Vec2((float) movement.x, (float) movement.z);
-        var movementDirection = movementVector.normalized().scale(0.5F);
-        player.setDeltaMovement(movementDirection.x, movement.y, movementDirection.y);
+        player.setDeltaMovement(movement.x, movement.y * 1.625, movement.z);
+
+        if (!ParCoolConfig.Client.Booleans.EnableActionSounds.get()) return;
+        player.playSound(SoundEvents.VAULT.get(), 1.0F, 1.0F);
     }
 
     @SubscribeEvent
     public static void onFlippingFinish(ParCoolActionEvent.Finish.Pre event) {
-        if (!(event.getAction() instanceof FlipSkill flipSkill)) return;
+        if (!(event.getAction() instanceof FlippingSkill flippingSkill)) return;
 
-        flipSkill.parcoolskill$setReadyType(FlipSkill.Type.NONE);
+        flippingSkill.parcoolskill$setAttackReady(false);
     }
 
     @SubscribeEvent
     public static void onSlideTick(ParCoolActionEvent.Tick.Pre event) {
         if (!(event.getAction() instanceof Flipping flipping)) return;
 
-        var flipSkill = (FlipSkill) flipping;
-        var invulnerableTime = flipSkill.parcoolskill$getInvulnerableTime();
+        var flippingSkill = (FlippingSkill) flipping;
+        var invulnerableTime = flippingSkill.parcoolskill$getInvulnerableTime();
         if (invulnerableTime == 0) return;
 
-        flipSkill.parcoolskill$setInvulnerableTime(invulnerableTime - 1);
+        flippingSkill.parcoolskill$setInvulnerableTime(invulnerableTime - 1);
     }
 
     @SubscribeEvent
@@ -74,34 +72,35 @@ public class FlickFlackHandler {
         if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
             return;
 
-        var flipSkill = (FlipSkill) Parkourability.get(player).get(Flipping.class);
-        if (flipSkill.parcoolskill$getInvulnerableTime() == 0) return;
+        var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
+        if (flippingSkill.parcoolskill$getInvulnerableTime() == 0) return;
 
         event.setCanceled(true);
     }
 
-    public static void onFlippingVault(Player player) {
-        var movement = player.getDeltaMovement();
-        if (movement.y < 0.0) return;
-        player.setDeltaMovement(movement.x, movement.y * 0.5 + 0.45, movement.z);
-        SkillHandler.use(SkillPayload.Type.FLIPPING_VAULT, player);
-
-        if (!ParCoolConfig.Client.Booleans.EnableActionSounds.get()) return;
-        player.playSound(SoundEvents.VAULT.get(), 1.0F, 1.0F);
-    }
-
+    @SuppressWarnings("WrapperTypeMayBePrimitive")
     @SubscribeEvent
     public static void onPlayerAttack(PlayerAttackEvent.Pre event) {
         var player = event.getEntity();
-        if (!isReadyForAttack(player)) return;
+        var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
+        if (!isReadyForAttack(player) || !event.isFullStrength()) {
+            if (flippingSkill.parcoolskill$disableCrit()) {
+                event.setDisableCrit(true);
+            }
+            return;
+        }
 
         var flickFlackNeutralizedDuration = Config.FLICK_FLACK_NEUTRALIZED_DURATION.get();
         var target = event.getTarget();
-        SkillHandler.addEffect(target, player, Effects.NEUTRALIZED, flickFlackNeutralizedDuration);
+        if (target instanceof LivingEntity living) {
+            SkillHandler.addEffect(living, player, Effects.NEUTRALIZED, flickFlackNeutralizedDuration);
+        }
 
-        player.sweepAttack();
         SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
+        player.sweepAttack();
+        event.setDisableCrit(true);
 
+        flippingSkill.parcoolskill$setDisableCrit(true);
         for (var living : target.level().getEntitiesOfClass(LivingEntity.class, getSweepHitBox(target))) {
             var entityReachSquare = Mth.square(player.entityInteractionRange());
             if (living != player && living != target && !player.isAlliedTo(living) && (!(living instanceof ArmorStand) || !((ArmorStand) living).isMarker()) && player.distanceToSqr(living) < entityReachSquare) {
@@ -112,33 +111,15 @@ public class FlickFlackHandler {
                 SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, living);
             }
         }
-
-        var movement = player.getDeltaMovement();
-        player.setDeltaMovement(movement.x, movement.y - 0.2, movement.z);
-    }
-
-    public static void handleVault(Player player) {
-        var flipSkill = (FlipSkill) Parkourability.get(player).get(Flipping.class);
-        if (flipSkill.parcoolskill$getReadyType() != FlipSkill.Type.VAULT) return;
-
-        flipSkill.parcoolskill$setReadyType(FlipSkill.Type.ATTACK);
-    }
-
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean isReadyForVault(Player player) {
-        var flipSkill = (FlipSkill) Parkourability.get(player).get(Flipping.class);
-        if (flipSkill.parcoolskill$getReadyType() != FlipSkill.Type.VAULT) return false;
-
-        flipSkill.parcoolskill$setReadyType(FlipSkill.Type.ATTACK);
-        return true;
+        flippingSkill.parcoolskill$setDisableCrit(false);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isReadyForAttack(Player player) {
-        var flipSkill = (FlipSkill) Parkourability.get(player).get(Flipping.class);
-        if (flipSkill.parcoolskill$getReadyType() != FlipSkill.Type.ATTACK) return false;
+        var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
+        if (!flippingSkill.parcoolskill$isAttackReady()) return false;
 
-        flipSkill.parcoolskill$setReadyType(FlipSkill.Type.NONE);
+        flippingSkill.parcoolskill$setAttackReady(false);
         return true;
     }
 

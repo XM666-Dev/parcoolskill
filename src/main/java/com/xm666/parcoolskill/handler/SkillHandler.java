@@ -36,10 +36,6 @@ public class SkillHandler {
             CleaveHandler.handleReady(player);
         }
 
-        if (type == SkillPayload.Type.FLIPPING_VAULT) {
-            FlickFlackHandler.handleVault(player);
-        }
-
         if (!(targetEntity instanceof Entity target)) return;
 
         if (type == SkillPayload.Type.DROPKICK || type == SkillPayload.Type.HEEL_HOOK) {
@@ -118,13 +114,13 @@ public class SkillHandler {
         var partialTick = TimeScaleHandler.getOriginalPartialTick(true);
         var eyePosition = shooter.getEyePosition();
         var viewVector = shooter.getViewVector(partialTick);
-        var hitVector = viewVector.scale(distance);
-        var hitPosition = eyePosition.add(hitVector);
-        var aabb = shooter.getBoundingBox().expandTowards(hitVector).inflate(1.0);
+        var pickVector = viewVector.scale(distance);
+        var pickPosition = eyePosition.add(pickVector);
+        var aabb = shooter.getBoundingBox().expandTowards(pickVector).inflate(1.0);
         return SkillHandler.getEntityHits(
                 shooter,
                 eyePosition,
-                hitPosition,
+                pickPosition,
                 aabb,
                 (entity) -> !entity.isSpectator() && entity.isPickable(),
                 inflationAmount,

@@ -1,38 +1,71 @@
 package com.xm666.parcoolskill.event;
 
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 public class PlayerAttackEvent extends PlayerEvent {
-    private final LivingEntity target;
-    private final CriticalHitEvent critEvent;
-    private float amount;
+    private final Entity target;
+    private final float vanillaDamageMultiplier;
+    private final boolean isVanillaCritical;
+    private float damageMultiplier;
+    private boolean isCriticalHit;
+    private boolean disableSweep;
+    private boolean disableCrit;
 
-    protected PlayerAttackEvent(Player player, LivingEntity target, CriticalHitEvent critEvent, float amount) {
+    protected PlayerAttackEvent(Player player, Entity target, float damageMultiplier, boolean isCriticalHit, boolean disableSweep) {
         super(player);
         this.target = target;
-        this.critEvent = critEvent;
-        this.amount = amount;
+        this.damageMultiplier = this.vanillaDamageMultiplier = damageMultiplier;
+        this.isCriticalHit = this.isVanillaCritical = isCriticalHit;
+        this.disableSweep = disableSweep;
     }
 
-    public LivingEntity getTarget() {
+    public Entity getTarget() {
         return target;
     }
 
-    public CriticalHitEvent getCritEvent() {
-        return critEvent;
+    public float getDamageMultiplier() {
+        return this.damageMultiplier;
     }
 
-    public float getAmount() {
-        return amount;
+    public void setDamageMultiplier(float damageMultiplier) {
+        this.damageMultiplier = damageMultiplier;
     }
 
-    public void setAmount(float amount) {
-        this.amount = amount;
+    public boolean isCriticalHit() {
+        return this.isCriticalHit;
     }
 
+    public void setCriticalHit(boolean isCriticalHit) {
+        this.isCriticalHit = isCriticalHit;
+    }
+
+    public float getVanillaMultiplier() {
+        return this.vanillaDamageMultiplier;
+    }
+
+    public boolean isVanillaCritical() {
+        return this.isVanillaCritical;
+    }
+
+    public void setDisableSweep(boolean disableSweep) {
+        this.disableSweep = disableSweep;
+    }
+
+    public boolean disableSweep() {
+        return this.disableSweep;
+    }
+
+    public void setDisableCrit(boolean disableCrit) {
+        this.disableCrit = disableCrit;
+    }
+
+    public boolean disableCrit() {
+        return this.disableCrit;
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isFullStrength() {
         var player = getEntity();
         var attackStrengthScale = player.getAttackStrengthScale(0.5F);
@@ -40,14 +73,14 @@ public class PlayerAttackEvent extends PlayerEvent {
     }
 
     public static class Pre extends PlayerAttackEvent {
-        public Pre(Player player, LivingEntity target, CriticalHitEvent critEvent, float amount) {
-            super(player, target, critEvent, amount);
+        public Pre(Player player, Entity target, float damageMultiplier, boolean isCriticalHit, boolean disableSweep) {
+            super(player, target, damageMultiplier, isCriticalHit, disableSweep);
         }
     }
 
     public static class Post extends PlayerAttackEvent {
-        public Post(Player player, LivingEntity target, CriticalHitEvent critEvent, float amount) {
-            super(player, target, critEvent, amount);
+        public Post(Player player, Entity target, float damageMultiplier, boolean isCriticalHit, boolean disableSweep) {
+            super(player, target, damageMultiplier, isCriticalHit, disableSweep);
         }
     }
 }

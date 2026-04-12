@@ -21,15 +21,15 @@ public class StaminaHandler {
         }
     }
 
-    public static void recoverStaminaOf(Player player, Class<? extends Action> action) {
-        recoverStamina(player, getStaminaConsumptionOf(player, action));
+    public static void consume(Player player, int value) {
+        PacketDistributor.sendToPlayer((ServerPlayer) player, new StaminaPayload(-value));
     }
 
-    private static void recoverStamina(Player player, int value) {
+    public static void recover(Player player, int value) {
         PacketDistributor.sendToPlayer((ServerPlayer) player, new StaminaPayload(value));
     }
 
-    private static int getStaminaConsumptionOf(Player player, Class<? extends Action> action) {
+    public static int getConsumptionOf(Player player, Class<? extends Action> action) {
         var parkourability = Parkourability.get(player);
         return parkourability.getActionInfo().getStaminaConsumptionOf(action);
     }

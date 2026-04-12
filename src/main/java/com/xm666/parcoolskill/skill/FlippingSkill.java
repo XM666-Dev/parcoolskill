@@ -1,6 +1,6 @@
 package com.xm666.parcoolskill.skill;
 
-public interface FlipSkill {
+public interface FlippingSkill {
     int parcoolskill$getSkillTime();
 
     void parcoolskill$setSkillTime(int skillTime);
@@ -9,17 +9,15 @@ public interface FlipSkill {
 
     void parcoolskill$setCooldown(int cooldown);
 
-    Type parcoolskill$getReadyType();
+    boolean parcoolskill$isAttackReady();
 
-    void parcoolskill$setReadyType(Type type);
+    void parcoolskill$setAttackReady(boolean attackReady);
 
     int parcoolskill$getInvulnerableTime();
 
     void parcoolskill$setInvulnerableTime(int invulnerableTime);
 
-    enum Type {
-        VAULT,
-        ATTACK,
-        NONE
-    }
+    boolean parcoolskill$disableCrit();
+
+    void parcoolskill$setDisableCrit(boolean disableCrit);
 }

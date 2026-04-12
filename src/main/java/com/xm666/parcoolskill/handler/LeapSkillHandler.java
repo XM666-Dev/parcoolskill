@@ -1,5 +1,6 @@
 package com.xm666.parcoolskill.handler;
 
+import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.attachment.common.Parkourability;
@@ -15,7 +16,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 public class LeapSkillHandler {
     @SubscribeEvent
     public static void onLeapStart(ParCoolActionEvent.Start.Pre event) {
-        if (!(event.getAction() instanceof LeapSkill leapSkill)) return;
+        if (!(event.getAction() instanceof LeapSkill leapSkill) || !Config.WILD_STRIKE_ENABLED.get()) return;
 
         leapSkill.parcoolskill$setAttackReady(true);
     }
@@ -47,9 +48,15 @@ public class LeapSkillHandler {
 
         if (!event.isFullStrength()) return;
 
+        var wildStrikeStaminaConsumption = Config.WILD_STRIKE_STAMINA_CONSUMPTION.get();
+        var stamina = Stamina.get(player);
+        stamina.consume(wildStrikeStaminaConsumption);
+
         var wildStrikeDamageMultiplier = Config.WILD_STRIKE_DAMAGE_MULTIPLIER.get().floatValue();
         var wildStrikeParryDuration = Config.WILD_STRIKE_PARRY_DURATION.get();
-        event.setAmount(event.getAmount() * wildStrikeDamageMultiplier);
+        event.setCriticalHit(true);
+        event.setDisableCrit(true);
+        event.setDamageMultiplier(event.getDamageMultiplier() * wildStrikeDamageMultiplier);
         leapSkill.parcoolskill$setParryTime(wildStrikeParryDuration);
 
         var target = event.getTarget();

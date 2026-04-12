@@ -11,11 +11,12 @@ import net.neoforged.fml.common.EventBusSubscriber;
 public class JumpSkillHandler {
     @SubscribeEvent
     public static void onChargeTryToStart(ParCoolActionEvent.TryToStart event) {
-        if (!(event.getAction() instanceof JumpSkill jumpSkill)) return;
+        if (!(event.getAction() instanceof ChargeJump jump)) return;
 
+        var jumpSkill = (JumpSkill) jump;
         if (!jumpSkill.parcoolskill$isCoolingDown()) return;
 
         event.setCanceled(true);
-        jumpSkill.parcoolskill$setCoolingDown(jumpSkill.parcoolskill$getNotChargeTick() < ChargeJump.JUMP_ANIMATION_TICK);
+        jumpSkill.parcoolskill$setCoolingDown(jump.getNotChargingTick() < ChargeJump.JUMP_ANIMATION_TICK);
     }
 }

@@ -1,5 +1,6 @@
 package com.xm666.parcoolskill.handler;
 
+import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.BehaviorEnforcer;
 import com.alrex.parcool.common.action.impl.CatLeap;
@@ -50,13 +51,21 @@ public class SlideSkillHandler {
             var leapSkill = (LeapSkill) catleap;
             if (!leapSkill.parcoolskill$isAttackReady()) return;
 
+            var dropkickStaminaConsumption = Config.DROPKICK_STAMINA_CONSUMPTION.get();
+            var stamina = Stamina.get(player);
+            stamina.consume(dropkickStaminaConsumption);
+
             readyType = SlideSkill.Type.DROPKICK;
             player.setDeltaMovement(player.getDeltaMovement().add(0.0, 0.2, 0.0));
         } else {
             var dodge = parkourability.get(Dodge.class);
             if (dodge.isDoing()) {
                 var dodgeSkill = (DodgeSkill) dodge;
-                if (!dodgeSkill.parcoolskill$isAttackReady()) return;
+                if (!dodgeSkill.parcoolskill$isAttackReady() || !Config.HEEL_HOOK_ENABLED.get()) return;
+
+                var heelHookStaminaConsumption = Config.HEEL_HOOK_STAMINA_CONSUMPTION.get();
+                var stamina = Stamina.get(player);
+                stamina.consume(heelHookStaminaConsumption);
 
                 readyType = SlideSkill.Type.HEEL_HOOK;
                 if (!parkourability.getClientInfo().get(ParCoolConfig.Client.Booleans.CanGetOffStepsWhileDodge)) {
@@ -119,15 +128,14 @@ public class SlideSkillHandler {
         var aabb = target.getBoundingBox();
         if (!player.canInteractWithEntity(aabb, 1.0)) return;
 
-        var slideSkillDamageAddition = Config.SLIDE_SKILL_DAMAGE_ADDITION.get();
+        var slideSkillDamageHealthGrowth = Config.SLIDE_SKILL_DAMAGE_HEALTH_GROWTH.get();
         var level = target.level();
-        var attackModifierPredicate = (Predicate<AttributeModifier>) m -> !m.is(ResourceLocation.parse("minecraft:base_attack_damage"));
         var lowerArmorPredicate = (Predicate<AttributeModifier>) m -> m.is(ResourceLocation.parse("minecraft:armor.leggings")) || m.is(ResourceLocation.parse("minecraft:armor.boots"));
+        var attackModifierPredicate = (Predicate<AttributeModifier>) m -> !m.is(ResourceLocation.parse("minecraft:base_attack_damage"));
         var damage = (float) (
-                SkillHandler.calculateAttribute(player, Attributes.ATTACK_DAMAGE, attackModifierPredicate) +
+                player.getAttributeValue(Attributes.MAX_HEALTH) * slideSkillDamageHealthGrowth +
                         SkillHandler.calculateAttribute(player, Attributes.ARMOR, lowerArmorPredicate) +
-                        SkillHandler.calculateAttribute(player, Attributes.ARMOR_TOUGHNESS, lowerArmorPredicate) +
-                        slideSkillDamageAddition
+                        SkillHandler.calculateAttribute(player, Attributes.ATTACK_DAMAGE, attackModifierPredicate)
         );
         var slideAttack = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.SLIDE_ATTACK);
         var damageSource = new DamageSource(slideAttack, player, player, player.position());
@@ -143,10 +151,9 @@ public class SlideSkillHandler {
                     SkillHandler.knockback(living, player, dropkickKnockbackBase);
 
                     if (living.hasEffect(Effects.VULNERABLE)) {
-                        StaminaHandler.recoverStaminaOf(player, CatLeap.class);
+                        var dropkickStaminaConsumption = Config.DROPKICK_STAMINA_CONSUMPTION.get();
+                        StaminaHandler.recover(player, StaminaHandler.getConsumptionOf(player, CatLeap.class) + StaminaHandler.getConsumptionOf(player, Slide.class) + dropkickStaminaConsumption);
                         TimeScaleHandler.applyScale(slideSkillBulletTimeScale, slideSkillBulletTimeDuration);
-
-                        SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_EFFECT, player);
                     }
 
                     SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
@@ -157,10 +164,9 @@ public class SlideSkillHandler {
                     SkillHandler.addEffect(living, player, MobEffects.MOVEMENT_SLOWDOWN, heelHookSlowdownDuration, heelHookSlowdownAmplifier);
 
                     if (living.hasEffect(MobEffects.WEAKNESS) || living.hasEffect(Effects.NEUTRALIZED)) {
-                        StaminaHandler.recoverStaminaOf(player, Dodge.class);
+                        var heelHookStaminaConsumption = Config.HEEL_HOOK_STAMINA_CONSUMPTION.get();
+                        StaminaHandler.recover(player, StaminaHandler.getConsumptionOf(player, Dodge.class) + StaminaHandler.getConsumptionOf(player, Slide.class) + heelHookStaminaConsumption);
                         TimeScaleHandler.applyScale(slideSkillBulletTimeScale, slideSkillBulletTimeDuration);
-
-                        SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_EFFECT, player);
                     }
 
                     SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);

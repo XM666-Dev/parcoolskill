@@ -1,5 +1,6 @@
 package com.xm666.parcoolskill.handler;
 
+import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.attachment.common.Parkourability;
@@ -9,6 +10,7 @@ import com.xm666.parcoolskill.effect.Effects;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.skill.JumpSkill;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -16,7 +18,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 public class BashHandler {
     @SubscribeEvent
     public static void onJumpStart(ParCoolActionEvent.Start.Pre event) {
-        if (!(event.getAction() instanceof JumpSkill jumpSkill)) return;
+        if (!(event.getAction() instanceof JumpSkill jumpSkill) || !Config.BASH_ENABLED.get()) return;
 
         jumpSkill.parcoolskill$setAttackReady(true);
     }
@@ -31,17 +33,23 @@ public class BashHandler {
     @SubscribeEvent
     public static void onPlayerAttack(PlayerAttackEvent.Post event) {
         var player = event.getEntity();
-
         var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
         if (!jumpSkill.parcoolskill$isAttackReady()) return;
         jumpSkill.parcoolskill$setAttackReady(false);
 
-        if (!event.getCritEvent().isVanillaCritical()) return;
+        if (!event.isVanillaCritical()) return;
 
-        var bashVulnerableDuration = Config.BASH_VULNERABLE_DURATION.get();
+        var bashStaminaConsumption = Config.BASH_STAMINA_CONSUMPTION.get();
+        var stamina = Stamina.get(player);
+        stamina.consume(bashStaminaConsumption);
+
         var target = event.getTarget();
-        SkillHandler.addEffect(target, player, Effects.VULNERABLE, bashVulnerableDuration);
+        if (target instanceof LivingEntity living) {
+            var bashVulnerableDuration = Config.BASH_VULNERABLE_DURATION.get();
+            SkillHandler.addEffect(living, player, Effects.VULNERABLE, bashVulnerableDuration);
+        }
 
         SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
+        event.setDisableCrit(true);
     }
 }

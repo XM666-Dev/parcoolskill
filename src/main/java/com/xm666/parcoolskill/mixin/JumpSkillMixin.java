@@ -10,7 +10,6 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
@@ -23,19 +22,14 @@ public class JumpSkillMixin {
     private static class ChargeJumpMixin implements JumpSkill {
         @Unique
         private final HashSet<Entity> parcoolskill$entityHits = new HashSet<>();
-        @Shadow
-        private int notChargeTick;
         @Unique
         private boolean parcoolskill$attackReady;
         @Unique
         private int parcoolskill$attackTime;
         @Unique
         private boolean parcoolskill$coolingDown;
-
-        @Override
-        public int parcoolskill$getNotChargeTick() {
-            return notChargeTick;
-        }
+        @Unique
+        private int parcoolskill$renderTick;
 
         @Override
         public boolean parcoolskill$isAttackReady() {
@@ -77,6 +71,16 @@ public class JumpSkillMixin {
             parcoolskill$coolingDown = coolingDown;
         }
 
+        @Override
+        public int parcoolskill$getRenderTick() {
+            return parcoolskill$renderTick;
+        }
+
+        @Override
+        public void parcoolskill$addRenderTick() {
+            ++parcoolskill$renderTick;
+        }
+
         @OnlyIn(Dist.CLIENT)
         @Definition(id = "coolTimeTick", field = "Lcom/alrex/parcool/common/action/impl/ChargeJump;coolTimeTick:I")
         @Expression("this.coolTimeTick <= 0")
@@ -88,6 +92,14 @@ public class JumpSkillMixin {
         @ModifyConstant(method = "onJump", constant = @Constant(doubleValue = 0.5))
         public double modifyJumpThreshold(double constant) {
             return 1.0 / ChargeJump.JUMP_MAX_CHARGE_TICK;
+        }
+
+        @Definition(id = "keySneak", field = "Lcom/alrex/parcool/client/input/KeyRecorder;keySneak:Lcom/alrex/parcool/client/input/KeyRecorder$KeyState;")
+        @Definition(id = "getPreviousTickNotKeyDown", method = "Lcom/alrex/parcool/client/input/KeyRecorder$KeyState;getPreviousTickNotKeyDown()I")
+        @Expression("keySneak.getPreviousTickNotKeyDown() > 5")
+        @WrapOperation(method = "onClientTick", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
+        private boolean wrapSneakCondition(int left, int right, Operation<Boolean> original) {
+            return true;
         }
     }
 }

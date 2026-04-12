@@ -8,6 +8,7 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.xm666.parcoolskill.Config;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +19,7 @@ public class DropkickMixin {
     private static class SlideMixin {
         @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;onGround()Z"))
         private boolean modifyOnGround(boolean original, Player player) {
-            return original || Parkourability.get(player).get(CatLeap.class).isDoing();
+            return original || Parkourability.get(player).get(CatLeap.class).isDoing() && Config.DROPKICK_ENABLED.get();
         }
 
         @WrapOperation(method = "canStart", at = @At(value = "INVOKE", target = "Lcom/alrex/parcool/common/action/impl/FastRun;getDashTick(Lcom/alrex/parcool/common/action/AdditionalProperties;)I"))

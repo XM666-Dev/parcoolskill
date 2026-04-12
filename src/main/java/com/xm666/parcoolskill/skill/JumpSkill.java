@@ -3,8 +3,6 @@ package com.xm666.parcoolskill.skill;
 import net.minecraft.world.entity.Entity;
 
 public interface JumpSkill {
-    int parcoolskill$getNotChargeTick();
-
     boolean parcoolskill$isAttackReady();
 
     void parcoolskill$setAttackReady(boolean attackReady);
@@ -20,4 +18,8 @@ public interface JumpSkill {
     boolean parcoolskill$isCoolingDown();
 
     void parcoolskill$setCoolingDown(boolean coolingDown);
+
+    int parcoolskill$getRenderTick();
+
+    void parcoolskill$addRenderTick();
 }

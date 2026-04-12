@@ -1,13 +1,13 @@
 package com.xm666.parcoolskill.mixin;
 
 import com.alrex.parcool.common.action.impl.Flipping;
-import com.xm666.parcoolskill.skill.FlipSkill;
+import com.xm666.parcoolskill.skill.FlippingSkill;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 public class FlipSkillMixin {
     @Mixin(Flipping.class)
-    private static class FlippingMixin implements FlipSkill {
+    private static class FlippingMixin implements FlippingSkill {
         @Unique
         private int parcoolskill$skillTime;
 
@@ -15,10 +15,13 @@ public class FlipSkillMixin {
         private int parcoolskill$cooldown;
 
         @Unique
-        private Type parcoolskill$readyType = Type.NONE;
+        private boolean parcoolskill$attackReady;
 
         @Unique
         private int parcoolskill$invulnerableTime;
+
+        @Unique
+        private boolean parcoolskill$disableCrit;
 
         @Override
         public int parcoolskill$getSkillTime() {
@@ -41,13 +44,13 @@ public class FlipSkillMixin {
         }
 
         @Override
-        public Type parcoolskill$getReadyType() {
-            return parcoolskill$readyType;
+        public boolean parcoolskill$isAttackReady() {
+            return parcoolskill$attackReady;
         }
 
         @Override
-        public void parcoolskill$setReadyType(Type type) {
-            parcoolskill$readyType = type;
+        public void parcoolskill$setAttackReady(boolean attackReady) {
+            parcoolskill$attackReady = attackReady;
         }
 
         @Override
@@ -58,6 +61,16 @@ public class FlipSkillMixin {
         @Override
         public void parcoolskill$setInvulnerableTime(int invulnerableTime) {
             parcoolskill$invulnerableTime = invulnerableTime;
+        }
+
+        @Override
+        public boolean parcoolskill$disableCrit() {
+            return parcoolskill$disableCrit;
+        }
+
+        @Override
+        public void parcoolskill$setDisableCrit(boolean disableCrit) {
+            parcoolskill$disableCrit = disableCrit;
         }
     }
 }

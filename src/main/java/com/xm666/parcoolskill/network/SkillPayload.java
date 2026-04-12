@@ -28,7 +28,6 @@ public record SkillPayload(int skillType, int sourceEntity, int targetEntity) im
     public enum Type {
         DROPKICK,
         HEEL_HOOK,
-        FLIPPING_VAULT,
         CLEAVE_READY,
         CLEAVE_ATTACK
     }

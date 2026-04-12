@@ -11,8 +11,4 @@ public class DamageTypes {
             Registries.DAMAGE_TYPE,
             ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "slide_attack")
     );
-    public static final ResourceKey<DamageType> FLIP_ATTACK = ResourceKey.create(
-            Registries.DAMAGE_TYPE,
-            ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "flip_attack")
-    );
 }

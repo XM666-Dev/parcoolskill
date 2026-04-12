@@ -40,8 +40,8 @@ public class ParticleTypes {
             () -> new SimpleParticleType(false)
     );
 
-    public static final int IRONCLAD_COLOR = 0xBF3030;
-    public static final int SILENT_COLOR = 0x30BF30;
+    public static final int IRONCLAD_COLOR = 0xBF4D4D;
+    public static final int SILENT_COLOR = 0x4DBF4D;
 
     public ParticleTypes(IEventBus modEventBus) {
         PARTICLE_TYPES.register(modEventBus);
