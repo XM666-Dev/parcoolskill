@@ -91,6 +91,7 @@ config="${mod_id}.mixins.json"
 [[dependencies.${mod_id}]]
     modId="parcool"
     type="required"
+    versionRange="[3.4.3.3,)"
     ordering="NONE"
     side="BOTH"
 
