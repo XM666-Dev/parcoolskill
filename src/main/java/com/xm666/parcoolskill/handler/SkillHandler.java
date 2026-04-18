@@ -100,7 +100,7 @@ public class SkillHandler {
         return attribute.value().sanitizeValue(value);
     }
 
-    public static double getEntityHitRange(Entity shooter, double distance) {
+    public static double getEntityPickRange(Entity shooter, double distance) {
         var partialTick = TimeScaleHandler.getOriginalPartialTick(true);
         var hitResult = shooter.pick(distance, partialTick, false);
         if (hitResult.getType() != HitResult.Type.MISS) {

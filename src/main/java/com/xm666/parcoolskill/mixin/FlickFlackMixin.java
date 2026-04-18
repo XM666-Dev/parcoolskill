@@ -40,7 +40,7 @@ public class FlickFlackMixin {
         private void onApplyTransform(AbstractClientPlayer player, float partialTicks, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
             var flipping = Parkourability.get(player).get(Flipping.class);
             var flippingSkill = (FlippingSkill) flipping;
-            if (!flippingSkill.parcoolskill$isAttackReady()) return;
+            if (!flippingSkill.parcoolskill$isAttackReady() || !Config.FLICK_FLACK_ANIMATION_ENABLED.get()) return;
 
             poseStack.translate(-0.25F, 0.35F, 0.05F);
             poseStack.mulPose(Axis.XP.rotationDegrees(-55.0F));
