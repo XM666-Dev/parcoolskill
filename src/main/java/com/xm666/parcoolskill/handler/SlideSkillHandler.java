@@ -1,6 +1,5 @@
 package com.xm666.parcoolskill.handler;
 
-import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.BehaviorEnforcer;
 import com.alrex.parcool.common.action.impl.CatLeap;
@@ -52,8 +51,7 @@ public class SlideSkillHandler {
             if (!leapSkill.parcoolskill$isAttackReady()) return;
 
             var dropkickStaminaConsumption = Config.DROPKICK_STAMINA_CONSUMPTION.get();
-            var stamina = Stamina.get(player);
-            stamina.consume(dropkickStaminaConsumption);
+            StaminaHandler.consume(player, dropkickStaminaConsumption);
 
             readyType = SlideSkill.Type.DROPKICK;
             player.setDeltaMovement(player.getDeltaMovement().add(0.0, 0.2, 0.0));
@@ -64,8 +62,7 @@ public class SlideSkillHandler {
                 if (!dodgeSkill.parcoolskill$isAttackReady() || !Config.HEEL_HOOK_ENABLED.get()) return;
 
                 var heelHookStaminaConsumption = Config.HEEL_HOOK_STAMINA_CONSUMPTION.get();
-                var stamina = Stamina.get(player);
-                stamina.consume(heelHookStaminaConsumption);
+                StaminaHandler.consume(player, heelHookStaminaConsumption);
 
                 readyType = SlideSkill.Type.HEEL_HOOK;
                 if (!parkourability.getClientInfo().get(ParCoolConfig.Client.Booleans.CanGetOffStepsWhileDodge)) {

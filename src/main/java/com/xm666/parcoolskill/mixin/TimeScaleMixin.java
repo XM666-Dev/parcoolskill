@@ -45,6 +45,16 @@ public class TimeScaleMixin {
         }
     }
 
+    @Mixin(LivingEntity.class)
+    private static class LivingEntityMixin {
+        @WrapWithCondition(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;travel(Lnet/minecraft/world/phys/Vec3;)V"))
+        private boolean wrapTravel(LivingEntity instance, Vec3 travelVector) {
+            var timer = instance.level().isClientSide ? TimeScaleHandler.clientTimer : TimeScaleHandler.serverTimer;
+            return timer.runsTraveling(instance);
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
     @Mixin(DeltaTracker.Timer.class)
     private static class DeltaTrackerTimerMixin {
         @ModifyReturnValue(method = "getGameTimeDeltaPartialTick", at = @At(value = "RETURN", ordinal = 1))
@@ -56,6 +66,7 @@ public class TimeScaleMixin {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Mixin(Minecraft.class)
     private static class MinecraftMixin {
         @WrapOperation(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isLevelRunningNormally()Z"))
@@ -68,6 +79,7 @@ public class TimeScaleMixin {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Mixin(GameRenderer.class)
     private static class GameRendererMixin {
         @Shadow
@@ -104,6 +116,7 @@ public class TimeScaleMixin {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Mixin(Camera.class)
     private static class CameraMixin {
         @Inject(method = "setup", at = @At("HEAD"))
@@ -120,6 +133,7 @@ public class TimeScaleMixin {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Mixin(LevelRenderer.class)
     private static class LevelRendererMixin {
         @WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/TickRateManager;isEntityFrozen(Lnet/minecraft/world/entity/Entity;)Z"))
@@ -148,6 +162,7 @@ public class TimeScaleMixin {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Mixin(EntityRenderDispatcher.class)
     private static class EntityRenderDispatcherMixin {
         @ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/EntityRenderDispatcher;renderShadow(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/entity/Entity;FFLnet/minecraft/world/level/LevelReader;F)V"), index = 4)
@@ -155,15 +170,6 @@ public class TimeScaleMixin {
             return TimeScaleHandler.isPlayerEntityFrozen(entity)
                     ? TimeScaleHandler.getDefaultPartialTick(!TimeScaleHandler.isOriginalEntityFrozen(entity))
                     : partialTick;
-        }
-    }
-
-    @Mixin(LivingEntity.class)
-    private static class LivingEntityMixin {
-        @WrapWithCondition(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;travel(Lnet/minecraft/world/phys/Vec3;)V"))
-        private boolean wrapTravel(LivingEntity instance, Vec3 travelVector) {
-            var timer = instance.level().isClientSide ? TimeScaleHandler.clientTimer : TimeScaleHandler.serverTimer;
-            return timer.runsTraveling(instance);
         }
     }
 
@@ -212,6 +218,7 @@ public class TimeScaleMixin {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Mixin(LivingEntityRenderer.class)
     private static class LivingEntityRendererMixin {
         @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/WalkAnimationState;speed(F)F"))

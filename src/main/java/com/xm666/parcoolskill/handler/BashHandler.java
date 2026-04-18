@@ -1,7 +1,7 @@
 package com.xm666.parcoolskill.handler;
 
-import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
+import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.Config;
@@ -33,15 +33,18 @@ public class BashHandler {
     @SubscribeEvent
     public static void onPlayerAttack(PlayerAttackEvent.Post event) {
         var player = event.getEntity();
-        var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
+        var parkourability = Parkourability.get(player);
+        var catleap = parkourability.get(CatLeap.class);
+        if (catleap.isDoing()) return;
+
+        var jumpSkill = (JumpSkill) parkourability.get(ChargeJump.class);
         if (!jumpSkill.parcoolskill$isAttackReady()) return;
         jumpSkill.parcoolskill$setAttackReady(false);
 
         if (!event.isVanillaCritical()) return;
 
         var bashStaminaConsumption = Config.BASH_STAMINA_CONSUMPTION.get();
-        var stamina = Stamina.get(player);
-        stamina.consume(bashStaminaConsumption);
+        StaminaHandler.consume(player, bashStaminaConsumption);
 
         var target = event.getTarget();
         if (target instanceof LivingEntity living) {

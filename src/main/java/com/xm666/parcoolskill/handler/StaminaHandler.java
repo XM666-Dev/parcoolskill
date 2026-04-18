@@ -22,11 +22,15 @@ public class StaminaHandler {
     }
 
     public static void consume(Player player, int value) {
-        PacketDistributor.sendToPlayer((ServerPlayer) player, new StaminaPayload(-value));
+        if (!(player instanceof ServerPlayer serverPlayer)) return;
+
+        PacketDistributor.sendToPlayer(serverPlayer, new StaminaPayload(-value));
     }
 
     public static void recover(Player player, int value) {
-        PacketDistributor.sendToPlayer((ServerPlayer) player, new StaminaPayload(value));
+        if (!(player instanceof ServerPlayer serverPlayer)) return;
+
+        PacketDistributor.sendToPlayer(serverPlayer, new StaminaPayload(value));
     }
 
     public static int getConsumptionOf(Player player, Class<? extends Action> action) {

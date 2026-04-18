@@ -94,6 +94,7 @@ public class JumpSkillMixin {
             return 1.0 / ChargeJump.JUMP_MAX_CHARGE_TICK;
         }
 
+        @OnlyIn(Dist.CLIENT)
         @Definition(id = "keySneak", field = "Lcom/alrex/parcool/client/input/KeyRecorder;keySneak:Lcom/alrex/parcool/client/input/KeyRecorder$KeyState;")
         @Definition(id = "getPreviousTickNotKeyDown", method = "Lcom/alrex/parcool/client/input/KeyRecorder$KeyState;getPreviousTickNotKeyDown()I")
         @Expression("keySneak.getPreviousTickNotKeyDown() > 5")

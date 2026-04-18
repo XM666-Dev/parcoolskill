@@ -33,13 +33,13 @@ public class Config {
             .defineInRange("wild_strike_stamina_consumption", 50, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue SNEAKY_STRIKE_STAMINA_CONSUMPTION = BUILDER
-            .defineInRange("sneaky_strike_stamina_consumption", 420, 0, Integer.MAX_VALUE);
+            .defineInRange("sneaky_strike_stamina_consumption", 400, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue DROPKICK_STAMINA_CONSUMPTION = BUILDER
             .defineInRange("dropkick_stamina_consumption", 50, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue HEEL_HOOK_STAMINA_CONSUMPTION = BUILDER
-            .defineInRange("heel_hook_stamina_consumption", 170, 0, Integer.MAX_VALUE);
+            .defineInRange("heel_hook_stamina_consumption", 150, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue BASH_STAMINA_CONSUMPTION = BUILDER
             .defineInRange("bash_stamina_consumption", 400, 0, Integer.MAX_VALUE);
@@ -51,7 +51,7 @@ public class Config {
             .defineInRange("cleave_stamina_consumption", 500, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue FLICK_FLACK_STAMINA_CONSUMPTION = BUILDER
-            .defineInRange("flick_flack_stamina_consumption", 320, 0, Integer.MAX_VALUE);
+            .defineInRange("flick_flack_stamina_consumption", 300, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue WILD_STRIKE_DAMAGE_MULTIPLIER = BUILDER
             .defineInRange("wild_strike_damage_multiplier", 2.0, 0.0, Double.MAX_VALUE);

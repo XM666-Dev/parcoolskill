@@ -2,6 +2,7 @@ package com.xm666.parcoolskill.handler;
 
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.Dodge;
+import com.alrex.parcool.common.action.impl.Flipping;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.xm666.parcoolskill.Config;
@@ -67,8 +68,12 @@ public class DodgeSkillHandler {
     @SubscribeEvent
     public static void onPlayerAttack(PlayerAttackEvent.Pre event) {
         var player = event.getEntity();
-        var dodgeSkill = (DodgeSkill) Parkourability.get(player).get(Dodge.class);
+        var parkourability = Parkourability.get(player);
+        var dodgeSkill = (DodgeSkill) parkourability.get(Dodge.class);
         dodgeSkill.parcoolskill$setAttackReady(false);
+
+        var flipping = parkourability.get(Flipping.class);
+        if (flipping.isDoing()) return;
 
         if (dodgeSkill.parcoolskill$getAttackReadyTime() == 0) return;
         dodgeSkill.parcoolskill$setAttackReadyTime(0);

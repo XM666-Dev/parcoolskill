@@ -7,6 +7,8 @@ import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.SlideSkill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.EntityHitResult;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,6 +44,7 @@ public class SlideSkillMixin {
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Mixin(Minecraft.class)
     private static class MinecraftMixin {
         @Inject(method = "handleKeybinds", at = @At("HEAD"))

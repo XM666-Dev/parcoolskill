@@ -1,7 +1,6 @@
 package com.xm666.parcoolskill.handler;
 
 import com.alrex.parcool.api.SoundEvents;
-import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.Dodge;
 import com.alrex.parcool.common.action.impl.Flipping;
@@ -36,8 +35,7 @@ public class FlickFlackHandler {
         if (!dodge.isDoing()) return;
 
         var flickFlackStaminaConsumption = Config.FLICK_FLACK_STAMINA_CONSUMPTION.get();
-        var stamina = Stamina.get(player);
-        stamina.consume(flickFlackStaminaConsumption);
+        StaminaHandler.consume(player, flickFlackStaminaConsumption);
 
         flippingSkill.parcoolskill$setAttackReady(true);
         flippingSkill.parcoolskill$setInvulnerableTime(20);
@@ -45,7 +43,7 @@ public class FlickFlackHandler {
         var movement = player.getDeltaMovement();
         player.setDeltaMovement(movement.x, movement.y * 1.625, movement.z);
 
-        if (!ParCoolConfig.Client.Booleans.EnableActionSounds.get()) return;
+        if (!player.isLocalPlayer() || !ParCoolConfig.Client.Booleans.EnableActionSounds.get()) return;
         player.playSound(SoundEvents.VAULT.get(), 1.0F, 1.0F);
     }
 

@@ -1,6 +1,5 @@
 package com.xm666.parcoolskill.handler;
 
-import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.attachment.common.Parkourability;
@@ -49,8 +48,7 @@ public class LeapSkillHandler {
         if (!event.isFullStrength()) return;
 
         var wildStrikeStaminaConsumption = Config.WILD_STRIKE_STAMINA_CONSUMPTION.get();
-        var stamina = Stamina.get(player);
-        stamina.consume(wildStrikeStaminaConsumption);
+        StaminaHandler.consume(player, wildStrikeStaminaConsumption);
 
         var wildStrikeDamageMultiplier = Config.WILD_STRIKE_DAMAGE_MULTIPLIER.get().floatValue();
         var wildStrikeParryDuration = Config.WILD_STRIKE_PARRY_DURATION.get();

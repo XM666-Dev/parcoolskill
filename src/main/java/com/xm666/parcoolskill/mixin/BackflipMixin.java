@@ -90,12 +90,14 @@ public class BackflipMixin {
         }
 
         @SuppressWarnings("AddedMixinMembersNamePattern")
+        @OnlyIn(Dist.CLIENT)
         @Unique
         public boolean wantsToShowStatusBar(LocalPlayer player, Parkourability parkourability) {
             return ((FlippingSkill) this).parcoolskill$getCooldown() > 0;
         }
 
         @SuppressWarnings("AddedMixinMembersNamePattern")
+        @OnlyIn(Dist.CLIENT)
         @Unique
         public float getStatusValue(LocalPlayer player, Parkourability parkourability) {
             var backflipSkillCooldown = Config.BACKFLIP_SKILL_COOLDOWN.get();

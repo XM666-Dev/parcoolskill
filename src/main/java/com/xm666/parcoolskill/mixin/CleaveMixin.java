@@ -32,6 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+@OnlyIn(Dist.CLIENT)
 public class CleaveMixin {
     @Mixin(Minecraft.class)
     private static class MinecraftMixin {
@@ -94,7 +95,6 @@ public class CleaveMixin {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Mixin(ChargeJump.class)
     private static class ChargeJumpMixin {
         @Inject(method = "onClientTick", at = @At(value = "FIELD", target = "Lcom/alrex/parcool/common/action/impl/ChargeJump;chargeTick:I", ordinal = 1, opcode = Opcodes.PUTFIELD))

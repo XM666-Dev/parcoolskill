@@ -1,6 +1,5 @@
 package com.xm666.parcoolskill.handler;
 
-import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.Flipping;
 import com.alrex.parcool.common.attachment.common.Parkourability;
@@ -91,8 +90,7 @@ public class BackflipHandler {
 
     public static void onStart(Player player, FlippingSkill flippingSkill) {
         var backflipStaminaConsumption = Config.BACKFLIP_STAMINA_CONSUMPTION.get();
-        var stamina = Stamina.get(player);
-        stamina.consume(backflipStaminaConsumption);
+        StaminaHandler.consume(player, backflipStaminaConsumption);
 
         var backflipSkillDuration = Config.BACKFLIP_SKILL_DURATION.get();
         var backflipSkillCooldown = Config.BACKFLIP_SKILL_COOLDOWN.get();
