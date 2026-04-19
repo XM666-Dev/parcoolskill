@@ -11,9 +11,12 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.xm666.parcoolskill.Config;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+@OnlyIn(Dist.CLIENT)
 public class DropkickMixin {
     @Mixin(Slide.class)
     private static class SlideMixin {

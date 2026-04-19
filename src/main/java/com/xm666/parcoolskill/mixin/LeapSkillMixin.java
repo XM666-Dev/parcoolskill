@@ -11,6 +11,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,6 +45,7 @@ public class LeapSkillMixin {
             parcoolskill$parryTime = parryTime;
         }
 
+        @OnlyIn(Dist.CLIENT)
         @Definition(id = "coolTimeTick", field = "Lcom/alrex/parcool/common/action/impl/CatLeap;coolTimeTick:I")
         @Expression("this.coolTimeTick <= 0")
         @WrapOperation(method = "canStart", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 0))

@@ -18,6 +18,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -73,10 +74,12 @@ public class CleaveMixin {
 
             var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
             var jumpSkill = (JumpSkill) jump;
-            poseStack.translate(-0.1392841F, 0.091721935F, 0.078657655F);
+            var arm = hand == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
+            var direction = arm == HumanoidArm.RIGHT ? 1 : -1;
+            poseStack.translate(direction * -0.1392841F, 0.091721935F, 0.078657655F);
             poseStack.mulPose(Axis.XP.rotationDegrees(-13.935F));
-            poseStack.mulPose(Axis.YP.rotationDegrees(35.3F));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(-9.785F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(direction * 35.3F));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(direction * -9.785F));
             var progressTicks = jump.getChargingTick() + (partialTicks - 1.0F) * (jump.getNotChargingTick() == 0 ? 1.0F : -1.0F);
             var progressAmount = progressTicks / cleaveChargeDuration;
             progressAmount = (progressAmount * progressAmount + progressAmount * 2.0F) / 3.0F;
@@ -91,7 +94,7 @@ public class CleaveMixin {
             }
             poseStack.translate(0.0F, 0.0F, progressAmount * 0.04F);
             poseStack.scale(1.0F, 1.0F, 1.0F + progressAmount * 0.2F);
-            poseStack.mulPose(Axis.YN.rotationDegrees(45.0F));
+            poseStack.mulPose(Axis.YN.rotationDegrees(direction * 45.0F));
         }
     }
 

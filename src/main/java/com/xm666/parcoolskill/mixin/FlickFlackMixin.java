@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.api.distmarker.Dist;
@@ -45,10 +46,12 @@ public class FlickFlackMixin {
             var flippingSkill = (FlippingSkill) flipping;
             if (!flippingSkill.parcoolskill$isAttackReady() || !Config.FLICK_FLACK_ANIMATION_ENABLED.get()) return;
 
-            poseStack.translate(-0.25F, 0.35F, 0.05F);
+            var arm = hand == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
+            var direction = arm == HumanoidArm.RIGHT ? 1 : -1;
+            poseStack.translate(direction * -0.25F, 0.35F, 0.05F);
             poseStack.mulPose(Axis.XP.rotationDegrees(-55.0F));
-            poseStack.mulPose(Axis.YP.rotationDegrees(35.3F));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(-9.785F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(direction * 35.3F));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(direction * -9.785F));
             var progressTicks = flipping.getDoingTick() + partialTicks - 1.0F;
             var progressAmount = progressTicks / 10.0F;
             if (progressAmount > 1.0F) {
@@ -62,7 +65,7 @@ public class FlickFlackMixin {
             }
             poseStack.translate(0.0F, 0.0F, progressAmount * 0.2F);
             poseStack.scale(1.0F, 1.0F, 1.0F + progressAmount * 0.2F);
-            poseStack.mulPose(Axis.YN.rotationDegrees(45.0F));
+            poseStack.mulPose(Axis.YN.rotationDegrees(direction * 45.0F));
         }
     }
 }

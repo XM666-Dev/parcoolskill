@@ -2,6 +2,7 @@ package com.xm666.parcoolskill.handler;
 
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.CatLeap;
+import com.alrex.parcool.common.action.impl.Flipping;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
@@ -13,6 +14,17 @@ import net.neoforged.fml.common.EventBusSubscriber;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class LeapSkillHandler {
+    @SubscribeEvent
+    public static void onLeapTryToStart(ParCoolActionEvent.TryToStart event) {
+        if (!(event.getAction() instanceof CatLeap)) return;
+
+        var player = event.getPlayer();
+        var parkourability = Parkourability.get(player);
+        if (!parkourability.get(Flipping.class).isDoing()) return;
+
+        event.setCanceled(true);
+    }
+
     @SubscribeEvent
     public static void onLeapStart(ParCoolActionEvent.Start.Pre event) {
         if (!(event.getAction() instanceof LeapSkill leapSkill) || !Config.WILD_STRIKE_ENABLED.get()) return;

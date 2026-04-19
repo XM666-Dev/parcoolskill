@@ -34,9 +34,6 @@ public class FlickFlackHandler {
         var dodge = parkourability.get(Dodge.class);
         if (!dodge.isDoing()) return;
 
-        var flickFlackStaminaConsumption = Config.FLICK_FLACK_STAMINA_CONSUMPTION.get();
-        StaminaHandler.consume(player, flickFlackStaminaConsumption);
-
         flippingSkill.parcoolskill$setAttackReady(true);
         flippingSkill.parcoolskill$setInvulnerableTime(20);
 
@@ -87,6 +84,9 @@ public class FlickFlackHandler {
             }
             return;
         }
+
+        var flickFlackStaminaConsumption = Config.FLICK_FLACK_STAMINA_CONSUMPTION.get();
+        StaminaHandler.consume(player, flickFlackStaminaConsumption);
 
         var flickFlackNeutralizedDuration = Config.FLICK_FLACK_NEUTRALIZED_DURATION.get();
         var target = event.getTarget();

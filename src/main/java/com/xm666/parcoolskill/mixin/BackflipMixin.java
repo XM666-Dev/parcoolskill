@@ -4,6 +4,7 @@ import com.alrex.parcool.api.SoundEvents;
 import com.alrex.parcool.client.animation.PlayerModelRotator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
 import com.alrex.parcool.common.action.ActionProcessor;
+import com.alrex.parcool.common.action.impl.Dodge;
 import com.alrex.parcool.common.action.impl.Flipping;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
@@ -40,14 +41,15 @@ import java.nio.ByteBuffer;
 public class BackflipMixin {
     @Mixin(Flipping.class)
     private static class FlippingMixin {
+        @OnlyIn(Dist.CLIENT)
         @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isShiftKeyDown()Z"))
-        private boolean modifyShiftKeyDown(boolean original, @Local(name = "fDirection") Flipping.Direction fDirection, @Local(argsOnly = true) ByteBuffer startInfo) {
+        private boolean modifyShiftKeyDown(boolean original, @Local(argsOnly = true) ByteBuffer startInfo, @Local(name = "fDirection") Flipping.Direction fDirection, @Local(argsOnly = true) Parkourability parkourability) {
             if (!original) {
                 startInfo.putInt(0);
                 return false;
             }
 
-            if (fDirection != Flipping.Direction.Back || ((FlippingSkill) this).parcoolskill$getCooldown() > 0 || !Config.BACKFLIP_ENABLED.get()) {
+            if (fDirection != Flipping.Direction.Back || ((FlippingSkill) this).parcoolskill$getCooldown() > 0 || parkourability.get(Dodge.class).isDoing() || !Config.BACKFLIP_ENABLED.get()) {
                 startInfo.putInt(0);
                 return true;
             }
@@ -56,6 +58,7 @@ public class BackflipMixin {
             return false;
         }
 
+        @OnlyIn(Dist.CLIENT)
         @Inject(method = "onStartInLocalClient", at = @At("TAIL"))
         private void onStartInLocal(Player player, Parkourability parkourability, ByteBuffer startInfo, CallbackInfo ci) {
             if (!BackflipHandler.canStart(startInfo)) return;
@@ -67,6 +70,7 @@ public class BackflipMixin {
             player.playSound(SoundEvents.CHARGE_JUMP.get(), 1.0F, 1.0F);
         }
 
+        @OnlyIn(Dist.CLIENT)
         @Inject(method = "onStartInOtherClient", at = @At("TAIL"))
         private void onStartInOther(Player player, Parkourability parkourability, ByteBuffer startInfo, CallbackInfo ci) {
             if (!BackflipHandler.canStart(startInfo) || !ParCoolConfig.Client.Booleans.EnableActionSounds.get())

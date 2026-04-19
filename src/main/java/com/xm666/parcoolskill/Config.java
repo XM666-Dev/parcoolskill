@@ -45,7 +45,7 @@ public class Config {
             .defineInRange("bash_stamina_consumption", 400, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue BACKFLIP_STAMINA_CONSUMPTION = BUILDER
-            .defineInRange("backflip_stamina_consumption", 150, 0, Integer.MAX_VALUE);
+            .defineInRange("backflip_stamina_consumption", 400, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue CLEAVE_STAMINA_CONSUMPTION = BUILDER
             .defineInRange("cleave_stamina_consumption", 500, 0, Integer.MAX_VALUE);

@@ -50,9 +50,6 @@ public class SlideSkillHandler {
             var leapSkill = (LeapSkill) catleap;
             if (!leapSkill.parcoolskill$isAttackReady()) return;
 
-            var dropkickStaminaConsumption = Config.DROPKICK_STAMINA_CONSUMPTION.get();
-            StaminaHandler.consume(player, dropkickStaminaConsumption);
-
             readyType = SlideSkill.Type.DROPKICK;
             player.setDeltaMovement(player.getDeltaMovement().add(0.0, 0.2, 0.0));
         } else {
@@ -60,9 +57,6 @@ public class SlideSkillHandler {
             if (dodge.isDoing()) {
                 var dodgeSkill = (DodgeSkill) dodge;
                 if (!dodgeSkill.parcoolskill$isAttackReady() || !Config.HEEL_HOOK_ENABLED.get()) return;
-
-                var heelHookStaminaConsumption = Config.HEEL_HOOK_STAMINA_CONSUMPTION.get();
-                StaminaHandler.consume(player, heelHookStaminaConsumption);
 
                 readyType = SlideSkill.Type.HEEL_HOOK;
                 if (!parkourability.getClientInfo().get(ParCoolConfig.Client.Booleans.CanGetOffStepsWhileDodge)) {
@@ -124,6 +118,12 @@ public class SlideSkillHandler {
 
         var aabb = target.getBoundingBox();
         if (!player.canInteractWithEntity(aabb, 1.0)) return;
+
+        StaminaHandler.consume(player, switch (type) {
+            case DROPKICK -> Config.DROPKICK_STAMINA_CONSUMPTION.get();
+            case HEEL_HOOK -> Config.HEEL_HOOK_STAMINA_CONSUMPTION.get();
+            default -> 0;
+        });
 
         var slideSkillDamageHealthGrowth = Config.SLIDE_SKILL_DAMAGE_HEALTH_GROWTH.get();
         var level = target.level();

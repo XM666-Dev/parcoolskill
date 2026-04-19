@@ -3,6 +3,7 @@ package com.xm666.parcoolskill.handler;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.action.impl.ChargeJump;
+import com.alrex.parcool.common.action.impl.Flipping;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
@@ -34,8 +35,7 @@ public class BashHandler {
     public static void onPlayerAttack(PlayerAttackEvent.Post event) {
         var player = event.getEntity();
         var parkourability = Parkourability.get(player);
-        var catleap = parkourability.get(CatLeap.class);
-        if (catleap.isDoing()) return;
+        if (parkourability.get(CatLeap.class).isDoing() || parkourability.get(Flipping.class).isDoing()) return;
 
         var jumpSkill = (JumpSkill) parkourability.get(ChargeJump.class);
         if (!jumpSkill.parcoolskill$isAttackReady()) return;

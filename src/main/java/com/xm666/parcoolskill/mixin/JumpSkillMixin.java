@@ -1,12 +1,15 @@
 package com.xm666.parcoolskill.mixin;
 
+import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.action.impl.ChargeJump;
+import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.llamalad7.mixinextras.expression.Definition;
 import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
@@ -89,9 +92,10 @@ public class JumpSkillMixin {
             return true;
         }
 
+        @OnlyIn(Dist.CLIENT)
         @ModifyConstant(method = "onJump", constant = @Constant(doubleValue = 0.5))
-        public double modifyJumpThreshold(double constant) {
-            return 1.0 / ChargeJump.JUMP_MAX_CHARGE_TICK;
+        public double modifyJumpThreshold(double constant, Player player, Parkourability parkourability) {
+            return parkourability.get(CatLeap.class).isDoing() ? constant : 1.0 / ChargeJump.JUMP_MAX_CHARGE_TICK;
         }
 
         @OnlyIn(Dist.CLIENT)

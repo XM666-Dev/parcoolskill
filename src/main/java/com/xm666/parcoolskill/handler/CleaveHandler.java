@@ -105,16 +105,17 @@ public class CleaveHandler {
     }
 
     public static void handleReady(Player player) {
+        var cleaveStaminaConsumption = Config.CLEAVE_STAMINA_CONSUMPTION.get();
+        StaminaHandler.consume(player, cleaveStaminaConsumption);
+
         var cleaveAttackDuration = Config.CLEAVE_ATTACK_DURATION.get();
         var cleaveBulletTimeScale = Config.CLEAVE_BULLET_TIME_SCALE.get().floatValue();
         var cleaveBulletTimeDuration = Config.CLEAVE_BULLET_TIME_DURATION.get();
-        var cleaveStaminaConsumption = Config.CLEAVE_STAMINA_CONSUMPTION.get();
         var jump = Parkourability.get(player).get(ChargeJump.class);
         var jumpSkill = (JumpSkill) jump;
         jumpSkill.parcoolskill$setAttackTime(cleaveAttackDuration);
         jumpSkill.parcoolskill$clearEntityHits();
         TimeScaleHandler.applyScale(player, cleaveBulletTimeScale, cleaveBulletTimeDuration);
-        StaminaHandler.consume(player, cleaveStaminaConsumption);
     }
 
     public static void handleAttack(Player player, Entity target) {

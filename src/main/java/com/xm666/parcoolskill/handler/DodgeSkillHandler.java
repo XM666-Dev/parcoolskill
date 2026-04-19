@@ -1,6 +1,9 @@
 package com.xm666.parcoolskill.handler;
 
+import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
+import com.alrex.parcool.common.action.impl.CatLeap;
+import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.action.impl.Dodge;
 import com.alrex.parcool.common.action.impl.Flipping;
 import com.alrex.parcool.common.attachment.common.Parkourability;
@@ -64,7 +67,6 @@ public class DodgeSkillHandler {
         dodgeSkill.parcoolskill$setAttackReadyTime(sneakyStrikeReadyDuration);
     }
 
-    @SuppressWarnings("WrapperTypeMayBePrimitive")
     @SubscribeEvent
     public static void onPlayerAttack(PlayerAttackEvent.Pre event) {
         var player = event.getEntity();
@@ -72,8 +74,14 @@ public class DodgeSkillHandler {
         var dodgeSkill = (DodgeSkill) parkourability.get(Dodge.class);
         dodgeSkill.parcoolskill$setAttackReady(false);
 
-        var flipping = parkourability.get(Flipping.class);
-        if (flipping.isDoing()) return;
+        if (parkourability.get(CatLeap.class).isDoing() || parkourability.get(ChargeJump.class).isDoing() || parkourability.get(Flipping.class).isDoing() || CleaveHandler.isReadyForAttack(player))
+            return;
+
+        if (CleaveHandler.hasCorrectWeapon(player)) {
+            var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
+            var jump = parkourability.get(ChargeJump.class);
+            if (jump.getChargingTick() >= cleaveChargeDuration) return;
+        }
 
         if (dodgeSkill.parcoolskill$getAttackReadyTime() == 0) return;
         dodgeSkill.parcoolskill$setAttackReadyTime(0);
@@ -81,8 +89,8 @@ public class DodgeSkillHandler {
         if (!event.isFullStrength()) return;
 
         var sneakyStrikeStaminaConsumption = Config.SNEAKY_STRIKE_STAMINA_CONSUMPTION.get();
-        StaminaHandler.consume(player, sneakyStrikeStaminaConsumption);
-        StaminaHandler.recover(player, StaminaHandler.getConsumptionOf(player, Dodge.class) + sneakyStrikeStaminaConsumption);
+        var stamina = Stamina.get(player);
+        if (stamina.getValue() < sneakyStrikeStaminaConsumption) return;
 
         var behind = false;
         var target = event.getTarget();
