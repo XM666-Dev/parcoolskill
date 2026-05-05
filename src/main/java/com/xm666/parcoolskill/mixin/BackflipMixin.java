@@ -49,7 +49,7 @@ public class BackflipMixin {
                 return false;
             }
 
-            if (fDirection != Flipping.Direction.Back || ((FlippingSkill) this).parcoolskill$getCooldown() > 0 || parkourability.get(Dodge.class).isDoing() || !Config.BACKFLIP_ENABLED.get()) {
+            if (!Config.BACKFLIP_ENABLED.get() || fDirection != Flipping.Direction.Back || ((FlippingSkill) this).parcoolskill$getCooldown() > 0 || parkourability.get(Dodge.class).isDoing()) {
                 startInfo.putInt(0);
                 return true;
             }
@@ -73,7 +73,7 @@ public class BackflipMixin {
         @OnlyIn(Dist.CLIENT)
         @Inject(method = "onStartInOtherClient", at = @At("TAIL"))
         private void onStartInOther(Player player, Parkourability parkourability, ByteBuffer startInfo, CallbackInfo ci) {
-            if (!BackflipHandler.canStart(startInfo) || !ParCoolConfig.Client.Booleans.EnableActionSounds.get())
+            if (!ParCoolConfig.Client.Booleans.EnableActionSounds.get() || !BackflipHandler.canStart(startInfo))
                 return;
 
             player.playSound(SoundEvents.CHARGE_JUMP.get(), 1.0F, 1.0F);

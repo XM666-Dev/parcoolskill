@@ -139,7 +139,9 @@ public class CleaveHandler {
     }
 
     public static boolean hasCorrectWeapon(Player player) {
+        if (!Config.CLEAVE_ENABLED.get()) return false;
+
         var weapon = player.getWeaponItem();
-        return weapon.canPerformAction(ItemAbilities.SWORD_SWEEP) && Config.CLEAVE_ENABLED.get();
+        return weapon.canPerformAction(ItemAbilities.SWORD_SWEEP);
     }
 }

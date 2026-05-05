@@ -32,9 +32,11 @@ public class FlickFlackMixin {
     private static class DodgeMixin {
         @ModifyArg(method = "onStartInLocalClient", at = @At(value = "INVOKE", target = "Lcom/alrex/parcool/common/action/BehaviorEnforcer;addMarkerCancellingJump(Lcom/alrex/parcool/common/action/BehaviorEnforcer$ID;Lcom/alrex/parcool/common/action/BehaviorEnforcer$Marker;)V"), index = 1)
         private BehaviorEnforcer.Marker modifyJumpCancelMarker(BehaviorEnforcer.Marker marker) {
+            if (!Config.FLICK_FLACK_ENABLED.get()) return marker;
+
             var control = ParCoolConfig.Client.getInstance().FlipControl.get();
             var mc = Minecraft.getInstance();
-            return () -> marker.remain() && !(control.isInputDone(false) && mc.hitResult instanceof EntityHitResult || !Config.FLICK_FLACK_ENABLED.get());
+            return () -> marker.remain() && !(mc.hitResult instanceof EntityHitResult && control.isInputDone(true));
         }
     }
 
@@ -42,9 +44,11 @@ public class FlickFlackMixin {
     private static class ItemInHandRendererMixin {
         @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;applyItemArmAttackTransform(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/entity/HumanoidArm;F)V", shift = At.Shift.AFTER, ordinal = 1))
         private void onApplyTransform(AbstractClientPlayer player, float partialTicks, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
+            if (!Config.FLICK_FLACK_ANIMATION_ENABLED.get()) return;
+
             var flipping = Parkourability.get(player).get(Flipping.class);
             var flippingSkill = (FlippingSkill) flipping;
-            if (!flippingSkill.parcoolskill$isAttackReady() || !Config.FLICK_FLACK_ANIMATION_ENABLED.get()) return;
+            if (!flippingSkill.parcoolskill$isAttackReady()) return;
 
             var arm = hand == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
             var direction = arm == HumanoidArm.RIGHT ? 1 : -1;

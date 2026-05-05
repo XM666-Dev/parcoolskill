@@ -52,16 +52,16 @@ public class SlideSkillHandler {
 
             readyType = SlideSkill.Type.DROPKICK;
             player.setDeltaMovement(player.getDeltaMovement().add(0.0, 0.2, 0.0));
-        } else {
+        } else if (Config.HEEL_HOOK_ENABLED.get()) {
             var dodge = parkourability.get(Dodge.class);
-            if (dodge.isDoing()) {
-                var dodgeSkill = (DodgeSkill) dodge;
-                if (!dodgeSkill.parcoolskill$isAttackReady() || !Config.HEEL_HOOK_ENABLED.get()) return;
+            if (!dodge.isDoing()) return;
 
-                readyType = SlideSkill.Type.HEEL_HOOK;
-                if (!parkourability.getClientInfo().get(ParCoolConfig.Client.Booleans.CanGetOffStepsWhileDodge)) {
-                    parkourability.getBehaviorEnforcer().addMarkerCancellingDescendFromEdge(ID_DESCEND_EDGE, slide::isDoing);
-                }
+            var dodgeSkill = (DodgeSkill) dodge;
+            if (!dodgeSkill.parcoolskill$isAttackReady()) return;
+
+            readyType = SlideSkill.Type.HEEL_HOOK;
+            if (!parkourability.getClientInfo().get(ParCoolConfig.Client.Booleans.CanGetOffStepsWhileDodge)) {
+                parkourability.getBehaviorEnforcer().addMarkerCancellingDescendFromEdge(ID_DESCEND_EDGE, slide::isDoing);
             }
         }
 

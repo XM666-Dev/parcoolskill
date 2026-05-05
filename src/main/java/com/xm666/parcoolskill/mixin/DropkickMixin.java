@@ -22,7 +22,7 @@ public class DropkickMixin {
     private static class SlideMixin {
         @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;onGround()Z"))
         private boolean modifyOnGround(boolean original, Player player) {
-            return original || Parkourability.get(player).get(CatLeap.class).isDoing() && Config.DROPKICK_ENABLED.get();
+            return original || Config.DROPKICK_ENABLED.get() && Parkourability.get(player).get(CatLeap.class).isDoing();
         }
 
         @WrapOperation(method = "canStart", at = @At(value = "INVOKE", target = "Lcom/alrex/parcool/common/action/impl/FastRun;getDashTick(Lcom/alrex/parcool/common/action/AdditionalProperties;)I"))

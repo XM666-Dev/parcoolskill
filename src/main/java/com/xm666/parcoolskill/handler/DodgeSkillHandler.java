@@ -52,7 +52,7 @@ public class DodgeSkillHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
-        if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR) || !Config.SNEAKY_STRIKE_ENABLED.get())
+        if (!Config.SNEAKY_STRIKE_ENABLED.get() || !(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
             return;
 
         var parkourability = Parkourability.get(player);

@@ -64,7 +64,7 @@ public class CleaveMixin {
     private static class ItemInHandRendererMixin {
         @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;applyItemArmAttackTransform(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/entity/HumanoidArm;F)V", shift = At.Shift.AFTER, ordinal = 1))
         private void onApplyTransform(AbstractClientPlayer player, float partialTicks, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
-            if (!CleaveHandler.hasCorrectWeapon(player) || !Config.CLEAVE_ANIMATION_ENABLED.get()) return;
+            if (!Config.CLEAVE_ANIMATION_ENABLED.get() || !CleaveHandler.hasCorrectWeapon(player)) return;
 
             var jump = Parkourability.get(player).get(ChargeJump.class);
             if (!jump.isCharging()) return;

@@ -7,14 +7,12 @@ import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.skill.FlippingSkill;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.phys.Vec2;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -22,6 +20,7 @@ import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class BackflipHandler {
@@ -63,8 +62,7 @@ public class BackflipHandler {
 
         var item = event.getItem();
         var usingTicks = item.getUseDuration(player) - duration;
-        var chargeDuration = getChargeDuration(item, player);
-        if (usingTicks < chargeDuration || releaseUsingItem) return;
+        if (getPowerForTime(usingTicks, item, player).orElse(0.0F) < 1.0F || releaseUsingItem) return;
 
         releaseUsingItem = true;
         player.useItemRemaining = duration;
@@ -103,21 +101,13 @@ public class BackflipHandler {
         player.setDeltaMovement(movementDirection.x, movement.y * 1.125, movementDirection.y);
     }
 
-    public static int getChargeDuration(ItemStack stack, LivingEntity shooter) {
-        switch (stack.getItem()) {
-            case BowItem ignored -> {
-                return 20;
-            }
-            case CrossbowItem ignored -> {
-                var f = EnchantmentHelper.modifyCrossbowChargingTime(stack, shooter, 1.25F);
-                return Mth.floor(f * 20.0F);
-            }
-            case TridentItem ignored -> {
-                return 10;
-            }
-            default -> {
-                return Integer.MAX_VALUE;
-            }
-        }
+    public static Optional<Float> getPowerForTime(int charge, ItemStack stack, LivingEntity shooter) {
+        return Optional.ofNullable(
+                switch (stack.getItem()) {
+                    case BowItem ignored -> BowItem.getPowerForTime(charge);
+                    case CrossbowItem ignored -> CrossbowItem.getPowerForTime(charge, stack, shooter);
+                    case TridentItem ignored -> charge / 10.0F;
+                    default -> null;
+                });
     }
 }
