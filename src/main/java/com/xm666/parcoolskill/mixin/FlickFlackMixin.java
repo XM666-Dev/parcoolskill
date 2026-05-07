@@ -12,7 +12,7 @@ import com.xm666.parcoolskill.skill.FlippingSkill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -42,8 +42,8 @@ public class FlickFlackMixin {
 
     @Mixin(ItemInHandRenderer.class)
     private static class ItemInHandRendererMixin {
-        @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;applyItemArmAttackTransform(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/entity/HumanoidArm;F)V", shift = At.Shift.AFTER, ordinal = 1))
-        private void onApplyTransform(AbstractClientPlayer player, float partialTicks, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
+        @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;swingArm(FLcom/mojang/blaze3d/vertex/PoseStack;ILnet/minecraft/world/entity/HumanoidArm;)V", shift = At.Shift.AFTER, ordinal = 2))
+        private void onSwingArm(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand, float swingProgress, ItemStack item, float equippedProgress, PoseStack poseStack, SubmitNodeCollector nodeCollector, int packedLight, CallbackInfo ci) {
             if (!Config.FLICK_FLACK_ANIMATION_ENABLED.get()) return;
 
             var flipping = Parkourability.get(player).get(Flipping.class);
@@ -56,13 +56,13 @@ public class FlickFlackMixin {
             poseStack.mulPose(Axis.XP.rotationDegrees(-55.0F));
             poseStack.mulPose(Axis.YP.rotationDegrees(direction * 35.3F));
             poseStack.mulPose(Axis.ZP.rotationDegrees(direction * -9.785F));
-            var progressTicks = flipping.getDoingTick() + partialTicks - 1.0F;
-            var progressAmount = progressTicks / 10.0F;
+            var progressTick = flipping.getDoingTick() + partialTick - 1.0F;
+            var progressAmount = progressTick / 10.0F;
             if (progressAmount > 1.0F) {
                 progressAmount = 1.0F;
             }
             if (progressAmount > 0.1F) {
-                var sinned = Mth.sin((progressTicks - 0.1F) * 1.3F);
+                var sinned = Mth.sin((progressTick - 0.1F) * 1.3F);
                 var offsetAmount = progressAmount - 0.1F;
                 var smoothAmount = sinned * offsetAmount;
                 poseStack.translate(0.0F, smoothAmount * 0.004F, 0.0F);

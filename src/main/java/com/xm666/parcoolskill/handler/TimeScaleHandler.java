@@ -76,7 +76,7 @@ public class TimeScaleHandler {
     }
 
     @SuppressWarnings("DataFlowIssue")
-    public static boolean isOriginalEntityFrozen(Entity entity) {
+    public static boolean isEntityOriginalFrozen(Entity entity) {
         var mc = Minecraft.getInstance();
 
         TimeScaleHandler.scaleRunNormally = false;
@@ -87,7 +87,7 @@ public class TimeScaleHandler {
     }
 
     @SuppressWarnings("DataFlowIssue")
-    public static boolean isDefaultEntityFrozen(Entity entity) {
+    public static boolean isEntityScalableFrozen(Entity entity) {
         var mc = Minecraft.getInstance();
 
         TimeScaleHandler.disableRunNormally = true;
@@ -98,7 +98,7 @@ public class TimeScaleHandler {
     }
 
     @SuppressWarnings("DataFlowIssue")
-    public static boolean isPlayerEntityFrozen(Entity entity) {
+    public static boolean isEntityAuthoritativeFrozen(Entity entity) {
         var mc = Minecraft.getInstance();
 
         TimeScaleHandler.disableRunNormally = true;
@@ -112,15 +112,15 @@ public class TimeScaleHandler {
         var mc = Minecraft.getInstance();
 
         TimeScaleHandler.scalePartialTick = false;
-        var partialTick = mc.getTimer().getGameTimeDeltaPartialTick(runsNormally);
+        var partialTick = mc.getDeltaTracker().getGameTimeDeltaPartialTick(runsNormally);
         TimeScaleHandler.scalePartialTick = true;
 
         return partialTick;
     }
 
-    public static float getDefaultPartialTick(boolean runsNormally) {
+    public static float getScalablePartialTick(boolean runsNormally) {
         var mc = Minecraft.getInstance();
 
-        return mc.getTimer().getGameTimeDeltaPartialTick(runsNormally);
+        return mc.getDeltaTracker().getGameTimeDeltaPartialTick(runsNormally);
     }
 }

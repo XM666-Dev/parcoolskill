@@ -58,7 +58,7 @@ public class BackflipHandler {
         var duration = event.getDuration() - 1;
         event.setDuration(duration);
 
-        if (player.level().isClientSide) return;
+        if (player.level().isClientSide()) return;
 
         var item = event.getItem();
         var usingTicks = item.getUseDuration(player) - duration;

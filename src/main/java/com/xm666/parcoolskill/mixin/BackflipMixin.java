@@ -123,10 +123,10 @@ public class BackflipMixin {
     }
 
     @OnlyIn(Dist.CLIENT)
-    @Mixin(ActionProcessor.class)
+    @Mixin(ActionProcessor.ClientActionProcessor.class)
     private static class ActionProcessorMixin {
         @WrapMethod(method = "onTick$doPreprocessInClient")
-        private void wrapAnimationTick(PlayerTickEvent event, Parkourability parkourability, Operation<Void> original) {
+        private static void wrapAnimationTick(PlayerTickEvent event, Parkourability parkourability, Operation<Void> original) {
             var player = event.getEntity();
             if (!TimeScaleHandler.clientTimer.runsTraveling(player)) return;
 
@@ -143,8 +143,8 @@ public class BackflipMixin {
 
         @ModifyReturnValue(method = "getPartialTick", at = @At("RETURN"))
         public float modifyPartialTick(float original) {
-            return TimeScaleHandler.isPlayerEntityFrozen(player)
-                    ? TimeScaleHandler.getDefaultPartialTick(!TimeScaleHandler.isOriginalEntityFrozen(player))
+            return TimeScaleHandler.isEntityAuthoritativeFrozen(player)
+                    ? TimeScaleHandler.getScalablePartialTick(!TimeScaleHandler.isEntityOriginalFrozen(player))
                     : original;
         }
     }
@@ -158,8 +158,8 @@ public class BackflipMixin {
 
         @ModifyReturnValue(method = "getPartialTick", at = @At("RETURN"))
         public float modifyPartialTick(float original) {
-            return TimeScaleHandler.isPlayerEntityFrozen(player)
-                    ? TimeScaleHandler.getDefaultPartialTick(!TimeScaleHandler.isOriginalEntityFrozen(player))
+            return TimeScaleHandler.isEntityAuthoritativeFrozen(player)
+                    ? TimeScaleHandler.getScalablePartialTick(!TimeScaleHandler.isEntityOriginalFrozen(player))
                     : original;
         }
     }
