@@ -125,14 +125,8 @@ public class Config {
     public static final ModConfigSpec.DoubleValue CLEAVE_PICK_RADIUS = BUILDER
             .defineInRange("cleave_pick_radius", 0.3, 0.0, Double.MAX_VALUE);
 
-    public static final ModConfigSpec.BooleanValue CLEAVE_ANIMATION_ENABLED = BUILDER
-            .define("cleave_animation_enabled", true);
-
     public static final ModConfigSpec.IntValue FLICK_FLACK_NEUTRALIZED_DURATION = BUILDER
             .defineInRange("flick_flack_neutralized_duration", 120, 0, Integer.MAX_VALUE);
-
-    public static final ModConfigSpec.BooleanValue FLICK_FLACK_ANIMATION_ENABLED = BUILDER
-            .define("flick_flack_animation_enabled", true);
 
     public static final ModConfigSpec.DoubleValue VULNERABLE_DAMAGE_MULTIPLIER_ADDITION = BUILDER
             .defineInRange("vulnerable_damage_multiplier_addition", 0.5, 0.0, Double.MAX_VALUE);

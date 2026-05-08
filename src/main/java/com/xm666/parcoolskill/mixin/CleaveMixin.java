@@ -5,6 +5,7 @@ import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.xm666.parcoolskill.ClientConfig;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.handler.CleaveHandler;
 import com.xm666.parcoolskill.handler.SkillHandler;
@@ -64,7 +65,7 @@ public class CleaveMixin {
     private static class ItemInHandRendererMixin {
         @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;swingArm(FLcom/mojang/blaze3d/vertex/PoseStack;ILnet/minecraft/world/entity/HumanoidArm;)V", shift = At.Shift.AFTER, ordinal = 2))
         private void onSwingArm(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand, float swingProgress, ItemStack item, float equippedProgress, PoseStack poseStack, SubmitNodeCollector nodeCollector, int packedLight, CallbackInfo ci) {
-            if (!Config.CLEAVE_ANIMATION_ENABLED.get() || !CleaveHandler.hasCorrectWeapon(player)) return;
+            if (!ClientConfig.CLEAVE_ANIMATION_ENABLED.get() || !CleaveHandler.hasCorrectWeapon(player)) return;
 
             var jump = Parkourability.get(player).get(ChargeJump.class);
             if (!jump.isCharging()) return;
