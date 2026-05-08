@@ -6,7 +6,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.NotNull;
 
 public record StaminaPayload(int value) implements CustomPacketPayload {
     public static final Type<StaminaPayload> TYPE = new Type<>(Identifier.fromNamespaceAndPath(ParCoolSkill.MODID, "stamina"));
@@ -17,7 +16,7 @@ public record StaminaPayload(int value) implements CustomPacketPayload {
     );
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
+    public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }
