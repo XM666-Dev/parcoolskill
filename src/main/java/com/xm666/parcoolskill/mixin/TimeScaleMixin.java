@@ -49,7 +49,7 @@ public class TimeScaleMixin {
     private static class LivingEntityMixin {
         @WrapWithCondition(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;travel(Lnet/minecraft/world/phys/Vec3;)V"))
         private boolean wrapTravel(LivingEntity instance, Vec3 travelVector) {
-            var timer = instance.level().isClientSide ? TimeScaleHandler.clientTimer : TimeScaleHandler.serverTimer;
+            var timer = instance.level().isClientSide() ? TimeScaleHandler.clientTimer : TimeScaleHandler.serverTimer;
             return timer.runsTraveling(instance);
         }
     }
