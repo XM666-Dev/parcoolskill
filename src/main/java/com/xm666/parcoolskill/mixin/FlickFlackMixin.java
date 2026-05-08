@@ -7,6 +7,7 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.xm666.parcoolskill.ClientConfig;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.skill.FlippingSkill;
 import net.minecraft.client.Minecraft;
@@ -44,7 +45,7 @@ public class FlickFlackMixin {
     private static class ItemInHandRendererMixin {
         @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;applyItemArmAttackTransform(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/entity/HumanoidArm;F)V", shift = At.Shift.AFTER, ordinal = 1))
         private void onApplyTransform(AbstractClientPlayer player, float partialTicks, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
-            if (!Config.FLICK_FLACK_ANIMATION_ENABLED.get()) return;
+            if (!ClientConfig.FLICK_FLACK_ANIMATION_ENABLED.get()) return;
 
             var flipping = Parkourability.get(player).get(Flipping.class);
             var flippingSkill = (FlippingSkill) flipping;

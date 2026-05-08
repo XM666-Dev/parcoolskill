@@ -11,7 +11,7 @@ public class ParCoolSkill {
     public static final String MODID = "parcoolskill";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public ParCoolSkill(ModContainer modContainer) {
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    public ParCoolSkill(ModContainer container) {
+        container.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 }

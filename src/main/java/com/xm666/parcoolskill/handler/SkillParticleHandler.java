@@ -1,5 +1,6 @@
 package com.xm666.parcoolskill.handler;
 
+import com.xm666.parcoolskill.ClientConfig;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.particle.ParticleTypes;
 import net.minecraft.client.Minecraft;
@@ -9,6 +10,8 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class SkillParticleHandler {
     public static void handlePayload(final SkillParticlePayload payload, final IPayloadContext context) {
+        if (!ClientConfig.SKILL_PARTICLE_ENABLED.get()) return;
+
         var level = context.player().level();
         var entity = level.getEntity(payload.entity());
         if (entity == null) return;
