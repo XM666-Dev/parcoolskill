@@ -6,7 +6,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
 
 public record SkillParticlePayload(int particleType, int entity) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SkillParticlePayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "skill_particle"));
@@ -19,7 +18,7 @@ public record SkillParticlePayload(int particleType, int entity) implements Cust
     );
 
     @Override
-    public CustomPacketPayload.@NotNull Type<? extends CustomPacketPayload> type() {
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 
