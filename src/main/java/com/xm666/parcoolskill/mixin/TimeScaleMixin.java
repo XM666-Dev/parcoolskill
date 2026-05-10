@@ -37,9 +37,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class TimeScaleMixin {
     @Mixin(TickRateManager.class)
     private static class TickRateManagerMixin {
+        @SuppressWarnings("ConstantValue")
         @ModifyReturnValue(method = "runsNormally", at = @At("RETURN"))
         private boolean modifyRunNormally(boolean original) {
-            var timer = (Object) this instanceof ServerTickRateManager ? TimeScaleHandler.serverTimer : TimeScaleHandler.clientTimer;
+            var timer = TimeScaleHandler.getTimer(!((Object) this instanceof ServerTickRateManager));
             return original && (!TimeScaleHandler.scaleRunNormally || timer.runsTicking()) && !TimeScaleHandler.disableRunNormally;
         }
     }
@@ -48,7 +49,7 @@ public class TimeScaleMixin {
     private static class LivingEntityMixin {
         @WrapWithCondition(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;travel(Lnet/minecraft/world/phys/Vec3;)V"))
         private boolean wrapTravel(LivingEntity instance, Vec3 travelVector) {
-            var timer = instance.level().isClientSide() ? TimeScaleHandler.clientTimer : TimeScaleHandler.serverTimer;
+            var timer = TimeScaleHandler.getTimer(instance.level().isClientSide());
             return timer.runsTraveling(instance);
         }
 
@@ -66,11 +67,8 @@ public class TimeScaleMixin {
         private float modifyPartialTick(float original) {
             if (!TimeScaleHandler.scalePartialTick) return original;
 
-            var scale = TimeScaleHandler.clientTimer != null ? TimeScaleHandler.clientTimer.getScale() : 1.0F;
-            if (TimeScaleHandler.deltaTickRunning + scale > 1.0F) {
-                scale = 1.0F - TimeScaleHandler.deltaTickRunning;
-            }
-            return Math.min(TimeScaleHandler.deltaTickRunning + original * scale, 1.0F);
+            var scale = Math.min(TimeScaleHandler.getScale(true), 1.0F - TimeScaleHandler.deltaTickRunning);
+            return TimeScaleHandler.deltaTickRunning + original * scale;
         }
     }
 

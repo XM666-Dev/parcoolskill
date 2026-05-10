@@ -75,6 +75,18 @@ public class TimeScaleHandler {
         PacketDistributor.sendToAllPlayers(new TimeScalePayload(scale, scaleTicks, transition, entity.getId()));
     }
 
+    public static ScalableTimer getTimer(boolean isClientSide) {
+        return isClientSide ? clientTimer : serverTimer;
+    }
+
+    public static float getScale(boolean isClientSide) {
+        return getScale(getTimer(isClientSide));
+    }
+
+    private static float getScale(ScalableTimer timer) {
+        return timer != null ? timer.getScale() : 1.0F;
+    }
+
     @SuppressWarnings("DataFlowIssue")
     public static boolean isEntityOriginalFrozen(Entity entity) {
         var mc = Minecraft.getInstance();
