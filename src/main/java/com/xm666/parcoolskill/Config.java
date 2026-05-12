@@ -68,8 +68,11 @@ public class Config {
     public static final ModConfigSpec.DoubleValue BACKSTAB_DAMAGE_MULTIPLIER = BUILDER
             .defineInRange("backstab_damage_multiplier", 3.0, 0.0, Double.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue SLIDE_SKILL_DAMAGE_HEALTH_GROWTH = BUILDER
-            .defineInRange("slide_skill_damage_health_growth", 0.2, 0.0, Double.MAX_VALUE);
+    public static final ModConfigSpec.DoubleValue SLIDE_SKILL_DAMAGE_ADDITION = BUILDER
+            .defineInRange("slide_skill_damage_addition", 4.0, 0.0, Double.MAX_VALUE);
+
+    public static final ModConfigSpec.DoubleValue SLIDE_SKILL_DAMAGE_MULTIPLIER = BUILDER
+            .defineInRange("slide_skill_damage_multiplier", 1.0, 0.0, Double.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue SLIDE_SKILL_EXTRA_INVULNERABLE_DURATION = BUILDER
             .defineInRange("slide_skill_extra_invulnerable_duration", 10, 0, Integer.MAX_VALUE);

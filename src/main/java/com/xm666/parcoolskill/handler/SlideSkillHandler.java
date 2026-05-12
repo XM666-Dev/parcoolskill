@@ -31,8 +31,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
-import java.util.function.Predicate;
-
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class SlideSkillHandler {
     private static final BehaviorEnforcer.ID ID_DESCEND_EDGE = BehaviorEnforcer.newID();
@@ -126,17 +124,15 @@ public class SlideSkillHandler {
             default -> 0;
         });
 
-        var slideSkillDamageHealthGrowth = Config.SLIDE_SKILL_DAMAGE_HEALTH_GROWTH.get();
+        var slideSkillDamageAddition = Config.SLIDE_SKILL_DAMAGE_ADDITION.get();
+        var slideSkillDamageMultiplier = Config.SLIDE_SKILL_DAMAGE_MULTIPLIER.get();
         var level = target.level();
-        var lowerArmorPredicate = (Predicate<AttributeModifier>) m -> m.is(Identifier.parse("minecraft:armor.leggings")) || m.is(Identifier.parse("minecraft:armor.boots"));
-        var attackModifierPredicate = (Predicate<AttributeModifier>) m -> !m.is(Identifier.parse("minecraft:base_attack_damage"));
-        var damage = (float) (
-                player.getAttributeValue(Attributes.MAX_HEALTH) * slideSkillDamageHealthGrowth +
-                        SkillHandler.calculateAttribute(player, Attributes.ARMOR, lowerArmorPredicate) +
-                        SkillHandler.calculateAttribute(player, Attributes.ATTACK_DAMAGE, attackModifierPredicate)
-        );
         var slideAttack = level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.SLIDE_ATTACK);
         var damageSource = new DamageSource(slideAttack, player, player, player.position());
+        var attack = SkillHandler.calculateAttribute(player, Attributes.ATTACK_DAMAGE, SlideSkillHandler::isExtraAttack);
+        var armor = SkillHandler.calculateAttribute(player, Attributes.ARMOR, SlideSkillHandler::isLowerArmor);
+        var health = SkillHandler.getAttributeAddition(player, Attributes.MAX_HEALTH);
+        var damage = (float) ((attack + armor + health) * slideSkillDamageMultiplier + slideSkillDamageAddition);
         target.hurtServer((ServerLevel) level, damageSource, damage);
         player.resetAttackStrengthTicker();
 
@@ -178,6 +174,14 @@ public class SlideSkillHandler {
             default -> null;
         };
         level.playSound(null, player.getX(), player.getY(), player.getZ(), sound, player.getSoundSource(), 1.0F, 1.0F);
+    }
+
+    private static boolean isLowerArmor(AttributeModifier attributeModifier) {
+        return attributeModifier.is(Identifier.parse("minecraft:armor.leggings")) || attributeModifier.is(Identifier.parse("minecraft:armor.boots"));
+    }
+
+    private static boolean isExtraAttack(AttributeModifier attributeModifier) {
+        return !attributeModifier.is(Identifier.parse("minecraft:base_attack_damage"));
     }
 
     public static boolean isReadyForAttack(Player player, SlideSkill.Type type) {
