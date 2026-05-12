@@ -1,6 +1,7 @@
 package com.xm666.parcoolskill.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
@@ -12,7 +13,6 @@ import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class PlayerAttackMixin {
@@ -37,8 +37,8 @@ public class PlayerAttackMixin {
             return critEvent;
         }
 
-        @Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurtOrSimulate(Lnet/minecraft/world/damagesource/DamageSource;F)Z", shift = At.Shift.AFTER))
-        private void onHurtOrSimulate(Entity target, CallbackInfo ci, @Local CriticalHitEvent critEvent, @Share("disableCrit") LocalBooleanRef disableCrit) {
+        @Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z", shift = At.Shift.AFTER))
+        private void onHurt(Entity target, CallbackInfo ci, @Local CriticalHitEvent critEvent, @Share("disableCrit") LocalBooleanRef disableCrit) {
             var playerAttackEvent = new PlayerAttackEvent.Post(
                     (Player) (Object) this,
                     target,
@@ -53,9 +53,9 @@ public class PlayerAttackMixin {
             disableCrit.set(playerAttackEvent.disableCrit());
         }
 
-        @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;attackVisualEffects(Lnet/minecraft/world/entity/Entity;ZZZZF)V"), index = 1)
-        private boolean modifyCrit(boolean crit, @Share("disableCrit") LocalBooleanRef disableCrit) {
-            return crit && !disableCrit.get();
+        @WrapWithCondition(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;crit(Lnet/minecraft/world/entity/Entity;)V"))
+        private boolean wrapCrit(Player instance, Entity entityHit, @Share("disableCrit") LocalBooleanRef disableCrit) {
+            return !disableCrit.get();
         }
     }
 }

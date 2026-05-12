@@ -123,10 +123,10 @@ public class BackflipMixin {
     }
 
     @OnlyIn(Dist.CLIENT)
-    @Mixin(ActionProcessor.ClientActionProcessor.class)
+    @Mixin(ActionProcessor.class)
     private static class ActionProcessorMixin {
         @WrapMethod(method = "onTick$doPreprocessInClient")
-        private static void wrapAnimationTick(PlayerTickEvent event, Parkourability parkourability, Operation<Void> original) {
+        private void wrapAnimationTick(PlayerTickEvent event, Parkourability parkourability, Operation<Void> original) {
             var player = event.getEntity();
             if (!TimeScaleHandler.clientTimer.runsTraveling(player)) return;
 
