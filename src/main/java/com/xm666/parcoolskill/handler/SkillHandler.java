@@ -74,15 +74,16 @@ public class SkillHandler {
     }
 
     public static double calculateAttribute(LivingEntity living, Holder<Attribute> attribute, Predicate<AttributeModifier> predicate) {
-        var attributeInstance = living.getAttribute(attribute);
         var baseValue = living.getAttributeBaseValue(attribute);
-        var modifiers = attributeInstance != null
-                ? attributeInstance.getModifiers().stream().filter(predicate).toArray(AttributeModifier[]::new)
-                : new AttributeModifier[]{};
-        return calculateAttribute(attribute, baseValue, modifiers);
+        var modifiers = getAttributeModifiers(living, attribute, predicate);
+        return calculateAttribute(baseValue, modifiers, attribute);
     }
 
-    private static double calculateAttribute(Holder<Attribute> attribute, double baseValue, AttributeModifier[] modifiers) {
+    private static double calculateAttribute(double baseValue, AttributeModifier[] modifiers, Holder<Attribute> attribute) {
+        return attribute.value().sanitizeValue(calculateAttribute(baseValue, modifiers));
+    }
+
+    private static double calculateAttribute(double baseValue, AttributeModifier[] modifiers) {
         for (var attributeModifier : Arrays.stream(modifiers).filter(m -> m.operation() == AttributeModifier.Operation.ADD_VALUE).toArray(AttributeModifier[]::new)) {
             baseValue += attributeModifier.amount();
         }
@@ -97,7 +98,18 @@ public class SkillHandler {
             value *= 1.0 + attributeModifier.amount();
         }
 
-        return attribute.value().sanitizeValue(value);
+        return value;
+    }
+
+    private static AttributeModifier[] getAttributeModifiers(LivingEntity living, Holder<Attribute> attribute, Predicate<AttributeModifier> predicate) {
+        var attributeInstance = living.getAttribute(attribute);
+        if (attributeInstance == null) return new AttributeModifier[0];
+
+        return attributeInstance.getModifiers().stream().filter(predicate).toArray(AttributeModifier[]::new);
+    }
+
+    public static double getAttributeAddition(LivingEntity living, Holder<Attribute> attribute) {
+        return Math.max(living.getAttributeValue(attribute) - living.getAttributeBaseValue(attribute), 0.0);
     }
 
     public static double getEntityPickRange(Entity shooter, double distance) {
