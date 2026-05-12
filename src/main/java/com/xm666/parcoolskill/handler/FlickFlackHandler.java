@@ -12,6 +12,8 @@ import com.xm666.parcoolskill.effect.Effects;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.skill.FlippingSkill;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -95,7 +97,7 @@ public class FlickFlackHandler {
         }
 
         SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
-        player.sweepAttack();
+        sweepAttack(player);
         event.setDisableCrit(true);
 
         flippingSkill.parcoolskill$setDisableCrit(true);
@@ -123,5 +125,14 @@ public class FlickFlackHandler {
 
     private static AABB getSweepHitBox(Entity target) {
         return target.getBoundingBox().inflate(1.0, 0.25, 1.0);
+    }
+
+    private static void sweepAttack(Player player) {
+        if (!(player.level() instanceof ServerLevel serverlevel)) return;
+
+        var xOffset = -Mth.sin(player.getYRot() * Mth.DEG_TO_RAD);
+        var zOffset = Mth.cos(player.getYRot() * Mth.DEG_TO_RAD);
+        player.playSound(net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_SWEEP);
+        serverlevel.sendParticles(ParticleTypes.SWEEP_ATTACK, player.getX() + xOffset, player.getY(0.5F), player.getZ() + zOffset, 0, xOffset, 0.0F, zOffset, 0.0F);
     }
 }

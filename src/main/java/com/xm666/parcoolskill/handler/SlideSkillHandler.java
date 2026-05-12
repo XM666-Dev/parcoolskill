@@ -16,7 +16,8 @@ import com.xm666.parcoolskill.skill.DodgeSkill;
 import com.xm666.parcoolskill.skill.LeapSkill;
 import com.xm666.parcoolskill.skill.SlideSkill;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -117,7 +118,7 @@ public class SlideSkillHandler {
         if (!isReadyForAttack(player, type)) return;
 
         var aabb = target.getBoundingBox();
-        if (!player.canInteractWithEntity(aabb, 1.0)) return;
+        if (!player.isWithinEntityInteractionRange(aabb, 1.0)) return;
 
         StaminaHandler.consume(player, switch (type) {
             case DROPKICK -> Config.DROPKICK_STAMINA_CONSUMPTION.get();
@@ -127,16 +128,16 @@ public class SlideSkillHandler {
 
         var slideSkillDamageHealthGrowth = Config.SLIDE_SKILL_DAMAGE_HEALTH_GROWTH.get();
         var level = target.level();
-        var lowerArmorPredicate = (Predicate<AttributeModifier>) m -> m.is(ResourceLocation.parse("minecraft:armor.leggings")) || m.is(ResourceLocation.parse("minecraft:armor.boots"));
-        var attackModifierPredicate = (Predicate<AttributeModifier>) m -> !m.is(ResourceLocation.parse("minecraft:base_attack_damage"));
+        var lowerArmorPredicate = (Predicate<AttributeModifier>) m -> m.is(Identifier.parse("minecraft:armor.leggings")) || m.is(Identifier.parse("minecraft:armor.boots"));
+        var attackModifierPredicate = (Predicate<AttributeModifier>) m -> !m.is(Identifier.parse("minecraft:base_attack_damage"));
         var damage = (float) (
                 player.getAttributeValue(Attributes.MAX_HEALTH) * slideSkillDamageHealthGrowth +
                         SkillHandler.calculateAttribute(player, Attributes.ARMOR, lowerArmorPredicate) +
                         SkillHandler.calculateAttribute(player, Attributes.ATTACK_DAMAGE, attackModifierPredicate)
         );
-        var slideAttack = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.SLIDE_ATTACK);
+        var slideAttack = level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.SLIDE_ATTACK);
         var damageSource = new DamageSource(slideAttack, player, player, player.position());
-        target.hurt(damageSource, damage);
+        target.hurtServer((ServerLevel) level, damageSource, damage);
         player.resetAttackStrengthTicker();
 
         if (target instanceof LivingEntity living) {
@@ -158,7 +159,7 @@ public class SlideSkillHandler {
                 case HEEL_HOOK -> {
                     var heelHookSlowdownDuration = Config.HEEL_HOOK_SLOWDOWN_DURATION.get();
                     var heelHookSlowdownAmplifier = Config.HEEL_HOOK_SLOWDOWN_AMPLIFIER.get();
-                    SkillHandler.addEffect(living, player, MobEffects.MOVEMENT_SLOWDOWN, heelHookSlowdownDuration, heelHookSlowdownAmplifier);
+                    SkillHandler.addEffect(living, player, MobEffects.SLOWNESS, heelHookSlowdownDuration, heelHookSlowdownAmplifier);
 
                     if (living.hasEffect(MobEffects.WEAKNESS) || living.hasEffect(Effects.NEUTRALIZED)) {
                         var heelHookStaminaConsumption = Config.HEEL_HOOK_STAMINA_CONSUMPTION.get();

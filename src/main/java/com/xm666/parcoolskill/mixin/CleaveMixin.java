@@ -14,7 +14,7 @@ import com.xm666.parcoolskill.skill.JumpSkill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -48,7 +48,7 @@ public class CleaveMixin {
             var cleavePickRadius = Config.CLEAVE_PICK_RADIUS.get();
             var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
             var range = SkillHandler.getEntityPickRange(player, player.entityInteractionRange());
-            var sweepingEdge = player.level().registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.SWEEPING_EDGE);
+            var sweepingEdge = player.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SWEEPING_EDGE);
             var count = cleavePickCountBase + player.getWeaponItem().getEnchantmentLevel(sweepingEdge);
             var targets = Stream.concat(
                     Arrays.stream(SkillHandler.getEntityHits(player, range, 0.0, count)),
@@ -63,8 +63,8 @@ public class CleaveMixin {
 
     @Mixin(ItemInHandRenderer.class)
     private static class ItemInHandRendererMixin {
-        @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;applyItemArmAttackTransform(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/entity/HumanoidArm;F)V", shift = At.Shift.AFTER, ordinal = 1))
-        private void onApplyTransform(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
+        @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;swingArm(FLcom/mojang/blaze3d/vertex/PoseStack;ILnet/minecraft/world/entity/HumanoidArm;)V", shift = At.Shift.AFTER, ordinal = 2))
+        private void onSwingArm(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand, float swingProgress, ItemStack item, float equippedProgress, PoseStack poseStack, SubmitNodeCollector nodeCollector, int packedLight, CallbackInfo ci) {
             if (!ClientConfig.CLEAVE_ANIMATION_ENABLED.get() || !CleaveHandler.hasCorrectWeapon(player)) return;
 
             var jump = Parkourability.get(player).get(ChargeJump.class);

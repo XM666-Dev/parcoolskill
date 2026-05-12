@@ -11,7 +11,7 @@ import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -25,7 +25,7 @@ import net.neoforged.neoforge.common.ItemAbilities;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class CleaveHandler {
-    private static final ResourceLocation ENTITY_INTERACTION_RANGE_MODIFIER = ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "modifier.entity_interaction_range.cleave");
+    private static final Identifier ENTITY_INTERACTION_RANGE_MODIFIER = Identifier.fromNamespaceAndPath(ParCoolSkill.MODID, "modifier.entity_interaction_range.cleave");
 
     @SubscribeEvent
     public static void onJumpTick(ParCoolActionEvent.Tick.Pre event) {
@@ -122,7 +122,7 @@ public class CleaveHandler {
         if (!isReadyForAttack(player)) return;
 
         var aabb = target.getBoundingBox();
-        if (!player.canInteractWithEntity(aabb, 1.0)) return;
+        if (!player.isWithinEntityInteractionRange(aabb, 1.0)) return;
 
         var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
         if (!jumpSkill.parcoolskill$addEntityHit(target)) return;

@@ -15,7 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
@@ -50,11 +50,11 @@ public class SkillHandler {
     }
 
     public static void use(SkillPayload.Type type, Player source) {
-        PacketDistributor.sendToServer(new SkillPayload(type.ordinal(), source.getId(), 0));
+        ClientPacketDistributor.sendToServer(new SkillPayload(type.ordinal(), source.getId(), 0));
     }
 
     public static void use(SkillPayload.Type type, Player source, Entity target) {
-        PacketDistributor.sendToServer(new SkillPayload(type.ordinal(), source.getId(), target.getId()));
+        ClientPacketDistributor.sendToServer(new SkillPayload(type.ordinal(), source.getId(), target.getId()));
     }
 
     public static void addEffect(LivingEntity target, Entity source, Holder<MobEffect> effect, int duration) {
