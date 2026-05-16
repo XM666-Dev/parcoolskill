@@ -15,6 +15,7 @@ import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.skill.DodgeSkill;
 import com.xm666.parcoolskill.skill.LeapSkill;
 import com.xm666.parcoolskill.skill.SlideSkill;
+import com.xm666.timescalelib.handler.TimeScaleHandler;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;

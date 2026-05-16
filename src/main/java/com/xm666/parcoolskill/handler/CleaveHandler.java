@@ -10,6 +10,7 @@ import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.JumpSkill;
+import com.xm666.timescalelib.handler.TimeScaleHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
