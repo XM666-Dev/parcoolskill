@@ -29,6 +29,7 @@
     "DropkickMixin$SlideMixin",
     "FlickFlackMixin$DodgeMixin",
     "FlickFlackMixin$ItemInHandRendererMixin",
+    "PlayerRendererMixin",
     "SlideSkillMixin$MinecraftMixin"
   ],
   "mixinextras": {
