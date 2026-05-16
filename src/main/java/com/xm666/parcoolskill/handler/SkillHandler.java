@@ -2,6 +2,7 @@ package com.xm666.parcoolskill.handler;
 
 import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.SlideSkill;
+import com.xm666.timescalelib.handler.TimeScaleHandler;
 import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
