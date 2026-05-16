@@ -11,9 +11,7 @@
     "LeapSkillMixin$CatLeapMixin",
     "LeapSkillMixin$LivingEntityMixin",
     "PlayerAttackMixin$PlayerMixin",
-    "SlideSkillMixin$SlideMixin",
-    "TimeScaleMixin$LivingEntityMixin",
-    "TimeScaleMixin$TickRateManagerMixin"
+    "SlideSkillMixin$SlideMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -31,16 +29,7 @@
     "DropkickMixin$SlideMixin",
     "FlickFlackMixin$DodgeMixin",
     "FlickFlackMixin$ItemInHandRendererMixin",
-    "SlideSkillMixin$MinecraftMixin",
-    "TimeScaleMixin$AbstractClientPlayerMixin",
-    "TimeScaleMixin$CameraMixin",
-    "TimeScaleMixin$DeltaTrackerTimerMixin",
-    "TimeScaleMixin$EntityMixin",
-    "TimeScaleMixin$EntityRendererMixin",
-    "TimeScaleMixin$GameRendererMixin",
-    "TimeScaleMixin$LevelRendererMixin",
-    "TimeScaleMixin$LivingEntityRendererMixin",
-    "TimeScaleMixin$MinecraftMixin"
+    "SlideSkillMixin$MinecraftMixin"
   ],
   "mixinextras": {
     "minVersion": "0.5.0"
