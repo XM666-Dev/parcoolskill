@@ -20,6 +20,7 @@
     "requireAnnotations": true
   },
   "client": [
+    "AvatarRendererMixin",
     "BackflipMixin$ActionProcessorMixin",
     "BackflipMixin$PlayerModelRotatorMixin",
     "BackflipMixin$PlayerModelTransformerMixin",
@@ -29,7 +30,6 @@
     "DropkickMixin$SlideMixin",
     "FlickFlackMixin$DodgeMixin",
     "FlickFlackMixin$ItemInHandRendererMixin",
-    "PlayerRendererMixin",
     "SlideSkillMixin$MinecraftMixin"
   ],
   "mixinextras": {
