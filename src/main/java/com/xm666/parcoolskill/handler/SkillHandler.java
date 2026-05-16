@@ -110,7 +110,7 @@ public class SkillHandler {
     }
 
     public static double getAttributeAddition(LivingEntity living, Holder<Attribute> attribute) {
-        return Math.max(living.getAttributeValue(attribute) - living.getAttributeBaseValue(attribute), 0.0);
+        return Math.max(living.getAttributeValue(attribute) - living.getAttributes().supplier.getBaseValue(attribute), 0.0);
     }
 
     public static double getEntityPickRange(Entity shooter, double distance) {
