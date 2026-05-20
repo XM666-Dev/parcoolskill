@@ -14,7 +14,7 @@ public class EffectHandler {
     @SubscribeEvent
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         var source = event.getSource();
-        if (!source.is(Tags.DamageTypes.IS_PHYSICAL)) return;
+        if (!source.is(Tags.DamageTypes.IS_PHYSICAL) && !source.is(Tags.DamageTypes.IS_MAGIC)) return;
 
         var multiplier = 1.0F;
         var sourceEntity = source.getEntity();

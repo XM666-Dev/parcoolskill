@@ -102,5 +102,17 @@
   "parcoolskill.configuration.flick_flack_animation_enabled.tooltip": "是否启用翻越撑击的技能动画效果",
   "death.attack.parcoolskill.slide_attack": "%1$s被%2$s用腿部攻击击杀",
   "effect.parcoolskill.vulnerable": "易伤",
-  "effect.parcoolskill.neutralized": "中和"
+  "effect.parcoolskill.neutralized": "中和",
+  "item.minecraft.potion.effect.vulnerable": "易伤药水",
+  "item.minecraft.splash_potion.effect.vulnerable": "喷溅型易伤药水",
+  "item.minecraft.lingering_potion.effect.vulnerable": "滞留型易伤药水",
+  "item.minecraft.potion.effect.long_vulnerable": "易伤药水",
+  "item.minecraft.splash_potion.effect.long_vulnerable": "喷溅型易伤药水",
+  "item.minecraft.lingering_potion.effect.long_vulnerable": "滞留型易伤药水",
+  "item.minecraft.potion.effect.neutralized": "中和药水",
+  "item.minecraft.splash_potion.effect.neutralized": "喷溅型中和药水",
+  "item.minecraft.lingering_potion.effect.neutralized": "滞留型中和药水",
+  "item.minecraft.potion.effect.long_neutralized": "中和药水",
+  "item.minecraft.splash_potion.effect.long_neutralized": "喷溅型中和药水",
+  "item.minecraft.lingering_potion.effect.long_neutralized": "滞留型中和药水"
 }
