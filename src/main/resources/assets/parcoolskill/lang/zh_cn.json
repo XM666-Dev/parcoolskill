@@ -106,13 +106,17 @@
   "item.minecraft.potion.effect.vulnerable": "易伤药水",
   "item.minecraft.splash_potion.effect.vulnerable": "喷溅型易伤药水",
   "item.minecraft.lingering_potion.effect.vulnerable": "滞留型易伤药水",
+  "item.minecraft.tipped_arrow.effect.vulnerable": "易伤之箭",
   "item.minecraft.potion.effect.long_vulnerable": "易伤药水",
   "item.minecraft.splash_potion.effect.long_vulnerable": "喷溅型易伤药水",
   "item.minecraft.lingering_potion.effect.long_vulnerable": "滞留型易伤药水",
+  "item.minecraft.tipped_arrow.effect.long_vulnerable": "易伤之箭",
   "item.minecraft.potion.effect.neutralized": "中和药水",
   "item.minecraft.splash_potion.effect.neutralized": "喷溅型中和药水",
   "item.minecraft.lingering_potion.effect.neutralized": "滞留型中和药水",
+  "item.minecraft.tipped_arrow.effect.neutralized": "中和之箭",
   "item.minecraft.potion.effect.long_neutralized": "中和药水",
   "item.minecraft.splash_potion.effect.long_neutralized": "喷溅型中和药水",
-  "item.minecraft.lingering_potion.effect.long_neutralized": "滞留型中和药水"
+  "item.minecraft.lingering_potion.effect.long_neutralized": "滞留型中和药水",
+  "item.minecraft.tipped_arrow.effect.long_neutralized": "中和之箭"
 }
