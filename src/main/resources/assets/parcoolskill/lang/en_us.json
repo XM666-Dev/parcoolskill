@@ -106,13 +106,17 @@
   "item.minecraft.potion.effect.vulnerable": "Potion of Vulnerable",
   "item.minecraft.splash_potion.effect.vulnerable": "Splash Potion of Vulnerable",
   "item.minecraft.lingering_potion.effect.vulnerable": "Lingering Potion of Vulnerable",
+  "item.minecraft.tipped_arrow.effect.vulnerable": "Arrow of Vulnerable",
   "item.minecraft.potion.effect.long_vulnerable": "Potion of Vulnerable",
   "item.minecraft.splash_potion.effect.long_vulnerable": "Splash Potion of Vulnerable",
   "item.minecraft.lingering_potion.effect.long_vulnerable": "Lingering Potion of Vulnerable",
+  "item.minecraft.tipped_arrow.effect.long_vulnerable": "Arrow of Vulnerable",
   "item.minecraft.potion.effect.neutralized": "Potion of Neutralized",
   "item.minecraft.splash_potion.effect.neutralized": "Splash Potion of Neutralized",
   "item.minecraft.lingering_potion.effect.neutralized": "Lingering Potion of Neutralized",
+  "item.minecraft.tipped_arrow.effect.neutralized": "Arrow of Neutralized",
   "item.minecraft.potion.effect.long_neutralized": "Potion of Neutralized",
   "item.minecraft.splash_potion.effect.long_neutralized": "Splash Potion of Neutralized",
-  "item.minecraft.lingering_potion.effect.long_neutralized": "Lingering Potion of Neutralized"
+  "item.minecraft.lingering_potion.effect.long_neutralized": "Lingering Potion of Neutralized",
+  "item.minecraft.tipped_arrow.effect.long_neutralized": "Arrow of Neutralized"
 }
