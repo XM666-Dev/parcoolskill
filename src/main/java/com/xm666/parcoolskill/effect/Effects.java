@@ -36,11 +36,11 @@ public class Effects {
     );
     public static final Holder<Potion> VULNERABLE_POTION = POTIONS.register(
             "vulnerable",
-            () -> new Potion(new MobEffectInstance(VULNERABLE, 400))
+            () -> new Potion("vulnerable", new MobEffectInstance(VULNERABLE, 400))
     );
     public static final Holder<Potion> LONG_VULNERABLE_POTION = POTIONS.register(
             "long_vulnerable",
-            () -> new Potion(new MobEffectInstance(VULNERABLE, 600))
+            () -> new Potion("long_vulnerable", new MobEffectInstance(VULNERABLE, 600))
     );
     public static final DeferredHolder<MobEffect, Neutralized> NEUTRALIZED = MOB_EFFECTS.register(
             "neutralized",
@@ -48,12 +48,12 @@ public class Effects {
     );
     public static final Holder<Potion> NEUTRALIZED_POTION = POTIONS.register(
             "neutralized",
-            () -> new Potion(new MobEffectInstance(NEUTRALIZED, 400))
+            () -> new Potion("neutralized", new MobEffectInstance(NEUTRALIZED, 400))
     );
 
     public static final Holder<Potion> LONG_NEUTRALIZED_POTION = POTIONS.register(
             "long_neutralized",
-            () -> new Potion(new MobEffectInstance(NEUTRALIZED, 600))
+            () -> new Potion("long_neutralized", new MobEffectInstance(NEUTRALIZED, 600))
     );
 
     public Effects(IEventBus modEventBus) {
