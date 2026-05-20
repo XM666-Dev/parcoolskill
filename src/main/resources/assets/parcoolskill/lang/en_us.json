@@ -102,5 +102,17 @@
   "parcoolskill.configuration.flick_flack_animation_enabled.tooltip": "Whether to enable Flick Flack skill animation effects",
   "death.attack.parcoolskill.slide_attack": "%1$s was killed by %2$s using leg attack",
   "effect.parcoolskill.vulnerable": "Vulnerable",
-  "effect.parcoolskill.neutralized": "Neutralized"
+  "effect.parcoolskill.neutralized": "Neutralized",
+  "item.minecraft.potion.effect.vulnerable": "Potion of Vulnerable",
+  "item.minecraft.splash_potion.effect.vulnerable": "Splash Potion of Vulnerable",
+  "item.minecraft.lingering_potion.effect.vulnerable": "Lingering Potion of Vulnerable",
+  "item.minecraft.potion.effect.long_vulnerable": "Potion of Vulnerable",
+  "item.minecraft.splash_potion.effect.long_vulnerable": "Splash Potion of Vulnerable",
+  "item.minecraft.lingering_potion.effect.long_vulnerable": "Lingering Potion of Vulnerable",
+  "item.minecraft.potion.effect.neutralized": "Potion of Neutralized",
+  "item.minecraft.splash_potion.effect.neutralized": "Splash Potion of Neutralized",
+  "item.minecraft.lingering_potion.effect.neutralized": "Lingering Potion of Neutralized",
+  "item.minecraft.potion.effect.long_neutralized": "Potion of Neutralized",
+  "item.minecraft.splash_potion.effect.long_neutralized": "Splash Potion of Neutralized",
+  "item.minecraft.lingering_potion.effect.long_neutralized": "Lingering Potion of Neutralized"
 }

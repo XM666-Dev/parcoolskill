@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class PayloadHandler {
     @SubscribeEvent
-    public static void register(RegisterPayloadHandlersEvent event) {
+    public static void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
         var registrar = event.registrar("1");
         registrar.playToServer(
                 SkillPayload.TYPE,
