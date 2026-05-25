@@ -124,15 +124,8 @@ public class SlideSkillHandler {
             default -> 0;
         });
 
-        var slideSkillDamageAddition = Config.SLIDE_SKILL_DAMAGE_ADDITION.get();
-        var slideSkillDamageMultiplier = Config.SLIDE_SKILL_DAMAGE_MULTIPLIER.get();
-        var level = target.level();
-        var slideAttack = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.SLIDE_ATTACK);
-        var damageSource = new DamageSource(slideAttack, player, player, player.position());
-        var attack = SkillHandler.calculateAttribute(player, Attributes.ATTACK_DAMAGE, SlideSkillHandler::isExtraAttack);
-        var armor = SkillHandler.calculateAttribute(player, Attributes.ARMOR, SlideSkillHandler::isLowerArmor);
-        var health = SkillHandler.getAttributeAddition(player, Attributes.MAX_HEALTH);
-        var damage = (float) ((attack + armor + health) * slideSkillDamageMultiplier + slideSkillDamageAddition);
+        var damageSource = getDamageSource(player);
+        var damage = getDamage(player);
         target.hurt(damageSource, damage);
         player.resetAttackStrengthTicker();
 
@@ -168,12 +161,28 @@ public class SlideSkillHandler {
             }
         }
 
+        var level = player.level();
         var sound = switch (type) {
             case DROPKICK -> SoundEvents.PLAYER_ATTACK_KNOCKBACK;
             case HEEL_HOOK -> SoundEvents.PLAYER_ATTACK_STRONG;
             default -> null;
         };
         level.playSound(null, player.getX(), player.getY(), player.getZ(), sound, player.getSoundSource(), 1.0F, 1.0F);
+    }
+
+    private static DamageSource getDamageSource(Player player) {
+        var level = player.level();
+        var slideAttack = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.SLIDE_ATTACK);
+        return new DamageSource(slideAttack, player, player, player.position());
+    }
+
+    private static float getDamage(Player player) {
+        var slideSkillDamageAddition = Config.SLIDE_SKILL_DAMAGE_ADDITION.get();
+        var slideSkillDamageMultiplier = Config.SLIDE_SKILL_DAMAGE_MULTIPLIER.get();
+        var attack = SkillHandler.calculateAttribute(player, Attributes.ATTACK_DAMAGE, SlideSkillHandler::isExtraAttack);
+        var armor = SkillHandler.calculateAttribute(player, Attributes.ARMOR, SlideSkillHandler::isLowerArmor);
+        var health = SkillHandler.getAttributeAddition(player, Attributes.MAX_HEALTH);
+        return (float) ((attack + armor + health) * slideSkillDamageMultiplier + slideSkillDamageAddition);
     }
 
     private static boolean isLowerArmor(AttributeModifier attributeModifier) {
