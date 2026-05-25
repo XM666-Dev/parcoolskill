@@ -71,6 +71,7 @@ public class CleaveHandler {
 
         if (isReadyForAttack(player)) {
             event.setCanceled(true);
+            event.setSwingHand(false);
             return;
         }
 
