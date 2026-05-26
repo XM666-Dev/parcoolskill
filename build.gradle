@@ -144,7 +144,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
     implementation "curse.maven:parcool-482378:7760593"
-    implementation "curse.maven:timescalelib-1542930:8087553"
+    implementation "curse.maven:timescalelib-1542930:8146638"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
