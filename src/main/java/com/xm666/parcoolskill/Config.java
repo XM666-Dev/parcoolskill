@@ -1,5 +1,6 @@
 package com.xm666.parcoolskill;
 
+import com.alrex.parcool.common.action.impl.ChargeJump;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class Config {
@@ -78,7 +79,7 @@ public class Config {
             .defineInRange("slide_skill_extra_invulnerable_duration", 10, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue SLIDE_SKILL_BULLET_TIME_SCALE = BUILDER
-            .defineInRange("slide_skill_bullet_time_scale", 0.25, 0.0, Double.MAX_VALUE);
+            .defineInRange("slide_skill_bullet_time_scale", 0.25, 0.0, 1.0);
 
     public static final ModConfigSpec.IntValue SLIDE_SKILL_BULLET_TIME_DURATION = BUILDER
             .defineInRange("slide_skill_bullet_time_duration", 80, 0, Integer.MAX_VALUE);
@@ -90,7 +91,7 @@ public class Config {
             .defineInRange("heel_hook_slowdown_duration", 60, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue HEEL_HOOK_SLOWDOWN_AMPLIFIER = BUILDER
-            .defineInRange("heel_hook_slowdown_amplifier", 2, 0, Integer.MAX_VALUE);
+            .defineInRange("heel_hook_slowdown_amplifier", 2, 0, 255);
 
     public static final ModConfigSpec.IntValue BASH_VULNERABLE_DURATION = BUILDER
             .defineInRange("bash_vulnerable_duration", 120, 0, Integer.MAX_VALUE);
@@ -102,19 +103,19 @@ public class Config {
             .defineInRange("backflip_skill_cooldown", 60, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue BACKFLIP_BULLET_TIME_SCALE = BUILDER
-            .defineInRange("backflip_bullet_time_scale", 0.25, 0.0, Double.MAX_VALUE);
+            .defineInRange("backflip_bullet_time_scale", 0.25, 0.0, 1.0);
 
     public static final ModConfigSpec.IntValue BACKFLIP_BULLET_TIME_DURATION = BUILDER
             .defineInRange("backflip_bullet_time_duration", 60, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue CLEAVE_CHARGE_DURATION = BUILDER
-            .defineInRange("cleave_charge_duration", 10, 0, Integer.MAX_VALUE);
+            .defineInRange("cleave_charge_duration", 10, 0, ChargeJump.JUMP_MAX_CHARGE_TICK);
 
     public static final ModConfigSpec.IntValue CLEAVE_ATTACK_DURATION = BUILDER
             .defineInRange("cleave_attack_duration", 10, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue CLEAVE_BULLET_TIME_SCALE = BUILDER
-            .defineInRange("cleave_bullet_time_scale", 0.25, 0.0, Double.MAX_VALUE);
+            .defineInRange("cleave_bullet_time_scale", 0.25, 0.0, 1.0);
 
     public static final ModConfigSpec.IntValue CLEAVE_BULLET_TIME_DURATION = BUILDER
             .defineInRange("cleave_bullet_time_duration", 20, 0, Integer.MAX_VALUE);
