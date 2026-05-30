@@ -128,7 +128,7 @@ public class BackflipMixin {
         @WrapMethod(method = "onTick$doPreprocessInClient")
         private static void wrapAnimationTick(PlayerTickEvent event, Parkourability parkourability, Operation<Void> original) {
             var player = event.getEntity();
-            if (!TimeScaleHandler.clientTimer.runsTraveling(player)) return;
+            if (!TimeScaleHandler.clientTimer.runsTravelling(player)) return;
 
             original.call(event, parkourability);
         }
