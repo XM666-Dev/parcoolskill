@@ -2,7 +2,7 @@ package com.xm666.parcoolskill.handler;
 
 import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.SlideSkill;
-import com.xm666.timescalelib.handler.TimeScaleHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
@@ -114,7 +114,9 @@ public class SkillHandler {
     }
 
     public static double getEntityPickRange(Entity shooter, double distance) {
-        var partialTick = TimeScaleHandler.getOriginalPartialTick(true);
+        var mc = Minecraft.getInstance();
+        var timer = mc.getTimer();
+        var partialTick = timer.getGameTimeDeltaPartialTick(true);
         var hitResult = shooter.pick(distance, partialTick, false);
         if (hitResult.getType() != HitResult.Type.MISS) {
             var eyePosition = shooter.getEyePosition(partialTick);
@@ -124,7 +126,9 @@ public class SkillHandler {
     }
 
     public static Entity[] getEntityHits(Entity shooter, double distance, double inflationAmount, long limit) {
-        var partialTick = TimeScaleHandler.getOriginalPartialTick(true);
+        var mc = Minecraft.getInstance();
+        var timer = mc.getTimer();
+        var partialTick = timer.getGameTimeDeltaPartialTick(true);
         var eyePosition = shooter.getEyePosition();
         var viewVector = shooter.getViewVector(partialTick);
         var pickVector = viewVector.scale(distance);
