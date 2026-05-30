@@ -115,7 +115,7 @@ public class SkillHandler {
 
     public static double getEntityPickRange(Entity shooter, double distance) {
         var mc = Minecraft.getInstance();
-        var timer = mc.getTimer();
+        var timer = mc.getDeltaTracker();
         var partialTick = timer.getGameTimeDeltaPartialTick(true);
         var hitResult = shooter.pick(distance, partialTick, false);
         if (hitResult.getType() != HitResult.Type.MISS) {
@@ -127,7 +127,7 @@ public class SkillHandler {
 
     public static Entity[] getEntityHits(Entity shooter, double distance, double inflationAmount, long limit) {
         var mc = Minecraft.getInstance();
-        var timer = mc.getTimer();
+        var timer = mc.getDeltaTracker();
         var partialTick = timer.getGameTimeDeltaPartialTick(true);
         var eyePosition = shooter.getEyePosition();
         var viewVector = shooter.getViewVector(partialTick);
