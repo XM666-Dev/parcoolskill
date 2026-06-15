@@ -1,8 +1,12 @@
 package com.xm666.parcoolskill;
 
 import com.alrex.parcool.common.action.impl.ChargeJump;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+@Mod(ParCoolSkill.MODID)
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
@@ -114,12 +118,6 @@ public class Config {
     public static final ModConfigSpec.IntValue CLEAVE_ATTACK_DURATION = BUILDER
             .defineInRange("cleave_attack_duration", 10, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue CLEAVE_BULLET_TIME_SCALE = BUILDER
-            .defineInRange("cleave_bullet_time_scale", 0.25, 0.0, 1.0);
-
-    public static final ModConfigSpec.IntValue CLEAVE_BULLET_TIME_DURATION = BUILDER
-            .defineInRange("cleave_bullet_time_duration", 20, 0, Integer.MAX_VALUE);
-
     public static final ModConfigSpec.DoubleValue CLEAVE_RANGE_MULTIPLIER_ADDITION = BUILDER
             .defineInRange("cleave_range_multiplier_addition", 1.0, 0.0, Double.MAX_VALUE);
 
@@ -129,8 +127,17 @@ public class Config {
     public static final ModConfigSpec.DoubleValue CLEAVE_PICK_RADIUS = BUILDER
             .defineInRange("cleave_pick_radius", 0.3, 0.0, Double.MAX_VALUE);
 
+    public static final ModConfigSpec.DoubleValue CLEAVE_BULLET_TIME_SCALE = BUILDER
+            .defineInRange("cleave_bullet_time_scale", 0.25, 0.0, 1.0);
+
+    public static final ModConfigSpec.IntValue CLEAVE_BULLET_TIME_DURATION = BUILDER
+            .defineInRange("cleave_bullet_time_duration", 20, 0, Integer.MAX_VALUE);
+
     public static final ModConfigSpec.IntValue FLICK_FLACK_NEUTRALIZED_DURATION = BUILDER
             .defineInRange("flick_flack_neutralized_duration", 120, 0, Integer.MAX_VALUE);
+
+    public static final ModConfigSpec.IntValue FLICK_FLACK_INVULNERABLE_DURATION = BUILDER
+            .defineInRange("flick_flack_invulnerable_duration", 20, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue VULNERABLE_DAMAGE_MULTIPLIER_ADDITION = BUILDER
             .defineInRange("vulnerable_damage_multiplier_addition", 0.5, 0.0, Double.MAX_VALUE);
@@ -145,4 +152,8 @@ public class Config {
             .defineInRange("neutralized_damage_multiplier_reduction_growth", 0.15, 0.0, Double.MAX_VALUE);
 
     static final ModConfigSpec SPEC = BUILDER.build();
+
+    public Config(ModContainer container) {
+        container.registerConfig(ModConfig.Type.COMMON, SPEC);
+    }
 }

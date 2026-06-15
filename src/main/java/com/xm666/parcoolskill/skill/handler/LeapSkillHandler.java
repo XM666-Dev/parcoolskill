@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.handler;
+package com.xm666.parcoolskill.skill.handler;
 
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.CatLeap;
@@ -7,7 +7,9 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
+import com.xm666.parcoolskill.handler.StaminaHandler;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
+import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.LeapSkill;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -27,7 +29,7 @@ public class LeapSkillHandler {
 
     @SubscribeEvent
     public static void onLeapStart(ParCoolActionEvent.Start.Pre event) {
-        if (!(event.getAction() instanceof LeapSkill leapSkill) || !Config.WILD_STRIKE_ENABLED.get()) return;
+        if (!Config.WILD_STRIKE_ENABLED.get() || !(event.getAction() instanceof LeapSkill leapSkill)) return;
 
         leapSkill.parcoolskill$setAttackReady(true);
     }
@@ -52,7 +54,6 @@ public class LeapSkillHandler {
     @SubscribeEvent
     public static void onPlayerAttack(PlayerAttackEvent.Pre event) {
         var player = event.getEntity();
-
         var leapSkill = (LeapSkill) Parkourability.get(player).get(CatLeap.class);
         if (!leapSkill.parcoolskill$isAttackReady()) return;
         leapSkill.parcoolskill$setAttackReady(false);
@@ -64,12 +65,11 @@ public class LeapSkillHandler {
 
         var wildStrikeDamageMultiplier = Config.WILD_STRIKE_DAMAGE_MULTIPLIER.get().floatValue();
         var wildStrikeParryDuration = Config.WILD_STRIKE_PARRY_DURATION.get();
-        event.setCriticalHit(true);
-        event.setDisableCrit(true);
-        event.setDamageMultiplier(event.getDamageMultiplier() * wildStrikeDamageMultiplier);
-        leapSkill.parcoolskill$setParryTime(wildStrikeParryDuration);
-
         var target = event.getTarget();
+        event.setCriticalHit(true);
+        event.setDamageMultiplier(event.getDamageMultiplier() * wildStrikeDamageMultiplier);
+        event.setDisableCrit(true);
+        leapSkill.parcoolskill$setParryTime(wildStrikeParryDuration);
         SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
     }
 }

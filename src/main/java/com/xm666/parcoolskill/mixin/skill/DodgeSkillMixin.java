@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.mixin;
+package com.xm666.parcoolskill.mixin.skill;
 
 import com.alrex.parcool.common.action.impl.Dodge;
 import com.xm666.parcoolskill.skill.DodgeSkill;

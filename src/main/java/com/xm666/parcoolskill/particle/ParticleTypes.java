@@ -19,27 +19,22 @@ public class ParticleTypes {
             BuiltInRegistries.PARTICLE_TYPE,
             ParCoolSkill.MODID
     );
-
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> IRONCLAD_HIT = PARTICLE_TYPES.register(
             "ironclad_hit",
             () -> new SimpleParticleType(false)
     );
-
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> IRONCLAD_EFFECT = PARTICLE_TYPES.register(
             "ironclad_effect",
             () -> new SimpleParticleType(false)
     );
-
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SILENT_HIT = PARTICLE_TYPES.register(
             "silent_hit",
             () -> new SimpleParticleType(false)
     );
-
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SILENT_EFFECT = PARTICLE_TYPES.register(
             "silent_effect",
             () -> new SimpleParticleType(false)
     );
-
     public static final int IRONCLAD_COLOR = 0xBF4D4D;
     public static final int SILENT_COLOR = 0x4DBF4D;
 

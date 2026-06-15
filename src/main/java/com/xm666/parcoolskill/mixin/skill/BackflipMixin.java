@@ -1,24 +1,18 @@
-package com.xm666.parcoolskill.mixin;
+package com.xm666.parcoolskill.mixin.skill;
 
-import com.alrex.parcool.api.SoundEvents;
 import com.alrex.parcool.client.animation.PlayerModelRotator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
 import com.alrex.parcool.common.action.ActionProcessor;
-import com.alrex.parcool.common.action.impl.Dodge;
 import com.alrex.parcool.common.action.impl.Flipping;
 import com.alrex.parcool.common.attachment.common.Parkourability;
-import com.alrex.parcool.config.ParCoolConfig;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.xm666.parcoolskill.Config;
-import com.xm666.parcoolskill.handler.BackflipHandler;
-import com.xm666.parcoolskill.handler.SkillParticleHandler;
-import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.skill.FlippingSkill;
+import com.xm666.parcoolskill.skill.handler.BackflipHandler;
 import com.xm666.timescalelib.handler.TimeScaleHandler;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
@@ -43,16 +37,10 @@ public class BackflipMixin {
     private static class FlippingMixin {
         @OnlyIn(Dist.CLIENT)
         @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isShiftKeyDown()Z"))
-        private boolean modifyShiftKeyDown(boolean original, @Local(argsOnly = true) ByteBuffer startInfo, @Local(name = "fDirection") Flipping.Direction fDirection, @Local(argsOnly = true) Parkourability parkourability) {
-            if (!original) {
-                startInfo.putInt(0);
-                return false;
-            }
+        private boolean modifyShiftKeyDown(boolean original, @Local(argsOnly = true) Parkourability parkourability, @Local(argsOnly = true) ByteBuffer startInfo, @Local(name = "fDirection") Flipping.Direction fDirection) {
+            if (!original) return false;
 
-            if (!Config.BACKFLIP_ENABLED.get() || fDirection != Flipping.Direction.Back || ((FlippingSkill) this).parcoolskill$getCooldown() > 0 || parkourability.get(Dodge.class).isDoing()) {
-                startInfo.putInt(0);
-                return true;
-            }
+            if (!BackflipHandler.canStart((FlippingSkill) this, parkourability, fDirection)) return true;
 
             startInfo.putInt(1);
             return false;
@@ -60,37 +48,20 @@ public class BackflipMixin {
 
         @OnlyIn(Dist.CLIENT)
         @Inject(method = "onStartInLocalClient", at = @At("TAIL"))
-        private void onStartInLocal(Player player, Parkourability parkourability, ByteBuffer startInfo, CallbackInfo ci) {
-            if (!BackflipHandler.canStart(startInfo)) return;
-
-            BackflipHandler.onStart(player, (FlippingSkill) this);
-
-            if (!ParCoolConfig.Client.Booleans.EnableActionSounds.get()) return;
-
-            player.playSound(SoundEvents.CHARGE_JUMP.get(), 1.0F, 1.0F);
+        private void onStartInLocalClient(Player player, Parkourability parkourability, ByteBuffer startData, CallbackInfo ci) {
+            BackflipHandler.tryStart((FlippingSkill) this, player, startData);
         }
 
         @OnlyIn(Dist.CLIENT)
         @Inject(method = "onStartInOtherClient", at = @At("TAIL"))
-        private void onStartInOther(Player player, Parkourability parkourability, ByteBuffer startInfo, CallbackInfo ci) {
-            if (!ParCoolConfig.Client.Booleans.EnableActionSounds.get() || !BackflipHandler.canStart(startInfo))
-                return;
-
-            player.playSound(SoundEvents.CHARGE_JUMP.get(), 1.0F, 1.0F);
+        private void onStartInOtherClient(Player player, Parkourability parkourability, ByteBuffer startData, CallbackInfo ci) {
+            BackflipHandler.tryStart((FlippingSkill) this, player, startData);
         }
 
         @SuppressWarnings("AddedMixinMembersNamePattern")
         @Unique
-        public void onStartInServer(Player player, Parkourability parkourability, ByteBuffer startInfo) {
-            if (!BackflipHandler.canStart(startInfo)) return;
-
-            BackflipHandler.onStart(player, (FlippingSkill) this);
-
-            var backflipBulletTimeScale = Config.BACKFLIP_BULLET_TIME_SCALE.get().floatValue();
-            var backflipBulletTimeDuration = Config.BACKFLIP_BULLET_TIME_DURATION.get();
-            TimeScaleHandler.applyScale(player, backflipBulletTimeScale, backflipBulletTimeDuration, 40);
-
-            SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_EFFECT, player);
+        public void onStartInServer(Player player, Parkourability parkourability, ByteBuffer startData) {
+            BackflipHandler.tryStart((FlippingSkill) this, player, startData);
         }
 
         @SuppressWarnings("AddedMixinMembersNamePattern")
@@ -141,11 +112,11 @@ public class BackflipMixin {
         @Final
         private Player player;
 
-        @ModifyReturnValue(method = "getPartialTick", at = @At("RETURN"))
-        public float modifyPartialTick(float original) {
+        @WrapMethod(method = "getPartialTick")
+        public float wrapPartialTick(Operation<Float> original) {
             return TimeScaleHandler.isEntityAuthoritativeFrozen(player)
                     ? TimeScaleHandler.getScalablePartialTick(!TimeScaleHandler.isEntityOriginalFrozen(player))
-                    : original;
+                    : original.call();
         }
     }
 
@@ -156,11 +127,11 @@ public class BackflipMixin {
         @Final
         private Player player;
 
-        @ModifyReturnValue(method = "getPartialTick", at = @At("RETURN"))
-        public float modifyPartialTick(float original) {
+        @WrapMethod(method = "getPartialTick")
+        public float wrapPartialTick(Operation<Float> original) {
             return TimeScaleHandler.isEntityAuthoritativeFrozen(player)
                     ? TimeScaleHandler.getScalablePartialTick(!TimeScaleHandler.isEntityOriginalFrozen(player))
-                    : original;
+                    : original.call();
         }
     }
 }

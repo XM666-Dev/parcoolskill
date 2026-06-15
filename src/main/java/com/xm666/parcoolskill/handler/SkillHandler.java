@@ -2,28 +2,20 @@ package com.xm666.parcoolskill.handler;
 
 import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.SlideSkill;
-import net.minecraft.client.Minecraft;
+import com.xm666.parcoolskill.skill.handler.CleaveHandler;
+import com.xm666.parcoolskill.skill.handler.SlideSkillHandler;
 import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.function.Predicate;
-
+@SuppressWarnings("UnusedReturnValue")
 public class SkillHandler {
     public static void handlePayload(final SkillPayload payload, final IPayloadContext context) {
         var level = context.player().level();
@@ -33,21 +25,35 @@ public class SkillHandler {
 
         if (!(sourceEntity instanceof Player player)) return;
 
-        if (type == SkillPayload.Type.CLEAVE_READY) {
-            CleaveHandler.handleReady(player);
-        }
+        if (tryHandleCleaveReady(type, player)) return;
 
         if (!(targetEntity instanceof Entity target)) return;
 
-        if (type == SkillPayload.Type.DROPKICK || type == SkillPayload.Type.HEEL_HOOK) {
-            var slideSkillType = SlideSkill.Type.values()[type.ordinal()];
-            SlideSkillHandler.handleAttack(player, target, slideSkillType);
-            return;
-        }
+        if (tryHandleSlideSkill(type, player, target)) return;
 
-        if (type == SkillPayload.Type.CLEAVE_ATTACK) {
-            CleaveHandler.handleAttack(player, target);
-        }
+        tryHandleCleaveAttack(type, player, target);
+    }
+
+    private static boolean tryHandleCleaveReady(SkillPayload.Type type, Player player) {
+        if (type != SkillPayload.Type.CLEAVE_READY) return false;
+
+        CleaveHandler.handleReady(player);
+        return true;
+    }
+
+    private static boolean tryHandleSlideSkill(SkillPayload.Type type, Player player, Entity target) {
+        if (type != SkillPayload.Type.DROPKICK && type != SkillPayload.Type.HEEL_HOOK) return false;
+
+        var slideSkillType = SlideSkill.Type.values()[type.ordinal()];
+        SlideSkillHandler.handleAttack(player, target, slideSkillType);
+        return true;
+    }
+
+    private static boolean tryHandleCleaveAttack(SkillPayload.Type type, Player player, Entity target) {
+        if (type != SkillPayload.Type.CLEAVE_ATTACK) return false;
+
+        CleaveHandler.handleAttack(player, target);
+        return true;
     }
 
     public static void use(SkillPayload.Type type, Player source) {
@@ -58,6 +64,12 @@ public class SkillHandler {
         PacketDistributor.sendToServer(new SkillPayload(type.ordinal(), source.getId(), target.getId()));
     }
 
+    public static void knockback(LivingEntity target, LivingEntity source, double amount) {
+        var knockback = source.getAttributeValue(Attributes.ATTACK_KNOCKBACK) + amount;
+        var rotation = source.getYRot() * Mth.DEG_TO_RAD;
+        target.knockback(knockback * 0.5, Mth.sin(rotation), -Mth.cos(rotation));
+    }
+
     public static void addEffect(LivingEntity target, Entity source, Holder<MobEffect> effect, int duration) {
         addEffect(target, source, effect, duration, 0);
     }
@@ -66,123 +78,5 @@ public class SkillHandler {
         var effectInstance = target.getEffect(effect);
         duration += effectInstance != null ? effectInstance.getDuration() : 0;
         target.addEffect(new MobEffectInstance(effect, duration, amplifier), source);
-    }
-
-    public static void knockback(LivingEntity target, LivingEntity source, double amount) {
-        var knockback = source.getAttributeValue(Attributes.ATTACK_KNOCKBACK) + amount;
-        var rotation = source.getYRot() * Mth.DEG_TO_RAD;
-        target.knockback(knockback * 0.5, Mth.sin(rotation), -Mth.cos(rotation));
-    }
-
-    public static double calculateAttribute(LivingEntity living, Holder<Attribute> attribute, Predicate<AttributeModifier> predicate) {
-        var baseValue = living.getAttributeBaseValue(attribute);
-        var modifiers = getAttributeModifiers(living, attribute, predicate);
-        return calculateAttribute(baseValue, modifiers, attribute);
-    }
-
-    private static double calculateAttribute(double baseValue, AttributeModifier[] modifiers, Holder<Attribute> attribute) {
-        return attribute.value().sanitizeValue(calculateAttribute(baseValue, modifiers));
-    }
-
-    private static double calculateAttribute(double baseValue, AttributeModifier[] modifiers) {
-        for (var attributeModifier : Arrays.stream(modifiers).filter(m -> m.operation() == AttributeModifier.Operation.ADD_VALUE).toArray(AttributeModifier[]::new)) {
-            baseValue += attributeModifier.amount();
-        }
-
-        var value = baseValue;
-
-        for (var attributeModifier : Arrays.stream(modifiers).filter(m -> m.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_BASE).toArray(AttributeModifier[]::new)) {
-            value += baseValue * attributeModifier.amount();
-        }
-
-        for (var attributeModifier : Arrays.stream(modifiers).filter(m -> m.operation() == AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL).toArray(AttributeModifier[]::new)) {
-            value *= 1.0 + attributeModifier.amount();
-        }
-
-        return value;
-    }
-
-    private static AttributeModifier[] getAttributeModifiers(LivingEntity living, Holder<Attribute> attribute, Predicate<AttributeModifier> predicate) {
-        var attributeInstance = living.getAttribute(attribute);
-        if (attributeInstance == null) return new AttributeModifier[0];
-
-        return attributeInstance.getModifiers().stream().filter(predicate).toArray(AttributeModifier[]::new);
-    }
-
-    public static double getAttributeAddition(LivingEntity living, Holder<Attribute> attribute) {
-        return Math.max(living.getAttributeValue(attribute) - living.getAttributes().supplier.getBaseValue(attribute), 0.0);
-    }
-
-    public static double getEntityPickRange(Entity shooter, double distance) {
-        var mc = Minecraft.getInstance();
-        var timer = mc.getTimer();
-        var partialTick = timer.getGameTimeDeltaPartialTick(true);
-        var hitResult = shooter.pick(distance, partialTick, false);
-        if (hitResult.getType() != HitResult.Type.MISS) {
-            var eyePosition = shooter.getEyePosition(partialTick);
-            return hitResult.getLocation().distanceTo(eyePosition);
-        }
-        return distance;
-    }
-
-    public static Entity[] getEntityHits(Entity shooter, double distance, double inflationAmount, long limit) {
-        var mc = Minecraft.getInstance();
-        var timer = mc.getTimer();
-        var partialTick = timer.getGameTimeDeltaPartialTick(true);
-        var eyePosition = shooter.getEyePosition();
-        var viewVector = shooter.getViewVector(partialTick);
-        var pickVector = viewVector.scale(distance);
-        var pickPosition = eyePosition.add(pickVector);
-        var aabb = shooter.getBoundingBox().expandTowards(pickVector).inflate(1.0);
-        return SkillHandler.getEntityHits(
-                shooter,
-                eyePosition,
-                pickPosition,
-                aabb,
-                (entity) -> !entity.isSpectator() && entity.isPickable(),
-                inflationAmount,
-                limit
-        );
-    }
-
-    public static Entity[] getEntityHits(Entity shooter, Vec3 startPosition, Vec3 endPosition, AABB boundingBox, Predicate<Entity> filter, double inflationAmount, long limit) {
-        record HitResult(Entity entity, double distanceSquare) {
-        }
-
-        var level = shooter.level();
-        var hitResults = new ArrayList<HitResult>();
-
-        for (Entity entity : level.getEntities(shooter, boundingBox, filter)) {
-            var aabb = entity.getBoundingBox().inflate(entity.getPickRadius() + inflationAmount);
-            var optionalPoint = aabb.clip(startPosition, endPosition);
-            double distanceSquare;
-            if (aabb.contains(startPosition)) {
-                distanceSquare = 0.0;
-            } else if (optionalPoint.isPresent()) {
-                var point = optionalPoint.get();
-                distanceSquare = startPosition.distanceToSqr(point);
-            } else {
-                continue;
-            }
-            hitResults.add(new HitResult(entity, distanceSquare));
-        }
-
-        return hitResults.stream()
-                .sorted(Comparator.comparingDouble((HitResult hitResult) -> hitResult.distanceSquare))
-                .map(hitResult -> hitResult.entity)
-                .limit(limit)
-                .toArray(Entity[]::new);
-    }
-
-    public static float getRedComponent(int color) {
-        return ((color >> 16) & 0xFF) / 255.0F;
-    }
-
-    public static float getGreenComponent(int color) {
-        return ((color >> 8) & 0xFF) / 255.0F;
-    }
-
-    public static float getBlueComponent(int color) {
-        return (color & 0xFF) / 255.0F;
     }
 }

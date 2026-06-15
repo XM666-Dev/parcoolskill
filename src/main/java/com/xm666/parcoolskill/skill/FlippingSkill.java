@@ -1,6 +1,8 @@
 package com.xm666.parcoolskill.skill;
 
 public interface FlippingSkill {
+    boolean parcoolskill$justJumped();
+
     int parcoolskill$getSkillTime();
 
     void parcoolskill$setSkillTime(int skillTime);
@@ -16,8 +18,4 @@ public interface FlippingSkill {
     int parcoolskill$getInvulnerableTime();
 
     void parcoolskill$setInvulnerableTime(int invulnerableTime);
-
-    boolean parcoolskill$disableCrit();
-
-    void parcoolskill$setDisableCrit(boolean disableCrit);
 }

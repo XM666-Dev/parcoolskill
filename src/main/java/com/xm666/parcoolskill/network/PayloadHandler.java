@@ -1,9 +1,9 @@
-package com.xm666.parcoolskill.handler;
+package com.xm666.parcoolskill.network;
 
 import com.xm666.parcoolskill.ParCoolSkill;
-import com.xm666.parcoolskill.network.SkillParticlePayload;
-import com.xm666.parcoolskill.network.SkillPayload;
-import com.xm666.parcoolskill.network.StaminaPayload;
+import com.xm666.parcoolskill.handler.SkillHandler;
+import com.xm666.parcoolskill.handler.StaminaHandler;
+import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;

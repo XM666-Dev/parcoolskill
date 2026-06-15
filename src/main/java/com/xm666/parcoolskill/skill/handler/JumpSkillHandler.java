@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.handler;
+package com.xm666.parcoolskill.skill.handler;
 
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.ChargeJump;

@@ -1,8 +1,7 @@
-package com.xm666.parcoolskill.handler;
+package com.xm666.parcoolskill.particle;
 
 import com.xm666.parcoolskill.ClientConfig;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
-import com.xm666.parcoolskill.particle.ParticleTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -31,5 +30,17 @@ public class SkillParticleHandler {
         if (entity.level().isClientSide()) return;
 
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, new SkillParticlePayload(type.ordinal(), entity.getId()));
+    }
+
+    public static float getRedComponent(int color) {
+        return ((color >> 16) & 0xFF) / 255.0F;
+    }
+
+    public static float getGreenComponent(int color) {
+        return ((color >> 8) & 0xFF) / 255.0F;
+    }
+
+    public static float getBlueComponent(int color) {
+        return (color & 0xFF) / 255.0F;
     }
 }

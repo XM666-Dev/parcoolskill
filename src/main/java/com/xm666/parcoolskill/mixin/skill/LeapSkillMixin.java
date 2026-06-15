@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.mixin;
+package com.xm666.parcoolskill.mixin.skill;
 
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.attachment.common.Parkourability;
@@ -48,7 +48,7 @@ public class LeapSkillMixin {
         @OnlyIn(Dist.CLIENT)
         @Definition(id = "coolTimeTick", field = "Lcom/alrex/parcool/common/action/impl/CatLeap;coolTimeTick:I")
         @Expression("this.coolTimeTick <= 0")
-        @WrapOperation(method = "canStart", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 0))
+        @WrapOperation(method = "canStart", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
         private boolean wrapCoolTimeCondition(int left, int right, Operation<Boolean> original) {
             return true;
         }

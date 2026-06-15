@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.handler;
+package com.xm666.parcoolskill.skill.handler;
 
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.CatLeap;
@@ -9,7 +9,10 @@ import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.effect.Effects;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
+import com.xm666.parcoolskill.handler.SkillHandler;
+import com.xm666.parcoolskill.handler.StaminaHandler;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
+import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -19,7 +22,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 public class BashHandler {
     @SubscribeEvent
     public static void onJumpStart(ParCoolActionEvent.Start.Pre event) {
-        if (!(event.getAction() instanceof JumpSkill jumpSkill) || !Config.BASH_ENABLED.get()) return;
+        if (!Config.BASH_ENABLED.get() || !(event.getAction() instanceof JumpSkill jumpSkill)) return;
 
         jumpSkill.parcoolskill$setAttackReady(true);
     }

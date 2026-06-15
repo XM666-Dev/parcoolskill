@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.mixin;
+package com.xm666.parcoolskill.mixin.event;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
@@ -20,16 +20,9 @@ public class PlayerAttackMixin {
     private static class PlayerMixin {
         @ModifyExpressionValue(method = "attack", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/common/CommonHooks;fireCriticalHit(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;ZF)Lnet/neoforged/neoforge/event/entity/player/CriticalHitEvent;"))
         private CriticalHitEvent modifyCriticalHit(CriticalHitEvent critEvent, @Share("disableCrit") LocalBooleanRef disableCrit) {
-            var playerAttackEvent = new PlayerAttackEvent.Pre(
-                    (Player) (Object) this,
-                    critEvent.getTarget(),
-                    critEvent.getVanillaMultiplier(),
-                    critEvent.isVanillaCritical(),
-                    critEvent.disableSweep()
-            );
-            playerAttackEvent.setDamageMultiplier(critEvent.getDamageMultiplier());
-            playerAttackEvent.setCriticalHit(critEvent.isCriticalHit());
+            var playerAttackEvent = new PlayerAttackEvent.Pre(critEvent);
             NeoForge.EVENT_BUS.post(playerAttackEvent);
+
             critEvent.setDamageMultiplier(playerAttackEvent.getDamageMultiplier());
             critEvent.setCriticalHit(playerAttackEvent.isCriticalHit());
             critEvent.setDisableSweep(playerAttackEvent.disableSweep());
@@ -39,17 +32,10 @@ public class PlayerAttackMixin {
 
         @Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z", shift = At.Shift.AFTER))
         private void onHurt(Entity target, CallbackInfo ci, @Local CriticalHitEvent critEvent, @Share("disableCrit") LocalBooleanRef disableCrit) {
-            var playerAttackEvent = new PlayerAttackEvent.Post(
-                    (Player) (Object) this,
-                    target,
-                    critEvent.getVanillaMultiplier(),
-                    critEvent.isVanillaCritical(),
-                    critEvent.disableSweep()
-            );
-            playerAttackEvent.setDamageMultiplier(critEvent.getDamageMultiplier());
-            playerAttackEvent.setCriticalHit(critEvent.isCriticalHit());
+            var playerAttackEvent = new PlayerAttackEvent.Post(critEvent);
             playerAttackEvent.setDisableCrit(disableCrit.get());
             NeoForge.EVENT_BUS.post(playerAttackEvent);
+
             disableCrit.set(playerAttackEvent.disableCrit());
         }
 

@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.handler;
+package com.xm666.parcoolskill.skill.handler;
 
 import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
@@ -6,27 +6,43 @@ import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
+import com.xm666.parcoolskill.animation.HandAnimation;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
+import com.xm666.parcoolskill.handler.SkillHandler;
+import com.xm666.parcoolskill.handler.StaminaHandler;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.network.SkillPayload;
+import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import com.xm666.timescalelib.handler.TimeScaleHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.common.ItemAbilities;
+import org.joml.Vector3f;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class CleaveHandler {
-    private static final ResourceLocation ENTITY_INTERACTION_RANGE_MODIFIER = ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "modifier.entity_interaction_range.cleave");
+    public static final HandAnimation HAND_ANIMATION = new HandAnimation(
+            new Vector3f(-0.1392841F, 0.091721935F, 0.078657655F),
+            new Vector3f(-13.935F, 35.3F, -9.785F),
+            0.04F,
+            true
+    );
+    private static final ResourceLocation ENTITY_INTERACTION_RANGE_MODIFIER = ResourceLocation.fromNamespaceAndPath(
+            ParCoolSkill.MODID, "modifier.entity_interaction_range.cleave"
+    );
+    private static int animationOffset;
 
     @SubscribeEvent
     public static void onJumpTick(ParCoolActionEvent.Tick.Pre event) {
@@ -39,18 +55,10 @@ public class CleaveHandler {
                 entityInteractionRange.removeModifier(ENTITY_INTERACTION_RANGE_MODIFIER);
             }
 
-            if (!isReadyForAttack(player)) {
-                if (!CleaveHandler.hasCorrectWeapon(player)) return;
-
-                var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
-                if (jump.getChargingTick() < cleaveChargeDuration) return;
-
-                var stamina = Stamina.get(player);
-                if (stamina.isExhausted()) return;
+            if (isAttackReady(player) || isAttacking(player)) {
+                var cleaveRangeMultiplierAddition = Config.CLEAVE_RANGE_MULTIPLIER_ADDITION.get();
+                entityInteractionRange.addTransientModifier(new AttributeModifier(ENTITY_INTERACTION_RANGE_MODIFIER, cleaveRangeMultiplierAddition, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
             }
-
-            var cleaveRangeMultiplierAddition = Config.CLEAVE_RANGE_MULTIPLIER_ADDITION.get();
-            entityInteractionRange.addTransientModifier(new AttributeModifier(ENTITY_INTERACTION_RANGE_MODIFIER, cleaveRangeMultiplierAddition, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         }
 
         var jumpSkill = (JumpSkill) jump;
@@ -63,27 +71,23 @@ public class CleaveHandler {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onClickInput(InputEvent.InteractionKeyMappingTriggered event) {
-        if (!event.isAttack()) return;
-
         var mc = Minecraft.getInstance();
         var player = mc.player;
-        if (player == null || !hasCorrectWeapon(player)) return;
+        if (player == null) return;
 
-        if (isReadyForAttack(player)) {
+        if (isAttacking(player)) {
             event.setCanceled(true);
             event.setSwingHand(false);
             return;
         }
 
+        if (!event.isAttack()) return;
+
         var jump = Parkourability.get(player).get(ChargeJump.class);
         var jumpSkill = (JumpSkill) jump;
         jumpSkill.parcoolskill$setCoolingDown(true);
 
-        var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
-        if (jump.getChargingTick() < cleaveChargeDuration) return;
-
-        var stamina = Stamina.get(player);
-        if (stamina.isExhausted()) return;
+        if (!isAttackReady(player)) return;
 
         var cleaveAttackDuration = Config.CLEAVE_ATTACK_DURATION.get();
         SkillHandler.use(SkillPayload.Type.CLEAVE_READY, player);
@@ -95,15 +99,15 @@ public class CleaveHandler {
     @SubscribeEvent
     public static void onPlayerAttack(PlayerAttackEvent.Pre event) {
         var player = event.getEntity();
-        if (!isReadyForAttack(player)) return;
+        if (!isAttacking(player)) return;
 
         var sweepingDamageRatio = (float) player.getAttributeValue(Attributes.SWEEPING_DAMAGE_RATIO);
         if (sweepingDamageRatio == 0.0F) return;
 
         event.setCriticalHit(true);
-        event.setDisableCrit(true);
-        event.setDisableSweep(false);
         event.setDamageMultiplier(event.getDamageMultiplier() * (1.0F + sweepingDamageRatio));
+        event.setDisableSweep(false);
+        event.setDisableCrit(true);
     }
 
     public static void handleReady(Player player) {
@@ -121,26 +125,68 @@ public class CleaveHandler {
     }
 
     public static void handleAttack(Player player, Entity target) {
-        if (!isReadyForAttack(player)) return;
+        if (!isAttacking(player)) return;
 
-        var aabb = target.getBoundingBox();
-        if (!player.canInteractWithEntity(aabb, 1.0)) return;
+        var boundingBox = target.getBoundingBox();
+        if (!player.canInteractWithEntity(boundingBox, 1.0)) return;
 
         var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
         if (!jumpSkill.parcoolskill$addEntityHit(target)) return;
 
         player.attackStrengthTicker = (int) player.getCurrentItemAttackStrengthDelay();
         player.attack(target);
-
         SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
     }
 
-    public static boolean isReadyForAttack(Player player) {
-        var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
-        return jumpSkill.parcoolskill$getAttackTime() > 0 && hasCorrectWeapon(player);
+    public static boolean isAttackReady(Player player) {
+        if (!canUseCleave(player)) return false;
+
+        var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
+        var jump = Parkourability.get(player).get(ChargeJump.class);
+        if (jump.getChargingTick() < cleaveChargeDuration) return false;
+
+        var stamina = Stamina.get(player);
+        return !stamina.isExhausted();
     }
 
-    public static boolean hasCorrectWeapon(Player player) {
+    public static boolean isAttacking(Player player) {
+        if (!canUseCleave(player)) return false;
+
+        var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
+        return jumpSkill.parcoolskill$getAttackTime() > 0;
+    }
+
+    public static int getPickCount(Player player) {
+        var cleavePickCountBase = Config.CLEAVE_PICK_COUNT_BASE.get();
+        var registryAccess = player.level().registryAccess();
+        var sweepingEdge = registryAccess.registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.SWEEPING_EDGE);
+        return cleavePickCountBase + player.getWeaponItem().getEnchantmentLevel(sweepingEdge);
+    }
+
+    public static boolean isCharging(Player player) {
+        if (!canUseCleave(player)) return false;
+
+        var jump = Parkourability.get(player).get(ChargeJump.class);
+        if (jump.getNotChargingTick() > 0) return false;
+
+        var stamina = Stamina.get(player);
+        return !stamina.isExhausted();
+    }
+
+    public static int getAnimationOffset() {
+        return animationOffset;
+    }
+
+    public static void addAnimationOffset() {
+        ++animationOffset;
+    }
+
+    public static void clearAnimationOffset() {
+        animationOffset = 0;
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private static boolean canUseCleave(Player player) {
         if (!Config.CLEAVE_ENABLED.get()) return false;
 
         var weapon = player.getWeaponItem();
