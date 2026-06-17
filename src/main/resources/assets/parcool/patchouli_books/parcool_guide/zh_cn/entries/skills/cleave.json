@@ -1,0 +1,12 @@
+{
+  "name": "顺劈斩",
+  "icon": "parcoolskill:textures/gui/iron_longsword.png",
+  "category": "parcool:category_skills",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "手持可进行横扫攻击的武器时，在蓄力至少达到$(thing)50%$()后进行攻击，可触发$(thing)顺劈斩（Cleave）$()。$(br)持续$(thing)0.5秒$()：$(li)实体交互距离翻倍$(li)获得额外伤害加成，其倍率等同于横扫伤害倍率$(li)准星扫过的敌人会自动受到满蓄力攻击$(li)默认情况下，每个方向仅可命中一个敌人$(li)每级$(thing)横扫之刃（Sweeping Edge）$()提供一次额外穿透次数$(li)每个敌人在一次触发期间最多被命中一次"
+    }
+  ]
+}

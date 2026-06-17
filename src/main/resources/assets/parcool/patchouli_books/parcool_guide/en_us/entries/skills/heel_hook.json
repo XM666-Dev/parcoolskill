@@ -1,0 +1,12 @@
+{
+  "name": "Heel Hook",
+  "icon": "minecraft:iron_boots",
+  "category": "parcool:category_skills",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Perform a $(thing)Slide$() during a $(thing)Dodge$() to execute $(thing)Heel Hook$().$(li)Damage is calculated as:$(li2)base damage$(li2)additional attack damage$(li2)lower-body armor value$(li2)bonus maximum health$(li)Grants temporary $(thing)invulnerability$()$(li)Applies $(thing)Slowdown$() to the target$(br)If the target is affected by $(thing)Neutralized$():$(li)Refunds the $(thing)Dodge$() stamina cost$(li)Triggers $(thing)Bullet Time$() for $(thing)3 seconds$()"
+    }
+  ]
+}

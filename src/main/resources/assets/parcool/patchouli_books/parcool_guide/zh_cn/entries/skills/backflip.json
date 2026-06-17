@@ -1,0 +1,12 @@
+{
+  "name": "后空翻",
+  "icon": "parcoolskill:textures/gui/iron_throwing_knife.png",
+  "category": "parcool:category_skills",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "在潜行状态下向后进行$(thing)空翻（Flipping）$()可触发$(thing)后空翻（Backflip）$()。$(li)获得短暂无敌时间$(li)进入$(thing)次级子弹时间$()$(li)激活远程武器的连射效果$(br)在该状态下：$(li)远程武器的蓄力速度翻倍$(li)蓄力完成后将自动释放攻击"
+    }
+  ]
+}

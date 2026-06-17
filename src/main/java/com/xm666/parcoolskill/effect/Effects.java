@@ -24,12 +24,10 @@ public class Effects {
             Registries.MOB_EFFECT,
             ParCoolSkill.MODID
     );
-
     public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(
             Registries.POTION,
             ParCoolSkill.MODID
     );
-
     public static final DeferredHolder<MobEffect, Vulnerable> VULNERABLE = MOB_EFFECTS.register(
             "vulnerable",
             () -> new Vulnerable(MobEffectCategory.HARMFUL, 0x736156)

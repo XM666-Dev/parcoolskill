@@ -2,6 +2,7 @@ package com.xm666.parcoolskill.event;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 public class PlayerAttackEvent extends PlayerEvent {
@@ -13,12 +14,18 @@ public class PlayerAttackEvent extends PlayerEvent {
     private boolean disableSweep;
     private boolean disableCrit;
 
-    protected PlayerAttackEvent(Player player, Entity target, float damageMultiplier, boolean isCriticalHit, boolean disableSweep) {
+    private PlayerAttackEvent(CriticalHitEvent critEvent) {
+        this(critEvent.getEntity(), critEvent.getTarget(), critEvent.getVanillaMultiplier(), critEvent.isVanillaCritical());
+        this.damageMultiplier = critEvent.getDamageMultiplier();
+        this.isCriticalHit = critEvent.isCriticalHit();
+        this.disableSweep = critEvent.disableSweep();
+    }
+
+    private PlayerAttackEvent(Player player, Entity target, float damageMultiplier, boolean isCriticalHit) {
         super(player);
         this.target = target;
         this.damageMultiplier = this.vanillaDamageMultiplier = damageMultiplier;
         this.isCriticalHit = this.isVanillaCritical = isCriticalHit;
-        this.disableSweep = disableSweep;
     }
 
     public Entity getTarget() {
@@ -65,7 +72,6 @@ public class PlayerAttackEvent extends PlayerEvent {
         return this.disableCrit;
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isFullStrength() {
         var player = getEntity();
         var attackStrengthScale = player.getAttackStrengthScale(0.5F);
@@ -73,14 +79,14 @@ public class PlayerAttackEvent extends PlayerEvent {
     }
 
     public static class Pre extends PlayerAttackEvent {
-        public Pre(Player player, Entity target, float damageMultiplier, boolean isCriticalHit, boolean disableSweep) {
-            super(player, target, damageMultiplier, isCriticalHit, disableSweep);
+        public Pre(CriticalHitEvent critEvent) {
+            super(critEvent);
         }
     }
 
     public static class Post extends PlayerAttackEvent {
-        public Post(Player player, Entity target, float damageMultiplier, boolean isCriticalHit, boolean disableSweep) {
-            super(player, target, damageMultiplier, isCriticalHit, disableSweep);
+        public Post(CriticalHitEvent critEvent) {
+            super(critEvent);
         }
     }
 }

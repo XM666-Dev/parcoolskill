@@ -18,8 +18,4 @@ public interface JumpSkill {
     boolean parcoolskill$isCoolingDown();
 
     void parcoolskill$setCoolingDown(boolean coolingDown);
-
-    int parcoolskill$getRenderTick();
-
-    void parcoolskill$addRenderTick();
 }
