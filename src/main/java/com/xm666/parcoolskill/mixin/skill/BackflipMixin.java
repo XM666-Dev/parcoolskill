@@ -58,25 +58,22 @@ public class BackflipMixin {
             BackflipHandler.tryStart((FlippingSkill) this, player, startData);
         }
 
-        @SuppressWarnings("AddedMixinMembersNamePattern")
         @Unique
         public void onStartInServer(Player player, Parkourability parkourability, ByteBuffer startData) {
             BackflipHandler.tryStart((FlippingSkill) this, player, startData);
         }
 
-        @SuppressWarnings("AddedMixinMembersNamePattern")
         @OnlyIn(Dist.CLIENT)
         @Unique
         public boolean wantsToShowStatusBar(LocalPlayer player, Parkourability parkourability) {
             return ((FlippingSkill) this).parcoolskill$getCooldown() > 0;
         }
 
-        @SuppressWarnings("AddedMixinMembersNamePattern")
         @OnlyIn(Dist.CLIENT)
         @Unique
         public float getStatusValue(LocalPlayer player, Parkourability parkourability) {
-            var backflipSkillCooldown = Config.BACKFLIP_SKILL_COOLDOWN.get();
-            return (float) ((FlippingSkill) this).parcoolskill$getCooldown() / backflipSkillCooldown;
+            var backflipCooldownDuration = Config.BACKFLIP_COOLDOWN_DURATION.get();
+            return (float) ((FlippingSkill) this).parcoolskill$getCooldown() / backflipCooldownDuration;
         }
     }
 

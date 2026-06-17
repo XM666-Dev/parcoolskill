@@ -104,7 +104,6 @@ public class SlideSkillHandler {
         event.setCanceled(true);
     }
 
-    @SuppressWarnings({"DataFlowIssue"})
     public static void handleAttack(Player player, Entity target, SlideSkill.Type type) {
         if (!isAttackReady(player, type)) return;
 
@@ -117,7 +116,7 @@ public class SlideSkillHandler {
             default -> 0;
         });
 
-        var damageSource = getDamageSource(player);
+        var damageSource = getDamageSource(player, type);
         var damage = getDamage(player);
         target.hurt(damageSource, damage);
         player.resetAttackStrengthTicker();
@@ -126,21 +125,19 @@ public class SlideSkillHandler {
             switch (type) {
                 case DROPKICK -> {
                     useDropKick(player, living);
+
                     SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
                 }
                 case HEEL_HOOK -> {
                     useHeelHook(player, living);
+
                     SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
                 }
             }
         }
 
         var level = player.level();
-        var sound = switch (type) {
-            case DROPKICK -> SoundEvents.PLAYER_ATTACK_KNOCKBACK;
-            case HEEL_HOOK -> SoundEvents.PLAYER_ATTACK_STRONG;
-            default -> null;
-        };
+        var sound = type == SlideSkill.Type.DROPKICK ? SoundEvents.PLAYER_ATTACK_KNOCKBACK : SoundEvents.PLAYER_ATTACK_STRONG;
         level.playSound(null, player.getX(), player.getY(), player.getZ(), sound, player.getSoundSource(), 1.0F, 1.0F);
     }
 
@@ -173,19 +170,21 @@ public class SlideSkillHandler {
         return true;
     }
 
-    private static DamageSource getDamageSource(Player player) {
+    private static DamageSource getDamageSource(Player player, SlideSkill.Type type) {
         var level = player.level();
-        var slideAttack = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.SLIDE_ATTACK);
-        return new DamageSource(slideAttack, player, player, player.position());
+        var damageType = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(
+                type == SlideSkill.Type.DROPKICK ? DamageTypes.KICK_ATTACK : DamageTypes.TWIST_ATTACK
+        );
+        return new DamageSource(damageType, player, player, player.position());
     }
 
     private static float getDamage(Player player) {
-        var slideSkillDamageAddition = Config.SLIDE_SKILL_DAMAGE_ADDITION.get();
+        var slideSkillDamageBase = Config.SLIDE_SKILL_DAMAGE_BASE.get();
         var slideSkillDamageMultiplier = Config.SLIDE_SKILL_DAMAGE_MULTIPLIER.get();
         var attack = AttributeHandler.calculateAttribute(player, Attributes.ATTACK_DAMAGE, SlideSkillHandler::isExtraAttack);
         var armor = AttributeHandler.calculateAttribute(player, Attributes.ARMOR, SlideSkillHandler::isLowerArmor);
         var health = AttributeHandler.getAttributeAddition(player, Attributes.MAX_HEALTH);
-        return (float) ((attack + armor + health) * slideSkillDamageMultiplier + slideSkillDamageAddition);
+        return (float) (slideSkillDamageBase + (attack + armor + health) * slideSkillDamageMultiplier);
     }
 
     private static boolean isLowerArmor(AttributeModifier attributeModifier) {

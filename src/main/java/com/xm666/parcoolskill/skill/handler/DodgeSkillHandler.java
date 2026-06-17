@@ -103,11 +103,12 @@ public class DodgeSkillHandler {
         }
 
         var sneakyStrikeDamageMultiplier = Config.SNEAKY_STRIKE_DAMAGE_MULTIPLIER.get().floatValue();
-        var backstabDamageMultiplier = Config.BACKSTAB_DAMAGE_MULTIPLIER.get().floatValue();
-        var damageMultiplier = behind ? backstabDamageMultiplier : sneakyStrikeDamageMultiplier;
+        var sneakyStrikeBackstabDamageMultiplier = Config.SNEAKY_STRIKE_BACKSTAB_DAMAGE_MULTIPLIER.get().floatValue();
+        var damageMultiplier = behind ? sneakyStrikeBackstabDamageMultiplier : sneakyStrikeDamageMultiplier;
         event.setCriticalHit(true);
         event.setDamageMultiplier(event.getDamageMultiplier() * damageMultiplier);
         event.setDisableSweep(false);
+
         event.setDisableCrit(true);
         SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
     }

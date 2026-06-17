@@ -3,6 +3,7 @@
   "package": "com.xm666.parcoolskill.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "event.LivingBlockMixin$PlayerMixin",
     "event.PlayerAttackMixin$PlayerMixin",
     "skill.BackflipMixin$FlippingMixin",
     "skill.BackflipMixin$ProjectileMixin",
@@ -10,7 +11,6 @@
     "skill.FlippingSkillMixin$FlippingMixin",
     "skill.JumpSkillMixin$ChargeJumpMixin",
     "skill.LeapSkillMixin$CatLeapMixin",
-    "skill.LeapSkillMixin$PlayerMixin",
     "skill.SlideSkillMixin$SlideMixin"
   ],
   "injectors": {

@@ -1,0 +1,12 @@
+{
+  "name": "Wild Strike",
+  "icon": "minecraft:iron_sword",
+  "category": "parcool:category_skills",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "After performing a $(thing)CatLeap$(), your next attack triggers $(thing)Wild Strike$(), dealing $(l)double damage$() and granting $(thing)1 second of parry time$()."
+    }
+  ]
+}

@@ -55,7 +55,7 @@ public class BashHandler {
             SkillHandler.addEffect(living, player, Effects.VULNERABLE, bashVulnerableDuration);
         }
 
-        SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
         event.setDisableCrit(true);
+        SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
     }
 }

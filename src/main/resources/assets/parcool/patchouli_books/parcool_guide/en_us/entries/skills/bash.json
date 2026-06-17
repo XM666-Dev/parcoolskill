@@ -1,0 +1,12 @@
+{
+  "name": "Bash",
+  "icon": "parcoolskill:textures/gui/iron_flanged_mace.png",
+  "category": "parcool:category_skills",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "After a $(thing)ChargeJump$(), your next downward strike triggers $(thing)Bash$(), applying $(thing)Vulnerable$() to the target."
+    }
+  ]
+}

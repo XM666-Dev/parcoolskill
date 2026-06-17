@@ -1,0 +1,12 @@
+{
+  "name": "Sneaky Strike",
+  "icon": "parcoolskill:textures/gui/iron_dagger.png",
+  "category": "parcool:category_skills",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "After successfully dodging an attack using $(thing)Dodge$(), your next attack within $(thing)1 second$() triggers $(thing)Sneaky Strike$(), dealing $(l)double damage$() and refunding the Dodge stamina cost. If the attack hits the target from behind, it instead triggers $(thing)Backstab$(), dealing $(l)triple damage$()."
+    }
+  ]
+}

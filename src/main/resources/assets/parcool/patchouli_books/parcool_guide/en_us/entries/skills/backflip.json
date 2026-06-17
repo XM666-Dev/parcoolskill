@@ -1,0 +1,12 @@
+{
+  "name": "Backflip",
+  "icon": "parcoolskill:textures/gui/iron_throwing_knife.png",
+  "category": "parcool:category_skills",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Perform a backward $(thing)Flipping$() while sneaking to trigger $(thing)Backflip$().$(li)Grants temporary $(thing)invulnerability$()$(li)Triggers $(thing)Minor Bullet Time$()$(li)Activates a ranged weapon rapid-fire effect$(br)During this state:$(li)Ranged weapon charge speed is doubled$(li)Fully charged shots are automatically released"
+    }
+  ]
+}

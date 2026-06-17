@@ -11,7 +11,6 @@ import org.xiyu.spartanweaponryunofficial.item.ThrowingWeaponItem;
 import java.util.Optional;
 
 public class SpartanWeaponryHandler {
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     public static Optional<Float> getPower(ItemStack stack, LivingEntity shooter) {
         var item = stack.getItem();
         var charge = stack.getUseDuration(shooter) - shooter.getUseItemRemainingTicks();

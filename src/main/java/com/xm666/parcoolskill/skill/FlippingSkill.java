@@ -18,4 +18,8 @@ public interface FlippingSkill {
     int parcoolskill$getInvulnerableTime();
 
     void parcoolskill$setInvulnerableTime(int invulnerableTime);
+
+    int parcoolskill$getParryTime();
+
+    void parcoolskill$setParryTime(int parryTime);
 }

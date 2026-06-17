@@ -145,6 +145,7 @@ dependencies {
 
     implementation "curse.maven:parcool-482378:7760593"
     implementation "curse.maven:timescalelib-1542930:8170456"
+    implementation "curse.maven:patchouli-306770:7730942"
     implementation "curse.maven:spartan-weaponry-unofficial-1450963:8238193"
 }
 

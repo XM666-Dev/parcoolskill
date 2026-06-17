@@ -1,16 +1,11 @@
 package com.xm666.parcoolskill.mixin.skill;
 
 import com.alrex.parcool.common.action.impl.CatLeap;
-import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.llamalad7.mixinextras.expression.Definition;
 import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.xm666.parcoolskill.skill.LeapSkill;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
@@ -51,21 +46,6 @@ public class LeapSkillMixin {
         @WrapOperation(method = "canStart", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
         private boolean wrapCoolTimeCondition(int left, int right, Operation<Boolean> original) {
             return true;
-        }
-    }
-
-    @Mixin(Player.class)
-    private abstract static class PlayerMixin extends LivingEntity {
-        protected PlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
-            super(entityType, level);
-        }
-
-        public boolean isBlocking() {
-            if (super.isBlocking()) return true;
-
-            var player = (Player) (Object) this;
-            var leapSkill = (LeapSkill) Parkourability.get(player).get(CatLeap.class);
-            return leapSkill.parcoolskill$getParryTime() > 0;
         }
     }
 }

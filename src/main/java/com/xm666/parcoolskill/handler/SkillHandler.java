@@ -15,7 +15,6 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-@SuppressWarnings("UnusedReturnValue")
 public class SkillHandler {
     public static void handlePayload(final SkillPayload payload, final IPayloadContext context) {
         var level = context.player().level();

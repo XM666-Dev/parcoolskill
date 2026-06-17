@@ -10,6 +10,7 @@ import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.animation.HandAnimation;
 import com.xm666.parcoolskill.effect.Effects;
+import com.xm666.parcoolskill.event.LivingBlockEvent;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.handler.StaminaHandler;
@@ -30,6 +31,9 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.joml.Vector3f;
 
+import java.util.ArrayDeque;
+import java.util.stream.Collectors;
+
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class FlickFlackHandler {
     public static final HandAnimation HAND_ANIMATION = new HandAnimation(
@@ -38,7 +42,7 @@ public class FlickFlackHandler {
             0.2F,
             false
     );
-    private static boolean disableCrit;
+    private static ArrayDeque<LivingEntity> targets;
 
     @SubscribeEvent
     public static void onFlippingStart(ParCoolActionEvent.Start.Post event) {
@@ -73,9 +77,14 @@ public class FlickFlackHandler {
 
         var flippingSkill = (FlippingSkill) flipping;
         var invulnerableTime = flippingSkill.parcoolskill$getInvulnerableTime();
-        if (invulnerableTime == 0) return;
+        if (invulnerableTime > 0) {
+            flippingSkill.parcoolskill$setInvulnerableTime(invulnerableTime - 1);
+        }
 
-        flippingSkill.parcoolskill$setInvulnerableTime(invulnerableTime - 1);
+        var parryTime = flippingSkill.parcoolskill$getParryTime();
+        if (parryTime > 0) {
+            flippingSkill.parcoolskill$setParryTime(parryTime - 1);
+        }
     }
 
     @SubscribeEvent
@@ -89,18 +98,10 @@ public class FlickFlackHandler {
         event.setCanceled(true);
     }
 
-    @SuppressWarnings("WrapperTypeMayBePrimitive")
     @SubscribeEvent
     public static void onPlayerAttack(PlayerAttackEvent.Pre event) {
         var player = event.getEntity();
-        if (!isAttackReady(player)) {
-            if (disableCrit) {
-                event.setDisableCrit(true);
-            }
-            return;
-        }
-
-        if (!event.isFullStrength()) return;
+        if (attackTarget(player, event) || !isAttackReady(player) || !event.isFullStrength()) return;
 
         var flickFlackStaminaConsumption = Config.FLICK_FLACK_STAMINA_CONSUMPTION.get();
         StaminaHandler.consume(player, flickFlackStaminaConsumption);
@@ -111,24 +112,33 @@ public class FlickFlackHandler {
             SkillHandler.addEffect(living, player, Effects.NEUTRALIZED, flickFlackNeutralizedDuration);
         }
 
+        var flickFlackParryDuration = Config.FLICK_FLACK_PARRY_DURATION.get();
+        var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
+        flippingSkill.parcoolskill$setParryTime(flickFlackParryDuration);
+
         event.setDisableCrit(true);
         SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
         player.sweepAttack();
 
-        disableCrit = true;
-        for (var living : target.level().getEntitiesOfClass(LivingEntity.class, getSweepHitBox(target))) {
-            var entityReachSquare = Mth.square(player.entityInteractionRange());
-            if (living != player && living != target && !player.isAlliedTo(living) && (!(living instanceof ArmorStand) || !((ArmorStand) living).isMarker()) && player.distanceToSqr(living) < entityReachSquare) {
-                player.attackStrengthTicker = (int) player.getCurrentItemAttackStrengthDelay();
-                player.attack(living);
-                SkillHandler.addEffect(living, player, Effects.NEUTRALIZED, flickFlackNeutralizedDuration);
-                SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, living);
-            }
-        }
-        disableCrit = false;
+        if (player.isLocalPlayer()) return;
+
+        targets = target.level().getEntitiesOfClass(LivingEntity.class, getSweepHitBox(target)).stream()
+                .filter(living -> canSweep(player, target, living))
+                .collect(Collectors.toCollection(ArrayDeque::new));
+        attackTarget(player, event);
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    @SubscribeEvent
+    public static void onLivingBlock(LivingBlockEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        var parkourability = Parkourability.get(player);
+        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
+        if (flippingSkill.parcoolskill$getParryTime() == 0) return;
+
+        event.setSuccessful(true);
+    }
+
     private static boolean isAttackReady(Player player) {
         var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
         if (!flippingSkill.parcoolskill$isAttackReady()) return false;
@@ -139,6 +149,28 @@ public class FlickFlackHandler {
 
     private static AABB getSweepHitBox(Entity target) {
         return target.getBoundingBox().inflate(1.0, 0.25, 1.0);
+    }
+
+    private static boolean attackTarget(Player player, PlayerAttackEvent.Pre event) {
+        if (player.isLocalPlayer() || targets == null || targets.isEmpty()) return false;
+
+        var flickFlackNeutralizedDuration = Config.FLICK_FLACK_NEUTRALIZED_DURATION.get();
+        var target = targets.pop();
+        player.attackStrengthTicker = (int) player.getCurrentItemAttackStrengthDelay();
+        player.attack(target);
+        SkillHandler.addEffect(target, player, Effects.NEUTRALIZED, flickFlackNeutralizedDuration);
+
+        event.setDisableCrit(true);
+        SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
+        return true;
+    }
+
+    private static boolean canSweep(Player player, Entity target, LivingEntity living) {
+        return living != player
+                && living != target
+                && !player.isAlliedTo(living)
+                && (!(living instanceof ArmorStand armorStand) || !armorStand.isMarker())
+                && player.distanceToSqr(living) < Mth.square(player.entityInteractionRange());
     }
 
     public static boolean canJump(Parkourability parkourability) {

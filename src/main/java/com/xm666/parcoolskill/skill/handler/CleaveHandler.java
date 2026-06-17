@@ -71,6 +71,8 @@ public class CleaveHandler {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onClickInput(InputEvent.InteractionKeyMappingTriggered event) {
+        if (event.isPickBlock()) return;
+
         var mc = Minecraft.getInstance();
         var player = mc.player;
         if (player == null) return;
@@ -81,7 +83,7 @@ public class CleaveHandler {
             return;
         }
 
-        if (!event.isAttack()) return;
+        if (!event.isAttack() || !isCharging(player)) return;
 
         var jump = Parkourability.get(player).get(ChargeJump.class);
         var jumpSkill = (JumpSkill) jump;
@@ -135,18 +137,16 @@ public class CleaveHandler {
 
         player.attackStrengthTicker = (int) player.getCurrentItemAttackStrengthDelay();
         player.attack(target);
+
         SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
     }
 
     public static boolean isAttackReady(Player player) {
-        if (!canUseCleave(player)) return false;
+        if (!isCharging(player)) return false;
 
         var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
         var jump = Parkourability.get(player).get(ChargeJump.class);
-        if (jump.getChargingTick() < cleaveChargeDuration) return false;
-
-        var stamina = Stamina.get(player);
-        return !stamina.isExhausted();
+        return jump.getChargingTick() >= cleaveChargeDuration;
     }
 
     public static boolean isAttacking(Player player) {
@@ -156,11 +156,11 @@ public class CleaveHandler {
         return jumpSkill.parcoolskill$getAttackTime() > 0;
     }
 
-    public static int getPickCount(Player player) {
-        var cleavePickCountBase = Config.CLEAVE_PICK_COUNT_BASE.get();
+    public static int getHitCount(Player player) {
+        var cleaveHitCountBase = Config.CLEAVE_HIT_COUNT_BASE.get();
         var registryAccess = player.level().registryAccess();
         var sweepingEdge = registryAccess.registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.SWEEPING_EDGE);
-        return cleavePickCountBase + player.getWeaponItem().getEnchantmentLevel(sweepingEdge);
+        return cleaveHitCountBase + player.getWeaponItem().getEnchantmentLevel(sweepingEdge);
     }
 
     public static boolean isCharging(Player player) {
@@ -185,7 +185,6 @@ public class CleaveHandler {
         animationOffset = 0;
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean canUseCleave(Player player) {
         if (!Config.CLEAVE_ENABLED.get()) return false;
 

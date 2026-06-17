@@ -26,9 +26,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 @OnlyIn(Dist.CLIENT)
 public class CleaveMixin {
     @Mixin(Minecraft.class)
@@ -39,13 +36,10 @@ public class CleaveMixin {
             var player = mc.player;
             if (player == null || !CleaveHandler.isAttacking(player)) return;
 
-            var cleavePickRadius = Config.CLEAVE_PICK_RADIUS.get();
-            var range = PickHandler.getEntityPickRange(player, player.entityInteractionRange());
-            var count = CleaveHandler.getPickCount(player);
+            var range = PickHandler.getHitRange(player, player.entityInteractionRange());
+            var count = CleaveHandler.getHitCount(player);
             var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
-            var targets = Stream.concat(
-                            Arrays.stream(PickHandler.getHitEntities(player, range, 0.0, count)),
-                            Arrays.stream(PickHandler.getHitEntities(player, range, cleavePickRadius, 1)))
+            var targets = PickHandler.getHitEntities(player, range, count)
                     .filter(jumpSkill::parcoolskill$addEntityHit)
                     .toArray(Entity[]::new);
             for (var target : targets) {

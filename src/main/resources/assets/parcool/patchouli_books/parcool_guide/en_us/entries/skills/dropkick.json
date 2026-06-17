@@ -1,0 +1,12 @@
+{
+  "name": "Dropkick",
+  "icon": "minecraft:iron_leggings",
+  "category": "parcool:category_skills",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Perform a $(thing)Slide$() during a $(thing)CatLeap$() to execute $(thing)Dropkick$().$(li)Damage is calculated as:$(li2)base damage$(li2)additional attack damage$(li2)lower-body armor value$(li2)bonus maximum health$(li)Grants temporary $(thing)invulnerability$()$(li)Knocks back the target$(br)If the target is affected by $(thing)Vulnerable$():$(li)Refunds the $(thing)CatLeap$() stamina cost$(li)Triggers $(thing)Bullet Time$() for $(thing)3 seconds$()"
+    }
+  ]
+}

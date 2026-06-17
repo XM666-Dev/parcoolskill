@@ -52,7 +52,7 @@ public class BackflipHandler {
         }
 
         var cooldown = flippingSkill.parcoolskill$getCooldown();
-        if (cooldown == 0) {
+        if (cooldown > 0) {
             flippingSkill.parcoolskill$setCooldown(cooldown - 1);
         }
     }
@@ -104,9 +104,9 @@ public class BackflipHandler {
         var isClientSide = player.level().isClientSide();
         if (isLocalPlayer || !isClientSide) {
             var backflipSkillDuration = Config.BACKFLIP_SKILL_DURATION.get();
-            var backflipSkillCooldown = Config.BACKFLIP_SKILL_COOLDOWN.get();
+            var backflipCooldownDuration = Config.BACKFLIP_COOLDOWN_DURATION.get();
             flippingSkill.parcoolskill$setSkillTime(backflipSkillDuration);
-            flippingSkill.parcoolskill$setCooldown(backflipSkillCooldown);
+            flippingSkill.parcoolskill$setCooldown(backflipCooldownDuration);
         }
 
         if (isLocalPlayer) {
@@ -127,6 +127,7 @@ public class BackflipHandler {
             var backflipBulletTimeScale = Config.BACKFLIP_BULLET_TIME_SCALE.get().floatValue();
             var backflipBulletTimeDuration = Config.BACKFLIP_BULLET_TIME_DURATION.get();
             TimeScaleHandler.applyScale(player, backflipBulletTimeScale, backflipBulletTimeDuration, 40);
+
             SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_EFFECT, player);
         }
     }

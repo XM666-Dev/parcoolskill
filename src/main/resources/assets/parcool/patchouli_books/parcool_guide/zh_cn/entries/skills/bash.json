@@ -1,0 +1,12 @@
+{
+  "name": "痛击",
+  "icon": "parcoolskill:textures/gui/iron_flanged_mace.png",
+  "category": "parcool:category_skills",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "进行一次$(thing)蓄力跳（ChargeJump）$()后，下一次下劈攻击触发$(thing)痛击（Bash）$()，对目标施加$(thing)易伤（Vulnerable）$()。"
+    }
+  ]
+}

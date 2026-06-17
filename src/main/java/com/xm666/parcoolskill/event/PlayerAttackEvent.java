@@ -72,7 +72,6 @@ public class PlayerAttackEvent extends PlayerEvent {
         return this.disableCrit;
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isFullStrength() {
         var player = getEntity();
         var attackStrengthScale = player.getAttackStrengthScale(0.5F);
