@@ -18,6 +18,7 @@ import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.FlippingSkill;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
@@ -26,6 +27,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -131,25 +133,15 @@ public class FlickFlackHandler {
     }
 
     @SubscribeEvent
-    public static void onLivingBlock(LivingBlockEvent.Attack event) {
+    public static void onLivingBlock(LivingBlockEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
         var parkourability = Parkourability.get(player);
         var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         if (flippingSkill.parcoolskill$getParryTime() == 0) return;
 
-        event.setSuccessful(true);
-    }
-
-    @SubscribeEvent
-    public static void onLivingBlock(LivingBlockEvent.Sound event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-
-        var parkourability = Parkourability.get(player);
-        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
-        if (flippingSkill.parcoolskill$getParryTime() == 0) return;
-
-        event.setSuccessful(true);
+        event.setItem(player.getWeaponItem());
+        event.setBlocksAttacks(Items.SHIELD.components().get(DataComponents.BLOCKS_ATTACKS));
     }
 
     private static boolean isAttackReady(Player player) {

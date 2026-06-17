@@ -12,7 +12,9 @@ import com.xm666.parcoolskill.handler.StaminaHandler;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.LeapSkill;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -75,25 +77,15 @@ public class LeapSkillHandler {
     }
 
     @SubscribeEvent
-    public static void onLivingBlock(LivingBlockEvent.Attack event) {
+    public static void onLivingBlock(LivingBlockEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
         var parkourability = Parkourability.get(player);
         var leapSkill = (LeapSkill) parkourability.get(CatLeap.class);
         if (leapSkill.parcoolskill$getParryTime() == 0) return;
 
-        event.setSuccessful(true);
-    }
-
-    @SubscribeEvent
-    public static void onLivingBlock(LivingBlockEvent.Sound event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-
-        var parkourability = Parkourability.get(player);
-        var leapSkill = (LeapSkill) parkourability.get(CatLeap.class);
-        if (leapSkill.parcoolskill$getParryTime() == 0) return;
-
-        event.setSuccessful(true);
+        event.setItem(player.getWeaponItem());
+        event.setBlocksAttacks(Items.SHIELD.components().get(DataComponents.BLOCKS_ATTACKS));
     }
 
     private static boolean isAttackReady(Player player) {

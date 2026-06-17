@@ -1,33 +1,33 @@
 package com.xm666.parcoolskill.event;
 
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.BlocksAttacks;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 public class LivingBlockEvent extends LivingEvent {
-    private boolean isSuccess;
+    private ItemStack item;
+    private BlocksAttacks blocksAttacks;
 
-    private LivingBlockEvent(LivingEntity entity, boolean success) {
+    public LivingBlockEvent(LivingEntity entity, ItemStack item, BlocksAttacks blocksAttacks) {
         super(entity);
-        this.isSuccess = success;
+        this.item = item;
+        this.blocksAttacks = blocksAttacks;
     }
 
-    public boolean isSuccessful() {
-        return this.isSuccess;
+    public ItemStack getItem() {
+        return item;
     }
 
-    public void setSuccessful(boolean success) {
-        this.isSuccess = success;
+    public void setItem(ItemStack item) {
+        this.item = item;
     }
 
-    public static class Attack extends LivingBlockEvent {
-        public Attack(LivingEntity entity, boolean success) {
-            super(entity, success);
-        }
+    public BlocksAttacks blocksAttacks() {
+        return this.blocksAttacks;
     }
 
-    public static class Sound extends LivingBlockEvent {
-        public Sound(LivingEntity entity, boolean success) {
-            super(entity, success);
-        }
+    public void setBlocksAttacks(BlocksAttacks blocksAttacks) {
+        this.blocksAttacks = blocksAttacks;
     }
 }
