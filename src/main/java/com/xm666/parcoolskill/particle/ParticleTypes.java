@@ -12,8 +12,8 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-@Mod(ParCoolSkill.MODID)
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
+@Mod(ParCoolSkill.MODID)
 public class ParticleTypes {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(
             BuiltInRegistries.PARTICLE_TYPE,

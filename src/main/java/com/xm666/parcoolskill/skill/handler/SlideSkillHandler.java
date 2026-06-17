@@ -21,7 +21,8 @@ import com.xm666.parcoolskill.skill.LeapSkill;
 import com.xm666.parcoolskill.skill.SlideSkill;
 import com.xm666.timescalelib.handler.TimeScaleHandler;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -108,7 +109,7 @@ public class SlideSkillHandler {
         if (!isAttackReady(player, type)) return;
 
         var boundingBox = target.getBoundingBox();
-        if (!player.canInteractWithEntity(boundingBox, 1.0)) return;
+        if (!player.isWithinEntityInteractionRange(boundingBox, 1.0)) return;
 
         StaminaHandler.consume(player, switch (type) {
             case DROPKICK -> Config.DROPKICK_STAMINA_CONSUMPTION.get();
@@ -116,9 +117,10 @@ public class SlideSkillHandler {
             default -> 0;
         });
 
+        var level = (ServerLevel) player.level();
         var damageSource = getDamageSource(player, type);
         var damage = getDamage(player);
-        target.hurt(damageSource, damage);
+        target.hurtServer(level, damageSource, damage);
         player.resetAttackStrengthTicker();
 
         if (target instanceof LivingEntity living) {
@@ -136,7 +138,6 @@ public class SlideSkillHandler {
             }
         }
 
-        var level = player.level();
         var sound = type == SlideSkill.Type.DROPKICK ? SoundEvents.PLAYER_ATTACK_KNOCKBACK : SoundEvents.PLAYER_ATTACK_STRONG;
         level.playSound(null, player.getX(), player.getY(), player.getZ(), sound, player.getSoundSource(), 1.0F, 1.0F);
     }
@@ -172,7 +173,7 @@ public class SlideSkillHandler {
 
     private static DamageSource getDamageSource(Player player, SlideSkill.Type type) {
         var level = player.level();
-        var damageType = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(
+        var damageType = level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(
                 type == SlideSkill.Type.DROPKICK ? DamageTypes.KICK_ATTACK : DamageTypes.TWIST_ATTACK
         );
         return new DamageSource(damageType, player, player, player.position());
@@ -188,11 +189,11 @@ public class SlideSkillHandler {
     }
 
     private static boolean isLowerArmor(AttributeModifier attributeModifier) {
-        return attributeModifier.is(ResourceLocation.parse("minecraft:armor.leggings")) || attributeModifier.is(ResourceLocation.parse("minecraft:armor.boots"));
+        return attributeModifier.is(Identifier.parse("minecraft:armor.leggings")) || attributeModifier.is(Identifier.parse("minecraft:armor.boots"));
     }
 
     private static boolean isExtraAttack(AttributeModifier attributeModifier) {
-        return !attributeModifier.is(ResourceLocation.parse("minecraft:base_attack_damage"));
+        return !attributeModifier.is(Identifier.parse("minecraft:base_attack_damage"));
     }
 
     private static void useDropKick(Player player, LivingEntity target) {
@@ -211,7 +212,7 @@ public class SlideSkillHandler {
     private static void useHeelHook(Player player, LivingEntity target) {
         var heelHookSlowdownDuration = Config.HEEL_HOOK_SLOWDOWN_DURATION.get();
         var heelHookSlowdownAmplifier = Config.HEEL_HOOK_SLOWDOWN_AMPLIFIER.get();
-        SkillHandler.addEffect(target, player, MobEffects.MOVEMENT_SLOWDOWN, heelHookSlowdownDuration, heelHookSlowdownAmplifier);
+        SkillHandler.addEffect(target, player, MobEffects.SLOWNESS, heelHookSlowdownDuration, heelHookSlowdownAmplifier);
 
         if (!target.hasEffect(Effects.NEUTRALIZED)) return;
 

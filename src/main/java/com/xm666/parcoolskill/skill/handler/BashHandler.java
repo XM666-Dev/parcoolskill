@@ -15,6 +15,7 @@ import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -38,13 +39,10 @@ public class BashHandler {
     public static void onPlayerAttack(PlayerAttackEvent.Post event) {
         var player = event.getEntity();
         var parkourability = Parkourability.get(player);
-        if (parkourability.get(CatLeap.class).isDoing() || parkourability.get(Flipping.class).isDoing()) return;
-
-        var jumpSkill = (JumpSkill) parkourability.get(ChargeJump.class);
-        if (!jumpSkill.parcoolskill$isAttackReady()) return;
-        jumpSkill.parcoolskill$setAttackReady(false);
-
-        if (!event.isVanillaCritical()) return;
+        if (parkourability.get(CatLeap.class).isDoing()
+                || parkourability.get(Flipping.class).isDoing()
+                || !isAttackReady(player)
+                || !event.isVanillaCritical()) return;
 
         var bashStaminaConsumption = Config.BASH_STAMINA_CONSUMPTION.get();
         StaminaHandler.consume(player, bashStaminaConsumption);
@@ -57,5 +55,14 @@ public class BashHandler {
 
         event.setDisableCrit(true);
         SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
+    }
+
+    private static boolean isAttackReady(Player player) {
+        var parkourability = Parkourability.get(player);
+        var jumpSkill = (JumpSkill) parkourability.get(ChargeJump.class);
+        if (!jumpSkill.parcoolskill$isAttackReady()) return false;
+
+        jumpSkill.parcoolskill$setAttackReady(false);
+        return true;
     }
 }

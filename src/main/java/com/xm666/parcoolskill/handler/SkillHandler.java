@@ -12,7 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class SkillHandler {
@@ -56,11 +56,11 @@ public class SkillHandler {
     }
 
     public static void use(SkillPayload.Type type, Player source) {
-        PacketDistributor.sendToServer(new SkillPayload(type.ordinal(), source.getId(), 0));
+        ClientPacketDistributor.sendToServer(new SkillPayload(type.ordinal(), source.getId(), 0));
     }
 
     public static void use(SkillPayload.Type type, Player source, Entity target) {
-        PacketDistributor.sendToServer(new SkillPayload(type.ordinal(), source.getId(), target.getId()));
+        ClientPacketDistributor.sendToServer(new SkillPayload(type.ordinal(), source.getId(), target.getId()));
     }
 
     public static void knockback(LivingEntity target, LivingEntity source, double amount) {

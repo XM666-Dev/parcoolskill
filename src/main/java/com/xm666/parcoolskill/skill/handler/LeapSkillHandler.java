@@ -56,28 +56,26 @@ public class LeapSkillHandler {
     @SubscribeEvent
     public static void onPlayerAttack(PlayerAttackEvent.Pre event) {
         var player = event.getEntity();
-        var leapSkill = (LeapSkill) Parkourability.get(player).get(CatLeap.class);
-        if (!leapSkill.parcoolskill$isAttackReady()) return;
-        leapSkill.parcoolskill$setAttackReady(false);
-
-        if (!event.isFullStrength()) return;
+        if (!isAttackReady(player) || !event.isFullStrength()) return;
 
         var wildStrikeStaminaConsumption = Config.WILD_STRIKE_STAMINA_CONSUMPTION.get();
         StaminaHandler.consume(player, wildStrikeStaminaConsumption);
 
         var wildStrikeDamageMultiplier = Config.WILD_STRIKE_DAMAGE_MULTIPLIER.get().floatValue();
         var wildStrikeParryDuration = Config.WILD_STRIKE_PARRY_DURATION.get();
-        var target = event.getTarget();
+        var parkourability = Parkourability.get(player);
+        var leapSkill = (LeapSkill) parkourability.get(CatLeap.class);
         event.setCriticalHit(true);
         event.setDamageMultiplier(event.getDamageMultiplier() * wildStrikeDamageMultiplier);
         event.setDisableCrit(true);
         leapSkill.parcoolskill$setParryTime(wildStrikeParryDuration);
 
+        var target = event.getTarget();
         SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
     }
 
     @SubscribeEvent
-    public static void onLivingBlock(LivingBlockEvent event) {
+    public static void onLivingBlock(LivingBlockEvent.Attack event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
         var parkourability = Parkourability.get(player);
@@ -85,5 +83,25 @@ public class LeapSkillHandler {
         if (leapSkill.parcoolskill$getParryTime() == 0) return;
 
         event.setSuccessful(true);
+    }
+
+    @SubscribeEvent
+    public static void onLivingBlock(LivingBlockEvent.Sound event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        var parkourability = Parkourability.get(player);
+        var leapSkill = (LeapSkill) parkourability.get(CatLeap.class);
+        if (leapSkill.parcoolskill$getParryTime() == 0) return;
+
+        event.setSuccessful(true);
+    }
+
+    private static boolean isAttackReady(Player player) {
+        var parkourability = Parkourability.get(player);
+        var leapSkill = (LeapSkill) parkourability.get(CatLeap.class);
+        if (!leapSkill.parcoolskill$isAttackReady()) return false;
+
+        leapSkill.parcoolskill$setAttackReady(false);
+        return true;
     }
 }

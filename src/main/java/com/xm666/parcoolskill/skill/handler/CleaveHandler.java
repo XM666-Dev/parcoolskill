@@ -17,7 +17,7 @@ import com.xm666.parcoolskill.skill.JumpSkill;
 import com.xm666.timescalelib.handler.TimeScaleHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -39,7 +39,7 @@ public class CleaveHandler {
             0.04F,
             true
     );
-    private static final ResourceLocation ENTITY_INTERACTION_RANGE_MODIFIER = ResourceLocation.fromNamespaceAndPath(
+    private static final Identifier ENTITY_INTERACTION_RANGE_MODIFIER = Identifier.fromNamespaceAndPath(
             ParCoolSkill.MODID, "modifier.entity_interaction_range.cleave"
     );
     private static int animationOffset;
@@ -130,7 +130,7 @@ public class CleaveHandler {
         if (!isAttacking(player)) return;
 
         var boundingBox = target.getBoundingBox();
-        if (!player.canInteractWithEntity(boundingBox, 1.0)) return;
+        if (!player.isWithinEntityInteractionRange(boundingBox, 1.0)) return;
 
         var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
         if (!jumpSkill.parcoolskill$addEntityHit(target)) return;
@@ -159,7 +159,7 @@ public class CleaveHandler {
     public static int getHitCount(Player player) {
         var cleaveHitCountBase = Config.CLEAVE_HIT_COUNT_BASE.get();
         var registryAccess = player.level().registryAccess();
-        var sweepingEdge = registryAccess.registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.SWEEPING_EDGE);
+        var sweepingEdge = registryAccess.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SWEEPING_EDGE);
         return cleaveHitCountBase + player.getWeaponItem().getEnchantmentLevel(sweepingEdge);
     }
 

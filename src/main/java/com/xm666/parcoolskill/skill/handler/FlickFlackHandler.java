@@ -18,6 +18,8 @@ import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.FlippingSkill;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -118,7 +120,7 @@ public class FlickFlackHandler {
 
         event.setDisableCrit(true);
         SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
-        player.sweepAttack();
+        sweep(player);
 
         if (player.isLocalPlayer()) return;
 
@@ -129,7 +131,18 @@ public class FlickFlackHandler {
     }
 
     @SubscribeEvent
-    public static void onLivingBlock(LivingBlockEvent event) {
+    public static void onLivingBlock(LivingBlockEvent.Attack event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        var parkourability = Parkourability.get(player);
+        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
+        if (flippingSkill.parcoolskill$getParryTime() == 0) return;
+
+        event.setSuccessful(true);
+    }
+
+    @SubscribeEvent
+    public static void onLivingBlock(LivingBlockEvent.Sound event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
         var parkourability = Parkourability.get(player);
@@ -140,7 +153,8 @@ public class FlickFlackHandler {
     }
 
     private static boolean isAttackReady(Player player) {
-        var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
+        var parkourability = Parkourability.get(player);
+        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         if (!flippingSkill.parcoolskill$isAttackReady()) return false;
 
         flippingSkill.parcoolskill$setAttackReady(false);
@@ -149,6 +163,14 @@ public class FlickFlackHandler {
 
     private static AABB getSweepHitBox(Entity target) {
         return target.getBoundingBox().inflate(1.0, 0.25, 1.0);
+    }
+
+    private static boolean canSweep(Player player, Entity target, LivingEntity living) {
+        return living != player
+                && living != target
+                && !player.isAlliedTo(living)
+                && (!(living instanceof ArmorStand armorStand) || !armorStand.isMarker())
+                && player.distanceToSqr(living) < Mth.square(player.entityInteractionRange());
     }
 
     private static boolean attackTarget(Player player, PlayerAttackEvent.Pre event) {
@@ -165,12 +187,13 @@ public class FlickFlackHandler {
         return true;
     }
 
-    private static boolean canSweep(Player player, Entity target, LivingEntity living) {
-        return living != player
-                && living != target
-                && !player.isAlliedTo(living)
-                && (!(living instanceof ArmorStand armorStand) || !armorStand.isMarker())
-                && player.distanceToSqr(living) < Mth.square(player.entityInteractionRange());
+    private static void sweep(Player player) {
+        if (!(player.level() instanceof ServerLevel serverlevel)) return;
+
+        var xOffset = -Mth.sin(player.getYRot() * Mth.DEG_TO_RAD);
+        var zOffset = Mth.cos(player.getYRot() * Mth.DEG_TO_RAD);
+        player.playSound(net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_SWEEP);
+        serverlevel.sendParticles(ParticleTypes.SWEEP_ATTACK, player.getX() + xOffset, player.getY(0.5F), player.getZ() + zOffset, 0, xOffset, 0.0F, zOffset, 0.0F);
     }
 
     public static boolean canJump(Parkourability parkourability) {

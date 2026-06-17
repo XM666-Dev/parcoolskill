@@ -3,15 +3,15 @@
   "package": "com.xm666.parcoolskill.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "BackflipMixin$FlippingMixin",
-    "BackflipMixin$ProjectileMixin",
-    "DodgeSkillMixin$DodgeMixin",
-    "FlipSkillMixin$FlippingMixin",
-    "JumpSkillMixin$ChargeJumpMixin",
-    "LeapSkillMixin$CatLeapMixin",
-    "LeapSkillMixin$LivingEntityMixin",
-    "PlayerAttackMixin$PlayerMixin",
-    "SlideSkillMixin$SlideMixin"
+    "event.LivingBlockMixin$LivingEntityMixin",
+    "event.PlayerAttackMixin$PlayerMixin",
+    "skill.BackflipMixin$FlippingMixin",
+    "skill.BackflipMixin$ProjectileMixin",
+    "skill.DodgeSkillMixin$DodgeMixin",
+    "skill.FlippingSkillMixin$FlippingMixin",
+    "skill.JumpSkillMixin$ChargeJumpMixin",
+    "skill.LeapSkillMixin$CatLeapMixin",
+    "skill.SlideSkillMixin$SlideMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -20,17 +20,18 @@
     "requireAnnotations": true
   },
   "client": [
-    "AvatarRendererMixin",
-    "BackflipMixin$ActionProcessorMixin",
-    "BackflipMixin$PlayerModelRotatorMixin",
-    "BackflipMixin$PlayerModelTransformerMixin",
-    "CleaveMixin$ChargeJumpMixin",
-    "CleaveMixin$ItemInHandRendererMixin",
-    "CleaveMixin$MinecraftMixin",
-    "DropkickMixin$SlideMixin",
-    "FlickFlackMixin$DodgeMixin",
-    "FlickFlackMixin$ItemInHandRendererMixin",
-    "SlideSkillMixin$MinecraftMixin"
+    "animation.AvatarRendererMixin",
+    "skill.BackflipMixin$ActionProcessorMixin",
+    "skill.BackflipMixin$PlayerModelRotatorMixin",
+    "skill.BackflipMixin$PlayerModelTransformerMixin",
+    "skill.BashMixin$ChargeJumpMixin",
+    "skill.CleaveMixin$ChargeJumpMixin",
+    "skill.CleaveMixin$ItemInHandRendererMixin",
+    "skill.CleaveMixin$MinecraftMixin",
+    "skill.DropkickMixin$SlideMixin",
+    "skill.FlickFlackMixin$DodgeMixin",
+    "skill.FlickFlackMixin$ItemInHandRendererMixin",
+    "skill.SlideSkillMixin$MinecraftMixin"
   ],
   "mixinextras": {
     "minVersion": "0.5.0"

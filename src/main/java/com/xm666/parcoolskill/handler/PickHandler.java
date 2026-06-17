@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public class PickHandler {
     public static double getHitRange(Entity shooter, double distance) {
         var mc = Minecraft.getInstance();
-        var timer = mc.getTimer();
+        var timer = mc.getDeltaTracker();
         var partialTick = timer.getGameTimeDeltaPartialTick(true);
         var hitResult = shooter.pick(distance, partialTick, false);
         if (hitResult.getType() != HitResult.Type.MISS) {
@@ -27,7 +27,7 @@ public class PickHandler {
 
     public static Stream<Entity> getHitEntities(Entity shooter, double distance, int count) {
         var mc = Minecraft.getInstance();
-        var timer = mc.getTimer();
+        var timer = mc.getDeltaTracker();
         var partialTick = timer.getGameTimeDeltaPartialTick(true);
         var eyePosition = shooter.getEyePosition();
         var viewVector = shooter.getViewVector(partialTick);
