@@ -3,7 +3,7 @@
   "package": "com.xm666.parcoolskill.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "event.LivingBlockMixin$PlayerMixin",
+    "event.LivingBlockMixin$LivingEntityMixin",
     "event.PlayerAttackMixin$PlayerMixin",
     "skill.BackflipMixin$FlippingMixin",
     "skill.BackflipMixin$ProjectileMixin",

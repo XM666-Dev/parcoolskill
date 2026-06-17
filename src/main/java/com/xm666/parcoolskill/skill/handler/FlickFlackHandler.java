@@ -140,7 +140,8 @@ public class FlickFlackHandler {
     }
 
     private static boolean isAttackReady(Player player) {
-        var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
+        var parkourability = Parkourability.get(player);
+        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         if (!flippingSkill.parcoolskill$isAttackReady()) return false;
 
         flippingSkill.parcoolskill$setAttackReady(false);
@@ -149,6 +150,14 @@ public class FlickFlackHandler {
 
     private static AABB getSweepHitBox(Entity target) {
         return target.getBoundingBox().inflate(1.0, 0.25, 1.0);
+    }
+
+    private static boolean canSweep(Player player, Entity target, LivingEntity living) {
+        return living != player
+                && living != target
+                && !player.isAlliedTo(living)
+                && (!(living instanceof ArmorStand armorStand) || !armorStand.isMarker())
+                && player.distanceToSqr(living) < Mth.square(player.entityInteractionRange());
     }
 
     private static boolean attackTarget(Player player, PlayerAttackEvent.Pre event) {
@@ -163,14 +172,6 @@ public class FlickFlackHandler {
         event.setDisableCrit(true);
         SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
         return true;
-    }
-
-    private static boolean canSweep(Player player, Entity target, LivingEntity living) {
-        return living != player
-                && living != target
-                && !player.isAlliedTo(living)
-                && (!(living instanceof ArmorStand armorStand) || !armorStand.isMarker())
-                && player.distanceToSqr(living) < Mth.square(player.entityInteractionRange());
     }
 
     public static boolean canJump(Parkourability parkourability) {
