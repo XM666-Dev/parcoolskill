@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "在$(thing)躲闪（Dodge）$()过程中使用$(thing)滑铲（Slide）$()触发$(thing)足跟勾（Heel Hook）$()。$(li)伤害计算方式：$(li2)基础伤害$(li2)额外攻击伤害$()$(li2)下身盔甲值$(li2)最大生命值增长量$(li)获得短暂无敌时间$(li)施加$(thing)减速效果$()$(br)若目标处于$(thing)中和（Neutralized）$()状态：$(li)返还$(thing)躲闪（Dodge）$()消耗的体力$(li)触发$(thing)3秒子弹时间（Bullet Time）$()"
+      "text": "在$(thing)躲闪（Dodge）$()过程中使用$(thing)滑铲（Slide）$()触发$(thing)足跟勾（Heel Hook）$()。$(li)伤害计算方式：$(li2)基础伤害$(li2)额外攻击伤害$()$(li2)下身盔甲值$(li2)最大生命值增长量$(li)获得短暂无敌时间$(li)施加$(thing)减速效果$()$(br)若目标处于$(thing)中和（Neutralized）$()状态：$(li)返还技能消耗的体力$(li)触发$(thing)3秒子弹时间（Bullet Time）$()"
     }
   ]
 }
