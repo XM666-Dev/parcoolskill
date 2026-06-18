@@ -25,8 +25,8 @@ public class LivingBlockMixin {
             var blocksAttacks = original != null ? original.get(DataComponents.BLOCKS_ATTACKS) : null;
             var event = new LivingBlockEvent(living, original, blocksAttacks);
             NeoForge.EVENT_BUS.post(event);
-            blocksAttacksRef.set(event.blocksAttacks());
-            return event.getItem();
+            blocksAttacksRef.set(event.getBlocksAttacks());
+            return event.getItemBlockingWith();
         }
 
         @Redirect(method = "applyItemBlocking", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;get(Lnet/minecraft/core/component/DataComponentType;)Ljava/lang/Object;"))
@@ -40,7 +40,7 @@ public class LivingBlockMixin {
             var blocksAttacks = (BlocksAttacks) original.call(instance, dataComponentType);
             var event = new LivingBlockEvent(living, instance, blocksAttacks);
             NeoForge.EVENT_BUS.post(event);
-            return event.blocksAttacks();
+            return event.getBlocksAttacks();
         }
     }
 }

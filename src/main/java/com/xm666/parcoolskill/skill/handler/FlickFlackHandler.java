@@ -141,9 +141,8 @@ public class FlickFlackHandler {
         var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         if (flippingSkill.parcoolskill$getParryTime() == 0) return;
 
-        event.setItem(player.getWeaponItem());
+        event.setItemBlockingWith(player.getWeaponItem());
         event.setBlocksAttacks(Items.SHIELD.components().get(DataComponents.BLOCKS_ATTACKS));
-        event.setBlocking(true);
     }
 
     public static boolean canJump(Parkourability parkourability) {

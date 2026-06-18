@@ -84,7 +84,7 @@ public class LeapSkillHandler {
         var leapSkill = (LeapSkill) parkourability.get(CatLeap.class);
         if (leapSkill.parcoolskill$getParryTime() == 0) return;
 
-        event.setItem(player.getWeaponItem());
+        event.setItemBlockingWith(player.getWeaponItem());
         event.setBlocksAttacks(Items.SHIELD.components().get(DataComponents.BLOCKS_ATTACKS));
     }
 

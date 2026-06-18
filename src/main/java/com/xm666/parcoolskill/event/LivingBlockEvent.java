@@ -6,24 +6,24 @@ import net.minecraft.world.item.component.BlocksAttacks;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 public class LivingBlockEvent extends LivingEvent {
-    private ItemStack item;
+    private ItemStack itemBlockingWith;
     private BlocksAttacks blocksAttacks;
 
-    public LivingBlockEvent(LivingEntity entity, ItemStack item, BlocksAttacks blocksAttacks) {
+    public LivingBlockEvent(LivingEntity entity, ItemStack itemBlockingWith, BlocksAttacks blocksAttacks) {
         super(entity);
-        this.item = item;
+        this.itemBlockingWith = itemBlockingWith;
         this.blocksAttacks = blocksAttacks;
     }
 
-    public ItemStack getItem() {
-        return item;
+    public ItemStack getItemBlockingWith() {
+        return itemBlockingWith;
     }
 
-    public void setItem(ItemStack item) {
-        this.item = item;
+    public void setItemBlockingWith(ItemStack itemBlockingWith) {
+        this.itemBlockingWith = itemBlockingWith;
     }
 
-    public BlocksAttacks blocksAttacks() {
+    public BlocksAttacks getBlocksAttacks() {
         return this.blocksAttacks;
     }
 
