@@ -33,28 +33,6 @@ public class SkillHandler {
         tryHandleCleaveAttack(type, player, target);
     }
 
-    private static boolean tryHandleCleaveReady(SkillPayload.Type type, Player player) {
-        if (type != SkillPayload.Type.CLEAVE_READY) return false;
-
-        CleaveHandler.handleReady(player);
-        return true;
-    }
-
-    private static boolean tryHandleSlideSkill(SkillPayload.Type type, Player player, Entity target) {
-        if (type != SkillPayload.Type.DROPKICK && type != SkillPayload.Type.HEEL_HOOK) return false;
-
-        var slideSkillType = SlideSkill.Type.values()[type.ordinal()];
-        SlideSkillHandler.handleAttack(player, target, slideSkillType);
-        return true;
-    }
-
-    private static boolean tryHandleCleaveAttack(SkillPayload.Type type, Player player, Entity target) {
-        if (type != SkillPayload.Type.CLEAVE_ATTACK) return false;
-
-        CleaveHandler.handleAttack(player, target);
-        return true;
-    }
-
     public static void use(SkillPayload.Type type, Player source) {
         ClientPacketDistributor.sendToServer(new SkillPayload(type.ordinal(), source.getId(), 0));
     }
@@ -77,5 +55,27 @@ public class SkillHandler {
         var effectInstance = target.getEffect(effect);
         duration += effectInstance != null ? effectInstance.getDuration() : 0;
         target.addEffect(new MobEffectInstance(effect, duration, amplifier), source);
+    }
+
+    private static boolean tryHandleCleaveReady(SkillPayload.Type type, Player player) {
+        if (type != SkillPayload.Type.CLEAVE_READY) return false;
+
+        CleaveHandler.handleReady(player);
+        return true;
+    }
+
+    private static boolean tryHandleSlideSkill(SkillPayload.Type type, Player player, Entity target) {
+        if (type != SkillPayload.Type.DROPKICK && type != SkillPayload.Type.HEEL_HOOK) return false;
+
+        var slideSkillType = SlideSkill.Type.values()[type.ordinal()];
+        SlideSkillHandler.handleAttack(player, target, slideSkillType);
+        return true;
+    }
+
+    private static boolean tryHandleCleaveAttack(SkillPayload.Type type, Player player, Entity target) {
+        if (type != SkillPayload.Type.CLEAVE_ATTACK) return false;
+
+        CleaveHandler.handleAttack(player, target);
+        return true;
     }
 }

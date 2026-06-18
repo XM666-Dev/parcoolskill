@@ -61,7 +61,8 @@ public class BackflipHandler {
     public static void onUseItemTick(LivingEntityUseItemEvent.Tick event) {
         if (releaseUsingItem || !(event.getEntity() instanceof Player player)) return;
 
-        var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
+        var parkourability = Parkourability.get(player);
+        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         if (flippingSkill.parcoolskill$getSkillTime() == 0) return;
 
         var duration = event.getDuration() - 1;
@@ -83,7 +84,8 @@ public class BackflipHandler {
         if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
             return;
 
-        var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
+        var parkourability = Parkourability.get(player);
+        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         if (flippingSkill.parcoolskill$getSkillTime() == 0) return;
 
         event.setCanceled(true);
@@ -137,7 +139,7 @@ public class BackflipHandler {
         return power.isPresent() && power.get() >= 1.0F;
     }
 
-    public static Optional<Float> getPower(ItemStack stack, LivingEntity shooter) {
+    private static Optional<Float> getPower(ItemStack stack, LivingEntity shooter) {
         if (ModList.get().isLoaded("spartan_weaponry_unofficial")) {
             var result = SpartanWeaponryHandler.getPower(stack, shooter);
             if (result.isPresent()) return result;

@@ -119,7 +119,7 @@ public class Config {
             .defineInRange("cleave_attack_duration", 10, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue CLEAVE_RANGE_MULTIPLIER_ADDITION = BUILDER
-            .defineInRange("cleave_range_multiplier_addition", 1.0, 0.0, Double.POSITIVE_INFINITY);
+            .defineInRange("cleave_range_multiplier_addition", 0.5, 0.0, Double.POSITIVE_INFINITY);
 
     public static final ModConfigSpec.IntValue CLEAVE_HIT_COUNT_BASE = BUILDER
             .defineInRange("cleave_hit_count_base", 1, 0, Integer.MAX_VALUE);
@@ -151,7 +151,7 @@ public class Config {
     public static final ModConfigSpec.DoubleValue NEUTRALIZED_DAMAGE_MULTIPLIER_REDUCTION_GROWTH = BUILDER
             .defineInRange("neutralized_damage_multiplier_reduction_growth", 0.15, 0.0, Double.POSITIVE_INFINITY);
 
-    static final ModConfigSpec SPEC = BUILDER.build();
+    private static final ModConfigSpec SPEC = BUILDER.build();
 
     public Config(ModContainer container) {
         container.registerConfig(ModConfig.Type.COMMON, SPEC);

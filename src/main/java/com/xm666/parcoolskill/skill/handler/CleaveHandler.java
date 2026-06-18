@@ -6,7 +6,7 @@ import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
-import com.xm666.parcoolskill.animation.HandAnimation;
+import com.xm666.parcoolskill.animation.ArmAnimation;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.handler.StaminaHandler;
@@ -33,7 +33,7 @@ import org.joml.Vector3f;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class CleaveHandler {
-    public static final HandAnimation HAND_ANIMATION = new HandAnimation(
+    public static final ArmAnimation ARM_ANIMATION = new ArmAnimation(
             new Vector3f(-0.1392841F, 0.091721935F, 0.078657655F),
             new Vector3f(-13.935F, 35.3F, -9.785F),
             0.04F,
@@ -42,7 +42,7 @@ public class CleaveHandler {
     private static final Identifier ENTITY_INTERACTION_RANGE_MODIFIER = Identifier.fromNamespaceAndPath(
             ParCoolSkill.MODID, "modifier.entity_interaction_range.cleave"
     );
-    private static int animationOffset;
+    public static int animationTick;
 
     @SubscribeEvent
     public static void onJumpTick(ParCoolActionEvent.Tick.Pre event) {
@@ -85,7 +85,8 @@ public class CleaveHandler {
 
         if (!event.isAttack() || !isCharging(player)) return;
 
-        var jump = Parkourability.get(player).get(ChargeJump.class);
+        var parkourability = Parkourability.get(player);
+        var jump = parkourability.get(ChargeJump.class);
         var jumpSkill = (JumpSkill) jump;
         jumpSkill.parcoolskill$setCoolingDown(true);
 
@@ -119,7 +120,8 @@ public class CleaveHandler {
         var cleaveAttackDuration = Config.CLEAVE_ATTACK_DURATION.get();
         var cleaveBulletTimeScale = Config.CLEAVE_BULLET_TIME_SCALE.get().floatValue();
         var cleaveBulletTimeDuration = Config.CLEAVE_BULLET_TIME_DURATION.get();
-        var jump = Parkourability.get(player).get(ChargeJump.class);
+        var parkourability = Parkourability.get(player);
+        var jump = parkourability.get(ChargeJump.class);
         var jumpSkill = (JumpSkill) jump;
         jumpSkill.parcoolskill$setAttackTime(cleaveAttackDuration);
         jumpSkill.parcoolskill$clearEntityHits();
@@ -132,7 +134,8 @@ public class CleaveHandler {
         var boundingBox = target.getBoundingBox();
         if (!player.isWithinEntityInteractionRange(boundingBox, 1.0)) return;
 
-        var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
+        var parkourability = Parkourability.get(player);
+        var jumpSkill = (JumpSkill) parkourability.get(ChargeJump.class);
         if (!jumpSkill.parcoolskill$addEntityHit(target)) return;
 
         player.attackStrengthTicker = (int) player.getCurrentItemAttackStrengthDelay();
@@ -141,19 +144,23 @@ public class CleaveHandler {
         SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
     }
 
-    public static boolean isAttackReady(Player player) {
-        if (!isCharging(player)) return false;
-
-        var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
-        var jump = Parkourability.get(player).get(ChargeJump.class);
-        return jump.getChargingTick() >= cleaveChargeDuration;
-    }
-
     public static boolean isAttacking(Player player) {
         if (!canUseCleave(player)) return false;
 
-        var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
+        var parkourability = Parkourability.get(player);
+        var jumpSkill = (JumpSkill) parkourability.get(ChargeJump.class);
         return jumpSkill.parcoolskill$getAttackTime() > 0;
+    }
+
+    public static boolean isCharging(Player player) {
+        if (!canUseCleave(player)) return false;
+
+        var parkourability = Parkourability.get(player);
+        var jump = parkourability.get(ChargeJump.class);
+        if (jump.getNotChargingTick() > 0) return false;
+
+        var stamina = Stamina.get(player);
+        return !stamina.isExhausted();
     }
 
     public static int getHitCount(Player player) {
@@ -163,26 +170,13 @@ public class CleaveHandler {
         return cleaveHitCountBase + player.getWeaponItem().getEnchantmentLevel(sweepingEdge);
     }
 
-    public static boolean isCharging(Player player) {
-        if (!canUseCleave(player)) return false;
+    private static boolean isAttackReady(Player player) {
+        if (!isCharging(player)) return false;
 
-        var jump = Parkourability.get(player).get(ChargeJump.class);
-        if (jump.getNotChargingTick() > 0) return false;
-
-        var stamina = Stamina.get(player);
-        return !stamina.isExhausted();
-    }
-
-    public static int getAnimationOffset() {
-        return animationOffset;
-    }
-
-    public static void addAnimationOffset() {
-        ++animationOffset;
-    }
-
-    public static void clearAnimationOffset() {
-        animationOffset = 0;
+        var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
+        var parkourability = Parkourability.get(player);
+        var jump = parkourability.get(ChargeJump.class);
+        return jump.getChargingTick() >= cleaveChargeDuration;
     }
 
     private static boolean canUseCleave(Player player) {

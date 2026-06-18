@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "进行一次$(thing)远跳（CatLeap）$()后，在短时间内的下一次攻击触发$(thing)狂野打击（Wild Strike）$()，造成$(l)双倍伤害$()，并获得$(thing)1秒招架时间$()。"
+      "text": "进行一次$(thing)远跳（CatLeap）$()后，在短时间内的下一次攻击触发$(thing)狂野打击（Wild Strike）$()，造成$(l)双倍伤害$()，并获得$(thing)0.5秒招架时间$()。"
     }
   ]
 }

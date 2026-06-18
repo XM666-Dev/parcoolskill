@@ -16,6 +16,7 @@ import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.DodgeSkill;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -75,35 +76,17 @@ public class DodgeSkillHandler {
         var dodgeSkill = (DodgeSkill) parkourability.get(Dodge.class);
         dodgeSkill.parcoolskill$setAttackReady(false);
 
-        if (dodgeSkill.parcoolskill$getAttackReadyTime() == 0) return;
-        dodgeSkill.parcoolskill$setAttackReadyTime(0);
-
         if (parkourability.get(CatLeap.class).isDoing()
                 || parkourability.get(ChargeJump.class).isDoing()
                 || parkourability.get(Flipping.class).isDoing()
-                || CleaveHandler.isAttackReady(player)
                 || CleaveHandler.isAttacking(player)
-                || !event.isFullStrength())
-            return;
-
-        var sneakyStrikeStaminaConsumption = Config.SNEAKY_STRIKE_STAMINA_CONSUMPTION.get();
-        var stamina = Stamina.get(player);
-        if (stamina.getValue() < sneakyStrikeStaminaConsumption) return;
-
-        var behind = false;
-        var target = event.getTarget();
-        if (target instanceof LivingEntity living) {
-            var sourcePosition = player.getEyePosition();
-            var targetPosition = target.position();
-            var sourceOffset = sourcePosition.subtract(targetPosition);
-            var targetDirection = directionFromBodyRotation(living.yBodyRot);
-            var offset = new Vector2d(sourceOffset.x, sourceOffset.z);
-            var direction = new Vector2d(targetDirection.x, targetDirection.z);
-            behind = isPositionBehind(offset, direction);
-        }
+                || !isAttackReady(player)
+                || !event.isFullStrength()) return;
 
         var sneakyStrikeDamageMultiplier = Config.SNEAKY_STRIKE_DAMAGE_MULTIPLIER.get().floatValue();
         var sneakyStrikeBackstabDamageMultiplier = Config.SNEAKY_STRIKE_BACKSTAB_DAMAGE_MULTIPLIER.get().floatValue();
+        var target = event.getTarget();
+        var behind = isBehindTarget(player, target);
         var damageMultiplier = behind ? sneakyStrikeBackstabDamageMultiplier : sneakyStrikeDamageMultiplier;
         event.setCriticalHit(true);
         event.setDamageMultiplier(event.getDamageMultiplier() * damageMultiplier);
@@ -113,14 +96,34 @@ public class DodgeSkillHandler {
         SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
     }
 
-    private static Vec3 directionFromBodyRotation(float rotation) {
-        var radian = rotation * Mth.DEG_TO_RAD;
-        var x = -Mth.sin(radian);
-        var z = Mth.cos(radian);
-        return new Vec3(x, 0.0, z);
+    private static boolean isAttackReady(Player player) {
+        var parkourability = Parkourability.get(player);
+        var dodgeSkill = (DodgeSkill) parkourability.get(Dodge.class);
+        if (dodgeSkill.parcoolskill$getAttackReadyTime() == 0) return false;
+
+        dodgeSkill.parcoolskill$setAttackReadyTime(0);
+
+        var sneakyStrikeStaminaConsumption = Config.SNEAKY_STRIKE_STAMINA_CONSUMPTION.get();
+        var stamina = Stamina.get(player);
+        return stamina.getValue() >= sneakyStrikeStaminaConsumption;
     }
 
-    private static boolean isPositionBehind(Vector2d position, Vector2d direction) {
-        return position.dot(direction) <= 0.0;
+    private static boolean isBehindTarget(Player player, Entity target) {
+        if (!(target instanceof LivingEntity living)) return false;
+
+        var offset = getOffset(player.position(), living.position());
+        var direction = getDirection(living.yBodyRot);
+        return offset.dot(direction) < 0.0;
+    }
+
+    private static Vector2d getOffset(Vec3 from, Vec3 to) {
+        return new Vector2d(from.x - to.x, from.z - to.z);
+    }
+
+    private static Vector2d getDirection(float yaw) {
+        var radian = yaw * Mth.DEG_TO_RAD;
+        var x = -Mth.sin(radian);
+        var z = Mth.cos(radian);
+        return new Vector2d(x, z);
     }
 }

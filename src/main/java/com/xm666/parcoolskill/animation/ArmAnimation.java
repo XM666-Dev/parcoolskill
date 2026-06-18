@@ -8,7 +8,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import org.joml.Vector3f;
 
-public record HandAnimation(Vector3f position, Vector3f rotation, float offset, boolean ease) {
+public record ArmAnimation(Vector3f position, Vector3f rotation, float offset, boolean ease) {
     public void apply(Player player, float partialTick, InteractionHand hand, PoseStack poseStack, int tick, int duration) {
         var arm = hand == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
         var direction = arm == HumanoidArm.RIGHT ? 1.0F : -1.0F;

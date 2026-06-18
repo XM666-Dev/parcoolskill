@@ -15,6 +15,10 @@ public class AttributeHandler {
         return calculateAttribute(baseValue, modifiers, attribute);
     }
 
+    public static double getAttributeAddition(LivingEntity living, Holder<Attribute> attribute) {
+        return Math.max(living.getAttributeValue(attribute) - living.getAttributes().supplier.getBaseValue(attribute), 0.0);
+    }
+
     private static double calculateAttribute(double baseValue, AttributeModifier[] modifiers, Holder<Attribute> attribute) {
         return attribute.value().sanitizeValue(calculateAttribute(baseValue, modifiers));
     }
@@ -42,9 +46,5 @@ public class AttributeHandler {
         if (attributeInstance == null) return new AttributeModifier[0];
 
         return attributeInstance.getModifiers().stream().filter(predicate).toArray(AttributeModifier[]::new);
-    }
-
-    public static double getAttributeAddition(LivingEntity living, Holder<Attribute> attribute) {
-        return Math.max(living.getAttributeValue(attribute) - living.getAttributes().supplier.getBaseValue(attribute), 0.0);
     }
 }

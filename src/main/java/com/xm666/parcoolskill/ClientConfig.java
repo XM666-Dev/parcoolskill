@@ -21,7 +21,7 @@ public class ClientConfig {
     public static final ModConfigSpec.BooleanValue FLICK_FLACK_ANIMATION_ENABLED = BUILDER
             .define("flick_flack_animation_enabled", true);
 
-    static final ModConfigSpec SPEC = BUILDER.build();
+    private static final ModConfigSpec SPEC = BUILDER.build();
 
     public ClientConfig(ModContainer container) {
         container.registerConfig(ModConfig.Type.CLIENT, SPEC);

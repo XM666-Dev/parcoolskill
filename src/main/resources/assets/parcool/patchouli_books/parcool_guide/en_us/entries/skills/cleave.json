@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "While holding a weapon capable of sweeping attacks, perform an attack after charging for at least $(thing)50%$() to trigger $(thing)Cleave$(). For $(thing)0.5 seconds$():$(li)Entity interaction range is doubled$(li)Gains additional damage multiplier equal to your sweeping damage ratio$(li)Enemies swept by the crosshair are automatically struck with full-strength attacks$(li)Only one enemy per direction can be hit by default$(li)Each level of $(thing)Sweeping Edge$() grants one additional penetration$(li)Each enemy can be hit at most once per activation"
+      "text": "While holding a weapon capable of sweeping attacks, perform an attack after charging for at least $(thing)50%$() to trigger $(thing)Cleave$(). For $(thing)0.5 seconds$():$(li)Entity interaction range is added by 50%$(li)Gains additional damage multiplier equal to your sweeping damage ratio$(li)Enemies swept by the crosshair are automatically struck with full-strength attacks$(li)Only one enemy per direction can be hit by default$(li)Each level of $(thing)Sweeping Edge$() grants one additional penetration$(li)Each enemy can be hit at most once per activation"
     }
   ]
 }
