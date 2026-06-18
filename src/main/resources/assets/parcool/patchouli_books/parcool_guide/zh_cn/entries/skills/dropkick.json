@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "在$(thing)远跳（CatLeap）$()过程中使用$(thing)滑铲（Slide）$()触发$(thing)飞身踢（Dropkick）$()。$(li)伤害计算方式：$(li2)基础伤害$(li2)额外攻击伤害$(li2)下身盔甲值$(li2)最大生命值增长量$(li)获得短暂无敌时间$(li)击退目标$(br)若目标处于$(thing)易伤（Vulnerable）$()状态：$(li)返还$(thing)远跳（CatLeap）$()消耗的体力$(li)触发$(thing)3秒子弹时间（Bullet Time）$()"
+      "text": "在$(thing)远跳（CatLeap）$()过程中使用$(thing)滑铲（Slide）$()触发$(thing)飞身踢（Dropkick）$()。$(li)伤害计算方式：$(li2)基础伤害$(li2)额外攻击伤害$(li2)下身盔甲值$(li2)最大生命值增长量$(li)获得短暂无敌时间$(li)击退目标$(br)若目标处于$(thing)易伤（Vulnerable）$()状态：$(li)返还技能消耗的体力$(li)触发$(thing)3秒子弹时间（Bullet Time）$()"
     }
   ]
 }

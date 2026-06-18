@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "使用$(thing)躲闪（Dodge）$()成功躲避一次攻击后，在$(thing)1秒$()内的下一次攻击触发$(thing)隐秘打击（Sneaky Strike）$()，造成$(l)双倍伤害$()，并返还本次躲闪消耗的体力。若该攻击从目标背后命中，则触发$(thing)背刺（Backstab）$()，造成$(l)三倍伤害$()。"
+      "text": "使用$(thing)躲闪（Dodge）$()成功躲避一次攻击后，若当前精力值高于一定值，在$(thing)1秒$()内的下一次攻击触发$(thing)隐秘打击（Sneaky Strike）$()，造成$(l)双倍伤害$()。若该攻击从目标背后命中，则触发$(thing)背刺（Backstab）$()，造成$(l)三倍伤害$()。"
     }
   ]
 }
