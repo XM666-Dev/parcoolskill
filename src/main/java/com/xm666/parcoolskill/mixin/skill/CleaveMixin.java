@@ -38,7 +38,8 @@ public class CleaveMixin {
 
             var range = PickHandler.getHitRange(player, player.entityInteractionRange());
             var count = CleaveHandler.getHitCount(player);
-            var jumpSkill = (JumpSkill) Parkourability.get(player).get(ChargeJump.class);
+            var parkourability = Parkourability.get(player);
+            var jumpSkill = (JumpSkill) parkourability.get(ChargeJump.class);
             var targets = PickHandler.getHitEntities(player, range, count)
                     .filter(jumpSkill::parcoolskill$addEntityHit)
                     .toArray(Entity[]::new);
@@ -52,14 +53,15 @@ public class CleaveMixin {
     @Mixin(ItemInHandRenderer.class)
     private static class ItemInHandRendererMixin {
         @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;applyItemArmTransform(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/entity/HumanoidArm;F)V", shift = At.Shift.AFTER, ordinal = 8))
-        private void onApplyAnimation(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
+        private void onApplyItemArmTransform(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
             if (!ClientConfig.CLEAVE_ANIMATION_ENABLED.get() || !CleaveHandler.isCharging(player)) return;
 
             var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
-            var jump = Parkourability.get(player).get(ChargeJump.class);
+            var parkourability = Parkourability.get(player);
+            var jump = parkourability.get(ChargeJump.class);
             var finalPartialTick = jump.getNotChargingTick() == 0 ? partialTick : -partialTick;
-            var tick = jump.getChargingTick() + CleaveHandler.getAnimationOffset();
-            CleaveHandler.HAND_ANIMATION.apply(player, finalPartialTick, hand, poseStack, tick, cleaveChargeDuration);
+            var tick = jump.getChargingTick() + CleaveHandler.animationTick;
+            CleaveHandler.ARM_ANIMATION.apply(player, finalPartialTick, hand, poseStack, tick, cleaveChargeDuration);
         }
     }
 
@@ -67,17 +69,17 @@ public class CleaveMixin {
     private static class ChargeJumpMixin {
         @Inject(method = "onClientTick", at = @At(value = "FIELD", target = "Lcom/alrex/parcool/common/action/impl/ChargeJump;chargeTick:I", opcode = Opcodes.PUTFIELD, ordinal = 1))
         private void onChargeDoing(Player player, Parkourability parkourability, CallbackInfo ci) {
-            CleaveHandler.addAnimationOffset();
+            ++CleaveHandler.animationTick;
         }
 
         @Inject(method = "onClientTick", at = @At(value = "FIELD", target = "Lcom/alrex/parcool/common/action/impl/ChargeJump;chargeTick:I", opcode = Opcodes.PUTFIELD, ordinal = 3))
         private void onChargeNotDoing(Player player, Parkourability parkourability, CallbackInfo ci) {
-            CleaveHandler.clearAnimationOffset();
+            CleaveHandler.animationTick = 0;
         }
 
         @Inject(method = "onClientTick", at = @At(value = "FIELD", target = "Lcom/alrex/parcool/common/action/impl/ChargeJump;chargeTick:I", opcode = Opcodes.PUTFIELD, ordinal = 4))
         private void onChargeFinish(Player player, Parkourability parkourability, CallbackInfo ci) {
-            CleaveHandler.clearAnimationOffset();
+            CleaveHandler.animationTick = 0;
         }
     }
 }

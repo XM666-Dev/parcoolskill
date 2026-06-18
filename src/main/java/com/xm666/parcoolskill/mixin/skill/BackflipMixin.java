@@ -83,7 +83,8 @@ public class BackflipMixin {
         private Vec3 wrapKnownMovement(Entity instance, Operation<Vec3> original) {
             if (!(instance instanceof Player player)) return original.call(instance);
 
-            var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
+            var parkourability = Parkourability.get(player);
+            var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
             if (flippingSkill.parcoolskill$getSkillTime() == 0) return original.call(instance);
 
             return Vec3.ZERO;
@@ -110,7 +111,7 @@ public class BackflipMixin {
         private Player player;
 
         @WrapMethod(method = "getPartialTick")
-        public float wrapPartialTick(Operation<Float> original) {
+        private float wrapPartialTick(Operation<Float> original) {
             return TimeScaleHandler.isEntityAuthoritativeFrozen(player)
                     ? TimeScaleHandler.getScalablePartialTick(!TimeScaleHandler.isEntityOriginalFrozen(player))
                     : original.call();
@@ -125,7 +126,7 @@ public class BackflipMixin {
         private Player player;
 
         @WrapMethod(method = "getPartialTick")
-        public float wrapPartialTick(Operation<Float> original) {
+        private float wrapPartialTick(Operation<Float> original) {
             return TimeScaleHandler.isEntityAuthoritativeFrozen(player)
                     ? TimeScaleHandler.getScalablePartialTick(!TimeScaleHandler.isEntityOriginalFrozen(player))
                     : original.call();

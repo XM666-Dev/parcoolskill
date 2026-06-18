@@ -11,8 +11,11 @@ public class LivingBlockMixin {
     @Mixin(LivingEntity.class)
     private static class LivingEntityMixin {
         @ModifyReturnValue(method = "isBlocking", at = @At("RETURN"))
-        public boolean modifyBlocking(boolean original) {
-            return NeoForge.EVENT_BUS.post(new LivingBlockEvent((LivingEntity) (Object) this, original)).isSuccessful();
+        private boolean modifyBlocking(boolean original) {
+            var living = (LivingEntity) (Object) this;
+            var event = new LivingBlockEvent(living, original);
+            NeoForge.EVENT_BUS.post(event);
+            return event.isBlocking();
         }
     }
 }

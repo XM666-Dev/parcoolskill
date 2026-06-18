@@ -35,15 +35,16 @@ public class FlickFlackMixin {
     @Mixin(ItemInHandRenderer.class)
     private static class ItemInHandRendererMixin {
         @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;applyItemArmTransform(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/entity/HumanoidArm;F)V", shift = At.Shift.AFTER, ordinal = 8))
-        private void onApplyAnimation(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
+        private void onApplyItemArmTransform(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
             if (!ClientConfig.FLICK_FLACK_ANIMATION_ENABLED.get()) return;
 
-            var flipping = Parkourability.get(player).get(Flipping.class);
+            var parkourability = Parkourability.get(player);
+            var flipping = parkourability.get(Flipping.class);
             var flippingSkill = (FlippingSkill) flipping;
             if (!flippingSkill.parcoolskill$isAttackReady()) return;
 
             var tick = flipping.getDoingTick();
-            FlickFlackHandler.HAND_ANIMATION.apply(player, partialTick, hand, poseStack, tick, 10);
+            FlickFlackHandler.ARM_ANIMATION.apply(player, partialTick, hand, poseStack, tick, 10);
         }
     }
 }

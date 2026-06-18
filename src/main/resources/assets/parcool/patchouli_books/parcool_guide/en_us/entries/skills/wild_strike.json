@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "After performing a $(thing)CatLeap$(), your next attack triggers $(thing)Wild Strike$(), dealing $(l)double damage$() and granting $(thing)1 second of parry time$()."
+      "text": "After performing a $(thing)CatLeap$(), your next attack triggers $(thing)Wild Strike$(), dealing $(l)double damage$() and granting $(thing)0.5 second of parry time$()."
     }
   ]
 }

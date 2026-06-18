@@ -18,6 +18,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class BashHandler {
@@ -29,9 +30,11 @@ public class BashHandler {
     }
 
     @SubscribeEvent
-    public static void onJumpFinish(ParCoolActionEvent.Finish.Pre event) {
-        if (!(event.getAction() instanceof JumpSkill jumpSkill)) return;
+    public static void onLivingFall(LivingFallEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
 
+        var parkourability = Parkourability.get(player);
+        var jumpSkill = (JumpSkill) parkourability.get(ChargeJump.class);
         jumpSkill.parcoolskill$setAttackReady(false);
     }
 

@@ -1,10 +1,10 @@
 package com.xm666.parcoolskill.mixin.skill;
 
 import com.alrex.parcool.common.action.impl.Slide;
-import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.SlideSkill;
+import com.xm666.parcoolskill.skill.handler.SlideSkillHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.api.distmarker.Dist;
@@ -53,10 +53,8 @@ public class SlideSkillMixin {
             var player = mc.player;
             if (player == null || !(mc.hitResult instanceof EntityHitResult entityHitResult)) return;
 
-            var slideSkill = (SlideSkill) Parkourability.get(player).get(Slide.class);
-            var readyType = slideSkill.parcoolskill$getReadyType();
+            var readyType = SlideSkillHandler.getReadyType(player);
             if (readyType == SlideSkill.Type.NONE) return;
-            slideSkill.parcoolskill$setReadyType(SlideSkill.Type.NONE);
 
             var type = SkillPayload.Type.values()[readyType.ordinal()];
             var target = entityHitResult.getEntity();

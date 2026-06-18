@@ -8,7 +8,7 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
-import com.xm666.parcoolskill.animation.HandAnimation;
+import com.xm666.parcoolskill.animation.ArmAnimation;
 import com.xm666.parcoolskill.effect.Effects;
 import com.xm666.parcoolskill.event.LivingBlockEvent;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class FlickFlackHandler {
-    public static final HandAnimation HAND_ANIMATION = new HandAnimation(
+    public static final ArmAnimation ARM_ANIMATION = new ArmAnimation(
             new Vector3f(-0.25F, 0.35F, 0.05F),
             new Vector3f(-55.0F, 35.3F, -9.785F),
             0.2F,
@@ -73,9 +73,8 @@ public class FlickFlackHandler {
 
     @SubscribeEvent
     public static void onFlippingTick(ParCoolActionEvent.Tick.Pre event) {
-        if (!(event.getAction() instanceof Flipping flipping)) return;
+        if (!(event.getAction() instanceof FlippingSkill flippingSkill)) return;
 
-        var flippingSkill = (FlippingSkill) flipping;
         var invulnerableTime = flippingSkill.parcoolskill$getInvulnerableTime();
         if (invulnerableTime > 0) {
             flippingSkill.parcoolskill$setInvulnerableTime(invulnerableTime - 1);
@@ -92,7 +91,8 @@ public class FlickFlackHandler {
         if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
             return;
 
-        var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
+        var parkourability = Parkourability.get(player);
+        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         if (flippingSkill.parcoolskill$getInvulnerableTime() == 0) return;
 
         event.setCanceled(true);
@@ -113,7 +113,8 @@ public class FlickFlackHandler {
         }
 
         var flickFlackParryDuration = Config.FLICK_FLACK_PARRY_DURATION.get();
-        var flippingSkill = (FlippingSkill) Parkourability.get(player).get(Flipping.class);
+        var parkourability = Parkourability.get(player);
+        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         flippingSkill.parcoolskill$setParryTime(flickFlackParryDuration);
 
         event.setDisableCrit(true);
@@ -136,7 +137,14 @@ public class FlickFlackHandler {
         var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         if (flippingSkill.parcoolskill$getParryTime() == 0) return;
 
-        event.setSuccessful(true);
+        event.setBlocking(true);
+    }
+
+    public static boolean canJump(Parkourability parkourability) {
+        var mc = Minecraft.getInstance();
+        var control = ParCoolConfig.Client.getInstance().FlipControl.get();
+        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
+        return mc.hitResult instanceof EntityHitResult && control.isInputDone(flippingSkill.parcoolskill$justJumped());
     }
 
     private static boolean isAttackReady(Player player) {
@@ -172,12 +180,5 @@ public class FlickFlackHandler {
         event.setDisableCrit(true);
         SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
         return true;
-    }
-
-    public static boolean canJump(Parkourability parkourability) {
-        var mc = Minecraft.getInstance();
-        var control = ParCoolConfig.Client.getInstance().FlipControl.get();
-        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
-        return mc.hitResult instanceof EntityHitResult && control.isInputDone(flippingSkill.parcoolskill$justJumped());
     }
 }

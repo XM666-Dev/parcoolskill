@@ -15,7 +15,7 @@ public class BashMixin {
     @Mixin(ChargeJump.class)
     private static class ChargeJumpMixin {
         @ModifyConstant(method = "onJump", constant = @Constant(doubleValue = 0.5))
-        public double modifyJumpThreshold(double constant, Player player, Parkourability parkourability) {
+        private double modifyJumpThreshold(double constant, Player player, Parkourability parkourability) {
             return parkourability.get(CatLeap.class).isDoing() ? constant : 1.0 / ChargeJump.JUMP_MAX_CHARGE_TICK;
         }
     }

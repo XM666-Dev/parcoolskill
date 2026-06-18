@@ -26,11 +26,11 @@ public class SpartanWeaponryHandler {
         };
     }
 
-    public static Optional<Float> getPowerForTime(SwordBaseItem swordBaseItem, int charge) {
+    private static Optional<Float> getPowerForTime(SwordBaseItem swordBaseItem, int charge) {
         return Optional.ofNullable(swordBaseItem.hasWeaponTraitWithType(WeaponTraits.TYPE_THROWABLE) ? charge / 5.0F : null);
     }
 
-    public static float getPowerForTime(ThrowingWeaponItem throwingWeapon, int charge, ItemStack stack, LivingEntity shooter) {
+    private static float getPowerForTime(ThrowingWeaponItem throwingWeapon, int charge, ItemStack stack, LivingEntity shooter) {
         var maxCharge = throwingWeapon.getMaxChargeTicks(stack, shooter.level());
         var finalCharge = charge > 2 ? charge : Math.min(charge, maxCharge - 1);
         return (float) finalCharge / maxCharge;

@@ -4,18 +4,18 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 public class LivingBlockEvent extends LivingEvent {
-    private boolean isSuccess;
+    private boolean blocking;
 
-    public LivingBlockEvent(LivingEntity entity, boolean success) {
+    public LivingBlockEvent(LivingEntity entity, boolean blocking) {
         super(entity);
-        this.isSuccess = success;
+        this.blocking = blocking;
     }
 
-    public boolean isSuccessful() {
-        return this.isSuccess;
+    public boolean isBlocking() {
+        return this.blocking;
     }
 
-    public void setSuccessful(boolean success) {
-        this.isSuccess = success;
+    public void setBlocking(boolean blocking) {
+        this.blocking = blocking;
     }
 }
