@@ -97,7 +97,7 @@ public class CleaveHandler {
         SkillHandler.use(SkillPayload.Type.CLEAVE_READY, player);
         jumpSkill.parcoolskill$setAttackTime(cleaveAttackDuration);
         jumpSkill.parcoolskill$clearEntityHits();
-        event.setCanceled(mc.hitResult.getType() == HitResult.Type.MISS);
+        event.setCanceled(mc.hitResult.getType() != HitResult.Type.BLOCK);
     }
 
     @SubscribeEvent
