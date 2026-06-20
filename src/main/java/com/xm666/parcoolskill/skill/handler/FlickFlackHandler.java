@@ -57,9 +57,7 @@ public class FlickFlackHandler {
         var dodge = parkourability.get(Dodge.class);
         if (!dodge.isDoing()) return;
 
-        var flickFlackInvulnerableDuration = Config.FLICK_FLACK_INVULNERABLE_DURATION.get();
         flippingSkill.parcoolskill$setAttackReady(true);
-        flippingSkill.parcoolskill$setInvulnerableTime(flickFlackInvulnerableDuration);
 
         var movement = player.getDeltaMovement();
         player.setDeltaMovement(movement.x, movement.y * 1.625, movement.z);
@@ -127,7 +125,9 @@ public class FlickFlackHandler {
 
         if (player.isLocalPlayer()) return;
 
-        targets = target.level().getEntitiesOfClass(LivingEntity.class, getSweepHitBox(target)).stream()
+        var weapon = player.getWeaponItem();
+        var hitBox = weapon.getSweepHitBox(player, target);
+        targets = target.level().getEntitiesOfClass(LivingEntity.class, hitBox).stream()
                 .filter(living -> canSweep(player, target, living))
                 .collect(Collectors.toCollection(ArrayDeque::new));
         attackTarget(player, event);

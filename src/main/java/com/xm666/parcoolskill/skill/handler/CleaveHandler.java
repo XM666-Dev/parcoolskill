@@ -23,6 +23,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -96,7 +97,7 @@ public class CleaveHandler {
         SkillHandler.use(SkillPayload.Type.CLEAVE_READY, player);
         jumpSkill.parcoolskill$setAttackTime(cleaveAttackDuration);
         jumpSkill.parcoolskill$clearEntityHits();
-        event.setCanceled(true);
+        event.setCanceled(mc.hitResult.getType() == HitResult.Type.MISS);
     }
 
     @SubscribeEvent

@@ -133,9 +133,6 @@ public class Config {
     public static final ModConfigSpec.IntValue FLICK_FLACK_NEUTRALIZED_DURATION = BUILDER
             .defineInRange("flick_flack_neutralized_duration", 120, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue FLICK_FLACK_INVULNERABLE_DURATION = BUILDER
-            .defineInRange("flick_flack_invulnerable_duration", 20, 0, Integer.MAX_VALUE);
-
     public static final ModConfigSpec.IntValue FLICK_FLACK_PARRY_DURATION = BUILDER
             .defineInRange("flick_flack_parry_duration", 10, 0, Integer.MAX_VALUE);
 
