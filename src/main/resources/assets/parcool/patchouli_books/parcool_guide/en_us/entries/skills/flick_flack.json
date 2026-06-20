@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "While targeting an enemy during a $(thing)Dodge$(), perform a $(thing)Flipping$() to trigger $(thing)Flick Flack$().$(li)Leaps high into the air and gains temporary $(thing)invulnerability$()$(li)Your next attack deals damage to multiple enemies$(li)Applies $(thing)Neutralized$() to affected targets$(li)Gains $(thing)0.5 second of parry time$()"
+      "text": "While targeting an enemy during a $(thing)Dodge$(), perform a $(thing)Flipping$() to trigger $(thing)Flick Flack$().$(li)Leaps high into the air, causing your next attack to deal damage to multiple enemies$(li)Applies $(thing)Neutralized$() to affected targets$(li)Gains $(thing)0.5 second of parry time$()"
     }
   ]
 }
