@@ -57,7 +57,7 @@ public class CleaveHandler {
 
             if (isAttackReady(player) || isAttacking(player)) {
                 var cleaveRangeMultiplierAddition = Config.CLEAVE_RANGE_MULTIPLIER_ADDITION.get();
-                entityInteractionRange.addTransientModifier(new AttributeModifier(ENTITY_INTERACTION_RANGE_MODIFIER, cleaveRangeMultiplierAddition, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+                entityInteractionRange.addTransientModifier(new AttributeModifier(ENTITY_INTERACTION_RANGE_MODIFIER, cleaveRangeMultiplierAddition, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
             }
         }
 
