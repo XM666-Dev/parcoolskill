@@ -20,6 +20,7 @@ import com.xm666.parcoolskill.skill.FlippingSkill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
@@ -48,7 +49,7 @@ public class FlickFlackHandler {
             0.2F,
             false
     );
-    private static final Identifier MOVEMENT_SPEED_MODIFIER = ResourceLocation.fromNamespaceAndPath(
+    private static final Identifier MOVEMENT_SPEED_MODIFIER = Identifier.fromNamespaceAndPath(
             ParCoolSkill.MODID, "modifier.movement_speed.flick_flack"
     );
     private static ArrayDeque<LivingEntity> targets;
