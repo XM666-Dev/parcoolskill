@@ -18,10 +18,13 @@ import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.FlippingSkill;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
@@ -41,6 +44,9 @@ public class FlickFlackHandler {
             new Vector3f(-55.0F, 35.3F, -9.785F),
             0.2F,
             false
+    );
+    private static final ResourceLocation MOVEMENT_SPEED_MODIFIER = ResourceLocation.fromNamespaceAndPath(
+            ParCoolSkill.MODID, "modifier.movement_speed.flick_flack"
     );
     private static ArrayDeque<LivingEntity> targets;
 
@@ -72,6 +78,22 @@ public class FlickFlackHandler {
     @SubscribeEvent
     public static void onFlippingTick(ParCoolActionEvent.Tick.Pre event) {
         if (!(event.getAction() instanceof FlippingSkill flippingSkill)) return;
+
+        var player = event.getPlayer();
+        var movementSpeed = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (movementSpeed != null) {
+            if (movementSpeed.getModifier(MOVEMENT_SPEED_MODIFIER) != null) {
+                movementSpeed.removeModifier(MOVEMENT_SPEED_MODIFIER);
+            }
+            if (flippingSkill.parcoolskill$isAttackReady()) {
+                var flickFlackSpeedMultiplierAddition = Config.FLICK_FLACK_SPEED_MULTIPLIER_ADDITION.get();
+                movementSpeed.addTransientModifier(new AttributeModifier(
+                        MOVEMENT_SPEED_MODIFIER,
+                        flickFlackSpeedMultiplierAddition,
+                        AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+                ));
+            }
+        }
 
         var invulnerableTime = flippingSkill.parcoolskill$getInvulnerableTime();
         if (invulnerableTime > 0) {
