@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "在$(thing)躲闪（Dodge）$()时瞄准目标，并进行$(thing)空翻（Flipping）$()触发$(thing)翻越撑击（Flick Flack）$()。$(li)高高跃起，并使你的下一次攻击对多个敌人造成伤害$(li)对命中的目标施加$(thing)中和（Neutralized）$()效果$(li)获得$(thing)0.5秒招架时间$()"
+      "text": "在$(thing)躲闪（Dodge）$()时瞄准目标，并进行$(thing)空翻（Flipping）$()触发$(thing)翻越撑击（Flick Flack）$()。$(li)高高跃起，获得50%移动速度加成$(li)你的下一次攻击将对多个敌人造成伤害$(li)对命中的目标施加$(thing)中和（Neutralized）$()效果$(li)获得$(thing)0.5秒招架时间$()"
     }
   ]
 }

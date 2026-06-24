@@ -130,6 +130,9 @@ public class Config {
     public static final ModConfigSpec.IntValue CLEAVE_BULLET_TIME_DURATION = BUILDER
             .defineInRange("cleave_bullet_time_duration", 20, 0, Integer.MAX_VALUE);
 
+    public static final ModConfigSpec.DoubleValue FLICK_FLACK_SPEED_MULTIPLIER_ADDITION = BUILDER
+            .defineInRange("flick_flack_speed_multiplier_addition", 0.5, 0.0, Double.POSITIVE_INFINITY);
+
     public static final ModConfigSpec.IntValue FLICK_FLACK_NEUTRALIZED_DURATION = BUILDER
             .defineInRange("flick_flack_neutralized_duration", 120, 0, Integer.MAX_VALUE);
 
