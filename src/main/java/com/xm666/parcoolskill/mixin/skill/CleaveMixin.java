@@ -20,6 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.CommonHooks;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,6 +47,7 @@ public class CleaveMixin {
             for (var target : targets) {
                 SkillHandler.use(SkillPayload.Type.CLEAVE_ATTACK, player, target);
                 player.resetAttackStrengthTicker();
+                CommonHooks.fireCriticalHit(player, target, false, 1.0F);
             }
         }
     }
