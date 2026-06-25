@@ -45,6 +45,7 @@ public class CleaveMixin {
                     .filter(jumpSkill::parcoolskill$addEntityHit)
                     .toArray(Entity[]::new);
             for (var target : targets) {
+                player.attackStrengthTicker = (int) player.getCurrentItemAttackStrengthDelay();
                 SkillHandler.use(SkillPayload.Type.CLEAVE_ATTACK, player, target);
                 CommonHooks.fireCriticalHit(player, target, false, 1.0F);
                 player.resetAttackStrengthTicker();
