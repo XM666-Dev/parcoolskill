@@ -180,7 +180,10 @@ public class CleaveHandler {
         var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
         var parkourability = Parkourability.get(player);
         var jump = parkourability.get(ChargeJump.class);
-        return jump.getChargingTick() >= cleaveChargeDuration;
+        if (jump.getChargingTick() < cleaveChargeDuration) return false;
+
+        var attackStrengthScale = player.getAttackStrengthScale(0.5F);
+        return attackStrengthScale > 0.9F;
     }
 
     private static boolean canUseCleave(Player player) {
