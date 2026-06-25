@@ -46,8 +46,8 @@ public class CleaveMixin {
                     .toArray(Entity[]::new);
             for (var target : targets) {
                 SkillHandler.use(SkillPayload.Type.CLEAVE_ATTACK, player, target);
-                player.resetAttackStrengthTicker();
                 CommonHooks.fireCriticalHit(player, target, false, 1.0F);
+                player.resetAttackStrengthTicker();
             }
         }
     }
