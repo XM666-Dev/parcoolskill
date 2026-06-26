@@ -23,7 +23,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -100,7 +99,7 @@ public class CleaveHandler {
         SkillHandler.use(SkillPayload.Type.CLEAVE_READY, player);
         jumpSkill.parcoolskill$setAttackTime(cleaveAttackDuration);
         jumpSkill.parcoolskill$clearEntityHits();
-        event.setCanceled(mc.hitResult.getType() != HitResult.Type.BLOCK);
+        event.setCanceled(true);
     }
 
     @SubscribeEvent
@@ -109,11 +108,8 @@ public class CleaveHandler {
         if (!isAttacking(player)) return;
 
         var sweepingDamageRatio = (float) player.getAttributeValue(Attributes.SWEEPING_DAMAGE_RATIO);
-        if (sweepingDamageRatio == 0.0F) return;
-
         event.setCriticalHit(true);
         event.setDamageMultiplier(event.getDamageMultiplier() * (1.0F + sweepingDamageRatio));
-        event.setDisableSweep(false);
         event.setDisableCrit(true);
     }
 
