@@ -53,7 +53,7 @@ public class FlickFlackMixin {
     private static class ItemInHandRendererMixin {
         @Inject(method = "renderArmWithItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemInHandRenderer;applyItemArmTransform(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/entity/HumanoidArm;F)V", shift = At.Shift.AFTER, ordinal = 4))
         private void onApplyItemArmTransform(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand, float swingProgress, ItemStack item, float equippedProgress, PoseStack poseStack, SubmitNodeCollector nodeCollector, int packedLight, CallbackInfo ci) {
-            if (!ClientConfig.FLICK_FLACK_ANIMATION_ENABLED.get()|| hand != InteractionHand.MAIN_HAND) return;
+            if (!ClientConfig.FLICK_FLACK_ANIMATION_ENABLED.get() || hand != InteractionHand.MAIN_HAND) return;
 
             var parkourability = Parkourability.get(player);
             var flipping = parkourability.get(Flipping.class);
