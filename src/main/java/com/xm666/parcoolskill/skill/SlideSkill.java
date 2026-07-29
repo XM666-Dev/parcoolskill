@@ -9,6 +9,10 @@ public interface SlideSkill {
 
     void parcoolskill$setInvulnerableTime(int invulnerableTime);
 
+    boolean parcoolskill$isInvulnerable();
+
+    void parcoolskill$setInvulnerable(boolean invulnerable);
+
     enum Type {
         DROPKICK,
         HEEL_HOOK,

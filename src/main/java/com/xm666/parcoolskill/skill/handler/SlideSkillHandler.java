@@ -63,6 +63,7 @@ public class SlideSkillHandler {
         var slideSkillExtraInvulnerableDuration = Config.SLIDE_SKILL_EXTRA_INVULNERABLE_DURATION.get();
         slideSkill.parcoolskill$setReadyType(readyType);
         slideSkill.parcoolskill$setInvulnerableTime(slideSkillExtraInvulnerableDuration);
+        slideSkill.parcoolskill$setInvulnerable(true);
     }
 
     @SubscribeEvent
@@ -82,13 +83,13 @@ public class SlideSkillHandler {
         if (!(event.getAction() instanceof SlideSkill slideSkill)) return;
 
         slideSkill.parcoolskill$setReadyType(SlideSkill.Type.NONE);
+        slideSkill.parcoolskill$setInvulnerable(false);
     }
 
     @SubscribeEvent
     public static void onSlideTick(ParCoolActionEvent.Tick.Pre event) {
-        if (!(event.getAction() instanceof Slide slide) || slide.isDoing()) return;
+        if (!(event.getAction() instanceof SlideSkill slideSkill) || slideSkill.parcoolskill$isInvulnerable()) return;
 
-        var slideSkill = (SlideSkill) slide;
         var invulnerableTime = slideSkill.parcoolskill$getInvulnerableTime();
         if (invulnerableTime == 0) return;
 
