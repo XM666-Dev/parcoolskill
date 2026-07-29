@@ -25,10 +25,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import org.joml.Vector3f;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
@@ -72,7 +74,7 @@ public class CleaveHandler {
     }
 
     @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onClickInput(InputEvent.InteractionKeyMappingTriggered event) {
         if (event.isPickBlock()) return;
 
@@ -108,9 +110,19 @@ public class CleaveHandler {
         if (!isAttacking(player)) return;
 
         var sweepingDamageRatio = (float) player.getAttributeValue(Attributes.SWEEPING_DAMAGE_RATIO);
+        if (sweepingDamageRatio == 0.0F) return;
+
         event.setCriticalHit(true);
         event.setDamageMultiplier(event.getDamageMultiplier() * (1.0F + sweepingDamageRatio));
         event.setDisableCrit(true);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerAttack(SweepAttackEvent event) {
+        var player = event.getEntity();
+        if (!isAttacking(player)) return;
+
+        event.setCanceled(true);
     }
 
     public static void handleReady(Player player) {

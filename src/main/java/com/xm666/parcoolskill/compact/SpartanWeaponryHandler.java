@@ -7,6 +7,7 @@ import org.xiyu.spartanweaponryunofficial.item.HeavyCrossbowItem;
 import org.xiyu.spartanweaponryunofficial.item.LongbowItem;
 import org.xiyu.spartanweaponryunofficial.item.SwordBaseItem;
 import org.xiyu.spartanweaponryunofficial.item.ThrowingWeaponItem;
+import org.xiyu.spartanweaponryunofficial.util.ItemStackDataHelper;
 
 import java.util.Optional;
 
@@ -18,7 +19,10 @@ public class SpartanWeaponryHandler {
             case SwordBaseItem swordBaseItem -> getPowerForTime(swordBaseItem, charge);
             default -> Optional.ofNullable(switch (item) {
                 case LongbowItem longbowItem -> longbowItem.getNockProgress(stack, shooter);
-                case HeavyCrossbowItem heavyCrossbowItem -> heavyCrossbowItem.getLoadProgress(stack, shooter);
+                case HeavyCrossbowItem heavyCrossbowItem ->
+                        ItemStackDataHelper.getTag(stack).getBoolean(HeavyCrossbowItem.NBT_CHARGED)
+                                ? (float) charge / heavyCrossbowItem.getAimTicks(stack, shooter.level())
+                                : heavyCrossbowItem.getLoadProgress(stack, shooter);
                 case ThrowingWeaponItem throwingWeaponItem ->
                         getPowerForTime(throwingWeaponItem, charge, stack, shooter);
                 default -> null;
