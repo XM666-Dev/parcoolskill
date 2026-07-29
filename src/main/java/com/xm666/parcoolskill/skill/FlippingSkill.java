@@ -15,9 +15,9 @@ public interface FlippingSkill {
 
     void parcoolskill$setAttackReady(boolean attackReady);
 
-    int parcoolskill$getInvulnerableTime();
+    boolean parcoolskill$isAccelerated();
 
-    void parcoolskill$setInvulnerableTime(int invulnerableTime);
+    void parcoolskill$setAccelerated(boolean accelerated);
 
     int parcoolskill$getParryTime();
 

@@ -19,7 +19,6 @@ import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.FlippingSkill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,7 +30,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.joml.Vector3f;
 
 import java.util.ArrayDeque;
@@ -60,6 +58,7 @@ public class FlickFlackHandler {
         if (!dodge.isDoing()) return;
 
         flippingSkill.parcoolskill$setAttackReady(true);
+        flippingSkill.parcoolskill$setAccelerated(true);
 
         var movement = player.getDeltaMovement();
         player.setDeltaMovement(movement.x, movement.y * 1.625, movement.z);
@@ -73,6 +72,7 @@ public class FlickFlackHandler {
         if (!(event.getAction() instanceof FlippingSkill flippingSkill)) return;
 
         flippingSkill.parcoolskill$setAttackReady(false);
+        flippingSkill.parcoolskill$setAccelerated(false);
     }
 
     @SubscribeEvent
@@ -85,7 +85,7 @@ public class FlickFlackHandler {
             if (movementSpeed.getModifier(MOVEMENT_SPEED_MODIFIER) != null) {
                 movementSpeed.removeModifier(MOVEMENT_SPEED_MODIFIER);
             }
-            if (flippingSkill.parcoolskill$isAttackReady()) {
+            if (flippingSkill.parcoolskill$isAccelerated()) {
                 var flickFlackSpeedMultiplierAddition = Config.FLICK_FLACK_SPEED_MULTIPLIER_ADDITION.get();
                 movementSpeed.addTransientModifier(new AttributeModifier(
                         MOVEMENT_SPEED_MODIFIER,
@@ -95,27 +95,10 @@ public class FlickFlackHandler {
             }
         }
 
-        var invulnerableTime = flippingSkill.parcoolskill$getInvulnerableTime();
-        if (invulnerableTime > 0) {
-            flippingSkill.parcoolskill$setInvulnerableTime(invulnerableTime - 1);
-        }
-
         var parryTime = flippingSkill.parcoolskill$getParryTime();
         if (parryTime > 0) {
             flippingSkill.parcoolskill$setParryTime(parryTime - 1);
         }
-    }
-
-    @SubscribeEvent
-    public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
-        if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
-            return;
-
-        var parkourability = Parkourability.get(player);
-        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
-        if (flippingSkill.parcoolskill$getInvulnerableTime() == 0) return;
-
-        event.setCanceled(true);
     }
 
     @SubscribeEvent

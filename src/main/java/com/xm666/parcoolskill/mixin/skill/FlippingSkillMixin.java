@@ -18,7 +18,7 @@ public class FlippingSkillMixin {
         @Unique
         private boolean parcoolskill$attackReady;
         @Unique
-        private int parcoolskill$invulnerableTime;
+        private boolean parcoolskill$accelerated;
         @Unique
         private int parcoolskill$parryTime;
 
@@ -58,13 +58,13 @@ public class FlippingSkillMixin {
         }
 
         @Override
-        public int parcoolskill$getInvulnerableTime() {
-            return parcoolskill$invulnerableTime;
+        public boolean parcoolskill$isAccelerated() {
+            return parcoolskill$accelerated;
         }
 
         @Override
-        public void parcoolskill$setInvulnerableTime(int invulnerableTime) {
-            parcoolskill$invulnerableTime = invulnerableTime;
+        public void parcoolskill$setAccelerated(boolean accelerated) {
+            parcoolskill$accelerated = accelerated;
         }
 
         @Override

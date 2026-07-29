@@ -22,6 +22,8 @@ public class SlideSkillMixin {
         private Type parcoolskill$readyType = Type.NONE;
         @Unique
         private int parcoolskill$invulnerableTime;
+        @Unique
+        private boolean parcoolskill$invulnerable;
 
         @Override
         public Type parcoolskill$getReadyType() {
@@ -41,6 +43,16 @@ public class SlideSkillMixin {
         @Override
         public void parcoolskill$setInvulnerableTime(int invulnerableTime) {
             parcoolskill$invulnerableTime = invulnerableTime;
+        }
+
+        @Override
+        public boolean parcoolskill$isInvulnerable() {
+            return parcoolskill$invulnerable;
+        }
+
+        @Override
+        public void parcoolskill$setInvulnerable(boolean invulnerable) {
+            parcoolskill$invulnerable = invulnerable;
         }
     }
 
