@@ -147,9 +147,6 @@ dependencies {
     implementation "curse.maven:timescalelib-1542930:8170456"
     implementation "curse.maven:patchouli-306770:7730942"
     implementation "curse.maven:spartan-weaponry-unofficial-1450963:8423182"
-    implementation "curse.maven:better-combat-by-daedelus-639842:8430183"
-    implementation "curse.maven:playeranimator-658587:7389814"
-    implementation "curse.maven:cloth-config-348521:5729127"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
