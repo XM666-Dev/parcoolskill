@@ -112,7 +112,7 @@ public class BackflipMixin {
 
         @WrapMethod(method = "getPartialTick")
         private float wrapPartialTick(Operation<Float> original) {
-            return TimeScaleHandler.isEntityAuthoritativeFrozen(player)
+            return TimeScaleHandler.isEntityEnforceableFrozen(player)
                     ? TimeScaleHandler.getScalablePartialTick(!TimeScaleHandler.isEntityOriginalFrozen(player))
                     : original.call();
         }
@@ -127,7 +127,7 @@ public class BackflipMixin {
 
         @WrapMethod(method = "getPartialTick")
         private float wrapPartialTick(Operation<Float> original) {
-            return TimeScaleHandler.isEntityAuthoritativeFrozen(player)
+            return TimeScaleHandler.isEntityEnforceableFrozen(player)
                     ? TimeScaleHandler.getScalablePartialTick(!TimeScaleHandler.isEntityOriginalFrozen(player))
                     : original.call();
         }
