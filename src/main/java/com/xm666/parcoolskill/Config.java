@@ -1,159 +1,181 @@
 package com.xm666.parcoolskill;
 
 import com.alrex.parcool.common.action.impl.ChargeJump;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ConfigTracker;
+import net.minecraftforge.fml.config.IConfigSpec;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.loading.FMLPaths;
 
-@Mod(ParCoolSkill.MODID)
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
+import java.util.Locale;
+
 public class Config {
-    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
-    public static final ModConfigSpec.BooleanValue WILD_STRIKE_ENABLED = BUILDER
+    public static final ForgeConfigSpec.BooleanValue WILD_STRIKE_ENABLED = BUILDER
             .define("wild_strike_enabled", true);
 
-    public static final ModConfigSpec.BooleanValue SNEAKY_STRIKE_ENABLED = BUILDER
+    public static final ForgeConfigSpec.BooleanValue SNEAKY_STRIKE_ENABLED = BUILDER
             .define("sneaky_strike_enabled", true);
 
-    public static final ModConfigSpec.BooleanValue DROPKICK_ENABLED = BUILDER
+    public static final ForgeConfigSpec.BooleanValue DROPKICK_ENABLED = BUILDER
             .define("dropkick_enabled", true);
 
-    public static final ModConfigSpec.BooleanValue HEEL_HOOK_ENABLED = BUILDER
+    public static final ForgeConfigSpec.BooleanValue HEEL_HOOK_ENABLED = BUILDER
             .define("heel_hook_enabled", true);
 
-    public static final ModConfigSpec.BooleanValue BASH_ENABLED = BUILDER
+    public static final ForgeConfigSpec.BooleanValue BASH_ENABLED = BUILDER
             .define("bash_enabled", true);
 
-    public static final ModConfigSpec.BooleanValue BACKFLIP_ENABLED = BUILDER
+    public static final ForgeConfigSpec.BooleanValue BACKFLIP_ENABLED = BUILDER
             .define("backflip_enabled", true);
 
-    public static final ModConfigSpec.BooleanValue CLEAVE_ENABLED = BUILDER
+    public static final ForgeConfigSpec.BooleanValue CLEAVE_ENABLED = BUILDER
             .define("cleave_enabled", true);
 
-    public static final ModConfigSpec.BooleanValue FLICK_FLACK_ENABLED = BUILDER
+    public static final ForgeConfigSpec.BooleanValue FLICK_FLACK_ENABLED = BUILDER
             .define("flick_flack_enabled", true);
 
-    public static final ModConfigSpec.IntValue WILD_STRIKE_STAMINA_CONSUMPTION = BUILDER
+    public static final ForgeConfigSpec.IntValue WILD_STRIKE_STAMINA_CONSUMPTION = BUILDER
             .defineInRange("wild_strike_stamina_consumption", 50, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue SNEAKY_STRIKE_STAMINA_CONSUMPTION = BUILDER
+    public static final ForgeConfigSpec.IntValue SNEAKY_STRIKE_STAMINA_CONSUMPTION = BUILDER
             .defineInRange("sneaky_strike_stamina_consumption", 400, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue DROPKICK_STAMINA_CONSUMPTION = BUILDER
+    public static final ForgeConfigSpec.IntValue DROPKICK_STAMINA_CONSUMPTION = BUILDER
             .defineInRange("dropkick_stamina_consumption", 50, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue HEEL_HOOK_STAMINA_CONSUMPTION = BUILDER
+    public static final ForgeConfigSpec.IntValue HEEL_HOOK_STAMINA_CONSUMPTION = BUILDER
             .defineInRange("heel_hook_stamina_consumption", 150, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue BASH_STAMINA_CONSUMPTION = BUILDER
+    public static final ForgeConfigSpec.IntValue BASH_STAMINA_CONSUMPTION = BUILDER
             .defineInRange("bash_stamina_consumption", 400, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue BACKFLIP_STAMINA_CONSUMPTION = BUILDER
+    public static final ForgeConfigSpec.IntValue BACKFLIP_STAMINA_CONSUMPTION = BUILDER
             .defineInRange("backflip_stamina_consumption", 400, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue CLEAVE_STAMINA_CONSUMPTION = BUILDER
+    public static final ForgeConfigSpec.IntValue CLEAVE_STAMINA_CONSUMPTION = BUILDER
             .defineInRange("cleave_stamina_consumption", 500, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue FLICK_FLACK_STAMINA_CONSUMPTION = BUILDER
+    public static final ForgeConfigSpec.IntValue FLICK_FLACK_STAMINA_CONSUMPTION = BUILDER
             .defineInRange("flick_flack_stamina_consumption", 300, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue WILD_STRIKE_DAMAGE_MULTIPLIER = BUILDER
+    public static final ForgeConfigSpec.DoubleValue WILD_STRIKE_DAMAGE_MULTIPLIER = BUILDER
             .defineInRange("wild_strike_damage_multiplier", 2.0, 0.0, Double.POSITIVE_INFINITY);
 
-    public static final ModConfigSpec.IntValue WILD_STRIKE_PARRY_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue WILD_STRIKE_PARRY_DURATION = BUILDER
             .defineInRange("wild_strike_parry_duration", 10, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue SNEAKY_STRIKE_READY_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue SNEAKY_STRIKE_READY_DURATION = BUILDER
             .defineInRange("sneaky_strike_ready_duration", 20, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue SNEAKY_STRIKE_DAMAGE_MULTIPLIER = BUILDER
+    public static final ForgeConfigSpec.DoubleValue SNEAKY_STRIKE_DAMAGE_MULTIPLIER = BUILDER
             .defineInRange("sneaky_strike_damage_multiplier", 2.0, 0.0, Double.POSITIVE_INFINITY);
 
-    public static final ModConfigSpec.DoubleValue SNEAKY_STRIKE_BACKSTAB_DAMAGE_MULTIPLIER = BUILDER
+    public static final ForgeConfigSpec.DoubleValue SNEAKY_STRIKE_BACKSTAB_DAMAGE_MULTIPLIER = BUILDER
             .defineInRange("sneaky_strike_backstab_damage_multiplier", 3.0, 0.0, Double.POSITIVE_INFINITY);
 
-    public static final ModConfigSpec.DoubleValue SLIDE_SKILL_DAMAGE_BASE = BUILDER
+    public static final ForgeConfigSpec.DoubleValue SLIDE_SKILL_DAMAGE_BASE = BUILDER
             .defineInRange("slide_skill_damage_base", 4.0, 0.0, Double.POSITIVE_INFINITY);
 
-    public static final ModConfigSpec.DoubleValue SLIDE_SKILL_DAMAGE_MULTIPLIER = BUILDER
+    public static final ForgeConfigSpec.DoubleValue SLIDE_SKILL_DAMAGE_MULTIPLIER = BUILDER
             .defineInRange("slide_skill_damage_multiplier", 1.0, 0.0, Double.POSITIVE_INFINITY);
 
-    public static final ModConfigSpec.IntValue SLIDE_SKILL_EXTRA_INVULNERABLE_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue SLIDE_SKILL_EXTRA_INVULNERABLE_DURATION = BUILDER
             .defineInRange("slide_skill_extra_invulnerable_duration", 10, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue SLIDE_SKILL_BULLET_TIME_SCALE = BUILDER
+    public static final ForgeConfigSpec.DoubleValue SLIDE_SKILL_BULLET_TIME_SCALE = BUILDER
             .defineInRange("slide_skill_bullet_time_scale", 0.25, 0.0, 1.0);
 
-    public static final ModConfigSpec.IntValue SLIDE_SKILL_BULLET_TIME_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue SLIDE_SKILL_BULLET_TIME_DURATION = BUILDER
             .defineInRange("slide_skill_bullet_time_duration", 80, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue DROPKICK_KNOCKBACK_BASE = BUILDER
+    public static final ForgeConfigSpec.DoubleValue DROPKICK_KNOCKBACK_BASE = BUILDER
             .defineInRange("dropkick_knockback_base", 2.0, 0.0, Double.POSITIVE_INFINITY);
 
-    public static final ModConfigSpec.IntValue HEEL_HOOK_SLOWDOWN_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue HEEL_HOOK_SLOWDOWN_DURATION = BUILDER
             .defineInRange("heel_hook_slowdown_duration", 60, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue HEEL_HOOK_SLOWDOWN_AMPLIFIER = BUILDER
+    public static final ForgeConfigSpec.IntValue HEEL_HOOK_SLOWDOWN_AMPLIFIER = BUILDER
             .defineInRange("heel_hook_slowdown_amplifier", 2, 0, 255);
 
-    public static final ModConfigSpec.IntValue BASH_VULNERABLE_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue BASH_VULNERABLE_DURATION = BUILDER
             .defineInRange("bash_vulnerable_duration", 120, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue BACKFLIP_SKILL_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue BACKFLIP_SKILL_DURATION = BUILDER
             .defineInRange("backflip_skill_duration", 60, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue BACKFLIP_COOLDOWN_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue BACKFLIP_COOLDOWN_DURATION = BUILDER
             .defineInRange("backflip_cooldown_duration", 80, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue BACKFLIP_BULLET_TIME_SCALE = BUILDER
+    public static final ForgeConfigSpec.DoubleValue BACKFLIP_BULLET_TIME_SCALE = BUILDER
             .defineInRange("backflip_bullet_time_scale", 0.25, 0.0, 1.0);
 
-    public static final ModConfigSpec.IntValue BACKFLIP_BULLET_TIME_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue BACKFLIP_BULLET_TIME_DURATION = BUILDER
             .defineInRange("backflip_bullet_time_duration", 60, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue CLEAVE_CHARGE_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue CLEAVE_CHARGE_DURATION = BUILDER
             .defineInRange("cleave_charge_duration", 10, 0, ChargeJump.JUMP_MAX_CHARGE_TICK);
 
-    public static final ModConfigSpec.IntValue CLEAVE_ATTACK_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue CLEAVE_ATTACK_DURATION = BUILDER
             .defineInRange("cleave_attack_duration", 10, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue CLEAVE_RANGE_MULTIPLIER_ADDITION = BUILDER
+    public static final ForgeConfigSpec.DoubleValue CLEAVE_RANGE_MULTIPLIER_ADDITION = BUILDER
             .defineInRange("cleave_range_multiplier_addition", 0.5, 0.0, Double.POSITIVE_INFINITY);
 
-    public static final ModConfigSpec.IntValue CLEAVE_HIT_COUNT_BASE = BUILDER
+    public static final ForgeConfigSpec.IntValue CLEAVE_HIT_COUNT_BASE = BUILDER
             .defineInRange("cleave_hit_count_base", 1, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue CLEAVE_BULLET_TIME_SCALE = BUILDER
+    public static final ForgeConfigSpec.DoubleValue CLEAVE_BULLET_TIME_SCALE = BUILDER
             .defineInRange("cleave_bullet_time_scale", 0.25, 0.0, 1.0);
 
-    public static final ModConfigSpec.IntValue CLEAVE_BULLET_TIME_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue CLEAVE_BULLET_TIME_DURATION = BUILDER
             .defineInRange("cleave_bullet_time_duration", 20, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue FLICK_FLACK_SPEED_MULTIPLIER_ADDITION = BUILDER
+    public static final ForgeConfigSpec.DoubleValue FLICK_FLACK_SPEED_MULTIPLIER_ADDITION = BUILDER
             .defineInRange("flick_flack_speed_multiplier_addition", 0.5, 0.0, Double.POSITIVE_INFINITY);
 
-    public static final ModConfigSpec.IntValue FLICK_FLACK_NEUTRALIZED_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue FLICK_FLACK_NEUTRALIZED_DURATION = BUILDER
             .defineInRange("flick_flack_neutralized_duration", 120, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.IntValue FLICK_FLACK_PARRY_DURATION = BUILDER
+    public static final ForgeConfigSpec.IntValue FLICK_FLACK_PARRY_DURATION = BUILDER
             .defineInRange("flick_flack_parry_duration", 10, 0, Integer.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue VULNERABLE_DAMAGE_MULTIPLIER_ADDITION = BUILDER
+    public static final ForgeConfigSpec.DoubleValue VULNERABLE_DAMAGE_MULTIPLIER_ADDITION = BUILDER
             .defineInRange("vulnerable_damage_multiplier_addition", 0.5, 0.0, Double.POSITIVE_INFINITY);
 
-    public static final ModConfigSpec.DoubleValue VULNERABLE_DAMAGE_MULTIPLIER_ADDITION_GROWTH = BUILDER
+    public static final ForgeConfigSpec.DoubleValue VULNERABLE_DAMAGE_MULTIPLIER_ADDITION_GROWTH = BUILDER
             .defineInRange("vulnerable_damage_multiplier_addition_growth", 0.25, 0.0, Double.POSITIVE_INFINITY);
 
-    public static final ModConfigSpec.DoubleValue NEUTRALIZED_DAMAGE_MULTIPLIER_REDUCTION = BUILDER
+    public static final ForgeConfigSpec.DoubleValue NEUTRALIZED_DAMAGE_MULTIPLIER_REDUCTION = BUILDER
             .defineInRange("neutralized_damage_multiplier_reduction", 0.25, 0.0, Double.POSITIVE_INFINITY);
 
-    public static final ModConfigSpec.DoubleValue NEUTRALIZED_DAMAGE_MULTIPLIER_REDUCTION_GROWTH = BUILDER
+    public static final ForgeConfigSpec.DoubleValue NEUTRALIZED_DAMAGE_MULTIPLIER_REDUCTION_GROWTH = BUILDER
             .defineInRange("neutralized_damage_multiplier_reduction_growth", 0.15, 0.0, Double.POSITIVE_INFINITY);
 
-    private static final ModConfigSpec SPEC = BUILDER.build();
+    private static final ForgeConfigSpec SPEC = BUILDER.build();
 
-    public Config(ModContainer container) {
-        container.registerConfig(ModConfig.Type.COMMON, SPEC);
+    public static void init(ModContainer container) {
+        registerConfig(ModConfig.Type.COMMON, SPEC, container);
+    }
+
+    public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec, ModContainer container) {
+        registerConfig(type, spec, container, type.extension());
+    }
+
+    public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec, ModContainer container, String extension) {
+        var fileName = String.format(Locale.ROOT, "%s-%s.toml", ParCoolSkill.MODID, extension);
+        var config = new ModConfig(type, spec, container, fileName);
+        try {
+            var method = ConfigTracker.class.getDeclaredMethod("openConfig", ModConfig.class, Path.class);
+            method.setAccessible(true);
+            method.invoke(ConfigTracker.INSTANCE, config, FMLPaths.CONFIGDIR.get());
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

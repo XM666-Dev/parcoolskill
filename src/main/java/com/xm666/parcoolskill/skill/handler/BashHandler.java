@@ -4,7 +4,7 @@ import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.action.impl.Flipping;
-import com.alrex.parcool.common.attachment.common.Parkourability;
+import com.alrex.parcool.common.capability.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.effect.Effects;
@@ -16,11 +16,11 @@ import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
-@EventBusSubscriber(modid = ParCoolSkill.MODID)
+@Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class BashHandler {
     @SubscribeEvent
     public static void onJumpStart(ParCoolActionEvent.Start.Pre event) {
@@ -53,7 +53,7 @@ public class BashHandler {
         var target = event.getTarget();
         if (target instanceof LivingEntity living) {
             var bashVulnerableDuration = Config.BASH_VULNERABLE_DURATION.get();
-            SkillHandler.addEffect(living, player, Effects.VULNERABLE, bashVulnerableDuration);
+            SkillHandler.addEffect(living, player, Effects.VULNERABLE.get(), bashVulnerableDuration);
         }
 
         event.setDisableCrit(true);

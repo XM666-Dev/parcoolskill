@@ -4,7 +4,7 @@ import com.alrex.parcool.api.SoundEvents;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.Dodge;
 import com.alrex.parcool.common.action.impl.Flipping;
-import com.alrex.parcool.common.attachment.common.Parkourability;
+import com.alrex.parcool.common.capability.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
@@ -21,17 +21,17 @@ import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.common.Mod;
 import org.joml.Vector2d;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-@EventBusSubscriber(modid = ParCoolSkill.MODID)
+@Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class BackflipHandler {
     private static boolean releaseUsingItem = false;
 
@@ -80,7 +80,7 @@ public class BackflipHandler {
     }
 
     @SubscribeEvent
-    public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
+    public static void onLivingIncomingDamage(LivingAttackEvent event) {
         if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
             return;
 
@@ -145,12 +145,15 @@ public class BackflipHandler {
             if (result.isPresent()) return result;
         }
 
-        var charge = stack.getUseDuration(shooter) - shooter.getUseItemRemainingTicks();
-        return Optional.ofNullable(switch (stack.getItem()) {
-            case BowItem ignored -> BowItem.getPowerForTime(charge);
-            case CrossbowItem ignored -> CrossbowItem.getPowerForTime(charge, stack, shooter);
-            case TridentItem ignored -> charge / 10.0F;
-            default -> null;
-        });
+        var charge = stack.getUseDuration() - shooter.getUseItemRemainingTicks();
+        var item = stack.getItem();
+        if (item instanceof BowItem) {
+            return Optional.of(BowItem.getPowerForTime(charge));
+        } else if (item instanceof CrossbowItem) {
+            return Optional.of(CrossbowItem.getPowerForTime(charge, stack));
+        } else if (item instanceof TridentItem) {
+            return Optional.of(charge / 10.0F);
+        }
+        return Optional.empty();
     }
 }

@@ -5,7 +5,7 @@ import com.alrex.parcool.common.action.BehaviorEnforcer;
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.action.impl.Dodge;
 import com.alrex.parcool.common.action.impl.Slide;
-import com.alrex.parcool.common.attachment.common.Parkourability;
+import com.alrex.parcool.common.capability.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
@@ -31,11 +31,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
-@EventBusSubscriber(modid = ParCoolSkill.MODID)
+@Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class SlideSkillHandler {
     private static final BehaviorEnforcer.ID ID_DESCEND_EDGE = BehaviorEnforcer.newID();
 
@@ -96,7 +98,7 @@ public class SlideSkillHandler {
     }
 
     @SubscribeEvent
-    public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
+    public static void onLivingIncomingDamage(LivingAttackEvent event) {
         if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
             return;
 
@@ -110,8 +112,7 @@ public class SlideSkillHandler {
     public static void handleAttack(Player player, Entity target, SlideSkill.Type type) {
         if (!isAttackReady(player, type)) return;
 
-        var boundingBox = target.getBoundingBox();
-        if (!player.canInteractWithEntity(boundingBox, 1.0)) return;
+        if (!player.canReach(target, 1.0)) return;
 
         StaminaHandler.consume(player, switch (type) {
             case DROPKICK -> Config.DROPKICK_STAMINA_CONSUMPTION.get();
@@ -200,18 +201,21 @@ public class SlideSkillHandler {
     }
 
     private static boolean isLowerArmor(AttributeModifier attributeModifier) {
-        return attributeModifier.is(ResourceLocation.parse("minecraft:armor.leggings")) || attributeModifier.is(ResourceLocation.parse("minecraft:armor.boots"));
+        var id = attributeModifier.getId();
+        return id == ArmorItem.ARMOR_MODIFIER_UUID_PER_TYPE.get(ArmorItem.Type.LEGGINGS)
+                || id == ArmorItem.ARMOR_MODIFIER_UUID_PER_TYPE.get(ArmorItem.Type.BOOTS);
     }
 
     private static boolean isExtraAttack(AttributeModifier attributeModifier) {
-        return !attributeModifier.is(ResourceLocation.parse("minecraft:base_attack_damage"));
+        var id = attributeModifier.getId();
+        return id != Item.BASE_ATTACK_DAMAGE_UUID;
     }
 
     private static void useDropKick(Player player, LivingEntity target) {
         var dropkickKnockbackBase = Config.DROPKICK_KNOCKBACK_BASE.get();
         SkillHandler.knockback(target, player, dropkickKnockbackBase);
 
-        if (!target.hasEffect(Effects.VULNERABLE)) return;
+        if (!target.hasEffect(Effects.VULNERABLE.get())) return;
 
         var slideSkillBulletTimeScale = Config.SLIDE_SKILL_BULLET_TIME_SCALE.get().floatValue();
         var slideSkillBulletTimeDuration = Config.SLIDE_SKILL_BULLET_TIME_DURATION.get();
@@ -227,7 +231,7 @@ public class SlideSkillHandler {
         var heelHookSlowdownAmplifier = Config.HEEL_HOOK_SLOWDOWN_AMPLIFIER.get();
         SkillHandler.addEffect(target, player, MobEffects.MOVEMENT_SLOWDOWN, heelHookSlowdownDuration, heelHookSlowdownAmplifier);
 
-        if (!target.hasEffect(Effects.NEUTRALIZED)) return;
+        if (!target.hasEffect(Effects.NEUTRALIZED.get())) return;
 
         var slideSkillBulletTimeScale = Config.SLIDE_SKILL_BULLET_TIME_SCALE.get().floatValue();
         var slideSkillBulletTimeDuration = Config.SLIDE_SKILL_BULLET_TIME_DURATION.get();

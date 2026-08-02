@@ -18,4 +18,6 @@ public interface JumpSkill {
     boolean parcoolskill$isCoolingDown();
 
     void parcoolskill$setCoolingDown(boolean coolingDown);
+
+    int getNotChargingTick();
 }

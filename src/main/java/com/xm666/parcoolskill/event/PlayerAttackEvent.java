@@ -2,8 +2,8 @@ package com.xm666.parcoolskill.event;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.CriticalHitEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 
 public class PlayerAttackEvent extends PlayerEvent {
     private final Entity target;
@@ -15,10 +15,10 @@ public class PlayerAttackEvent extends PlayerEvent {
     private boolean disableCrit;
 
     private PlayerAttackEvent(CriticalHitEvent critEvent) {
-        this(critEvent.getEntity(), critEvent.getTarget(), critEvent.getVanillaMultiplier(), critEvent.isVanillaCritical());
-        this.damageMultiplier = critEvent.getDamageMultiplier();
-        this.isCriticalHit = critEvent.isCriticalHit();
-        this.disableSweep = critEvent.disableSweep();
+        this(critEvent.getEntity(), critEvent.getTarget(), critEvent.getOldDamageModifier(), critEvent.isVanillaCritical());
+        this.damageMultiplier = critEvent.getDamageModifier();
+        this.isCriticalHit = critEvent.isVanillaCritical();
+        this.disableSweep = true;
     }
 
     private PlayerAttackEvent(Player player, Entity target, float damageMultiplier, boolean isCriticalHit) {

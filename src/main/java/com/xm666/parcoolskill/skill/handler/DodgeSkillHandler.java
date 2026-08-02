@@ -6,7 +6,7 @@ import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.action.impl.Dodge;
 import com.alrex.parcool.common.action.impl.Flipping;
-import com.alrex.parcool.common.attachment.common.Parkourability;
+import com.alrex.parcool.common.capability.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
@@ -20,13 +20,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.joml.Vector2d;
 
-@EventBusSubscriber(modid = ParCoolSkill.MODID)
+@Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class DodgeSkillHandler {
     @SubscribeEvent
     public static void onDodgeStart(ParCoolActionEvent.Start.Pre event) {
@@ -53,7 +53,7 @@ public class DodgeSkillHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
+    public static void onLivingIncomingDamage(LivingAttackEvent event) {
         if (!Config.SNEAKY_STRIKE_ENABLED.get() || !(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
             return;
 

@@ -4,7 +4,8 @@ import com.alrex.parcool.client.animation.PlayerModelRotator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
 import com.alrex.parcool.common.action.ActionProcessor;
 import com.alrex.parcool.common.action.impl.Flipping;
-import com.alrex.parcool.common.attachment.common.Parkourability;
+import com.alrex.parcool.common.capability.IStamina;
+import com.alrex.parcool.common.capability.Parkourability;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -19,9 +20,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.TickEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -33,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.nio.ByteBuffer;
 
 public class BackflipMixin {
-    @Mixin(Flipping.class)
+    @Mixin(value = Flipping.class,remap = false)
     private static class FlippingMixin {
         @OnlyIn(Dist.CLIENT)
         @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isShiftKeyDown()Z"))
@@ -48,7 +49,7 @@ public class BackflipMixin {
 
         @OnlyIn(Dist.CLIENT)
         @Inject(method = "onStartInLocalClient", at = @At("TAIL"))
-        private void onStartInLocalClient(Player player, Parkourability parkourability, ByteBuffer startData, CallbackInfo ci) {
+        private void onStartInLocalClient(Player player, Parkourability parkourability, IStamina stamina, ByteBuffer startData, CallbackInfo ci) {
             BackflipHandler.tryStart((FlippingSkill) this, player, startData);
         }
 
@@ -79,7 +80,7 @@ public class BackflipMixin {
 
     @Mixin(Projectile.class)
     private static class ProjectileMixin {
-        @WrapOperation(method = "shootFromRotation", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getKnownMovement()Lnet/minecraft/world/phys/Vec3;"))
+        @WrapOperation(method = "shootFromRotation", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getDeltaMovement()Lnet/minecraft/world/phys/Vec3;"))
         private Vec3 wrapKnownMovement(Entity instance, Operation<Vec3> original) {
             if (!(instance instanceof Player player)) return original.call(instance);
 
@@ -92,11 +93,11 @@ public class BackflipMixin {
     }
 
     @OnlyIn(Dist.CLIENT)
-    @Mixin(ActionProcessor.class)
+    @Mixin(value = ActionProcessor.class,remap = false)
     private static class ActionProcessorMixin {
         @WrapMethod(method = "onTick$doPreprocessInClient")
-        private void wrapAnimationTick(PlayerTickEvent event, Parkourability parkourability, Operation<Void> original) {
-            var player = event.getEntity();
+        private void wrapAnimationTick(TickEvent.PlayerTickEvent event, Parkourability parkourability, Operation<Void> original) {
+            var player = event.player;
             if (!TimeScaleHandler.clientTimer.runsTravelling(player)) return;
 
             original.call(event, parkourability);
@@ -104,7 +105,7 @@ public class BackflipMixin {
     }
 
     @OnlyIn(Dist.CLIENT)
-    @Mixin(PlayerModelTransformer.class)
+    @Mixin(value = PlayerModelTransformer.class,remap = false)
     private static class PlayerModelTransformerMixin {
         @Shadow
         @Final
@@ -119,7 +120,7 @@ public class BackflipMixin {
     }
 
     @OnlyIn(Dist.CLIENT)
-    @Mixin(PlayerModelRotator.class)
+    @Mixin(value = PlayerModelRotator.class,remap = false)
     private static class PlayerModelRotatorMixin {
         @Shadow
         @Final

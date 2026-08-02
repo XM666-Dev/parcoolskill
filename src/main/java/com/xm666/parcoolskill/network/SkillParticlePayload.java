@@ -1,27 +1,31 @@
 package com.xm666.parcoolskill.network;
 
-import com.xm666.parcoolskill.ParCoolSkill;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import com.xm666.parcoolskill.particle.SkillParticleHandler;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.network.NetworkEvent;
 
-public record SkillParticlePayload(int particleType, int entity) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<SkillParticlePayload> TYPE = new CustomPacketPayload.Type<>(
-            ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "skill_particle")
-    );
-    public static final StreamCodec<ByteBuf, SkillParticlePayload> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT,
-            SkillParticlePayload::particleType,
-            ByteBufCodecs.VAR_INT,
-            SkillParticlePayload::entity,
-            SkillParticlePayload::new
-    );
+import java.util.function.Supplier;
 
-    @Override
-    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+public record SkillParticlePayload(int particleType, int entity) {
+    public static void write(SkillParticlePayload msg, FriendlyByteBuf buf) {
+        buf.writeInt(msg.particleType);
+        buf.writeInt(msg.entity);
+    }
+
+    public static SkillParticlePayload read(FriendlyByteBuf buf) {
+        return new SkillParticlePayload(
+                buf.readInt(),
+                buf.readInt()
+        );
+    }
+
+    public static void handle(SkillParticlePayload msg, Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() ->
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> SkillParticleHandler.handlePayload(msg, ctx))
+        );
+        ctx.get().setPacketHandled(true);
     }
 
     public enum Type {

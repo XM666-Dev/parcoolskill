@@ -1,24 +1,28 @@
 package com.xm666.parcoolskill.network;
 
-import com.xm666.parcoolskill.ParCoolSkill;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import com.xm666.parcoolskill.handler.StaminaHandler;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.network.NetworkEvent;
 
-public record StaminaPayload(int value) implements CustomPacketPayload {
-    public static final Type<StaminaPayload> TYPE = new Type<>(
-            ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "stamina")
-    );
-    public static final StreamCodec<ByteBuf, StaminaPayload> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT,
-            StaminaPayload::value,
-            StaminaPayload::new
-    );
+import java.util.function.Supplier;
 
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+public record StaminaPayload(int value) {
+    public static void write(StaminaPayload msg, FriendlyByteBuf buf) {
+        buf.writeInt(msg.value);
+    }
+
+    public static StaminaPayload read(FriendlyByteBuf buf) {
+        return new StaminaPayload(
+                buf.readInt()
+        );
+    }
+
+    public static void handle(StaminaPayload msg, Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() ->
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> StaminaHandler.handlePayload(msg, ctx))
+        );
+        ctx.get().setPacketHandled(true);
     }
 }

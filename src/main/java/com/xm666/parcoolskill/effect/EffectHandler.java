@@ -2,19 +2,19 @@ package com.xm666.parcoolskill.effect;
 
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
-@EventBusSubscriber(modid = ParCoolSkill.MODID)
+@Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class EffectHandler {
     @SubscribeEvent
-    public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
+    public static void onLivingIncomingDamage(LivingHurtEvent event) {
         var source = event.getSource();
-        if (!source.is(Tags.DamageTypes.IS_PHYSICAL) && !source.is(Tags.DamageTypes.IS_MAGIC)) return;
+        if (source.is(DamageTypeTags.BYPASSES_SHIELD)) return;
 
         var damageMultiplier = 1.0F;
         var targetEntity = event.getEntity();
@@ -25,7 +25,7 @@ public class EffectHandler {
     }
 
     private static float applyVulnerable(float damageMultiplier, LivingEntity target, Entity source) {
-        var vulnerable = target.getEffect(Effects.VULNERABLE);
+        var vulnerable = target.getEffect(Effects.VULNERABLE.get());
         if (vulnerable == null) return damageMultiplier;
 
         var vulnerableDamageMultiplierAddition = Config.VULNERABLE_DAMAGE_MULTIPLIER_ADDITION.get().floatValue();
@@ -37,7 +37,7 @@ public class EffectHandler {
     private static float applyNeutralized(float damageMultiplier, LivingEntity target, Entity source) {
         if (!(source instanceof LivingEntity living)) return damageMultiplier;
 
-        var neutralized = living.getEffect(Effects.NEUTRALIZED);
+        var neutralized = living.getEffect(Effects.NEUTRALIZED.get());
         if (neutralized == null) return damageMultiplier;
 
         var neutralizedDamageMultiplierReduction = Config.NEUTRALIZED_DAMAGE_MULTIPLIER_REDUCTION.get().floatValue();

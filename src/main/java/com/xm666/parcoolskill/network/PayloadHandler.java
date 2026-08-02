@@ -1,32 +1,28 @@
 package com.xm666.parcoolskill.network;
 
 import com.xm666.parcoolskill.ParCoolSkill;
-import com.xm666.parcoolskill.handler.SkillHandler;
-import com.xm666.parcoolskill.handler.StaminaHandler;
-import com.xm666.parcoolskill.particle.SkillParticleHandler;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
-@EventBusSubscriber(modid = ParCoolSkill.MODID)
+import java.util.Optional;
+
+@Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class PayloadHandler {
-    @SubscribeEvent
-    public static void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
-        var registrar = event.registrar("1");
-        registrar.playToServer(
-                SkillPayload.TYPE,
-                SkillPayload.STREAM_CODEC,
-                SkillHandler::handlePayload
-        );
-        registrar.playToClient(
-                StaminaPayload.TYPE,
-                StaminaPayload.STREAM_CODEC,
-                StaminaHandler::handlePayload
-        );
-        registrar.playToClient(
-                SkillParticlePayload.TYPE,
-                SkillParticlePayload.STREAM_CODEC,
-                SkillParticleHandler::handlePayload
-        );
+    private static final String PROTOCOL_VERSION = "1";
+    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
+            new ResourceLocation(ParCoolSkill.MODID, "main"),
+            () -> PROTOCOL_VERSION,
+            PROTOCOL_VERSION::equals,
+            PROTOCOL_VERSION::equals
+    );
+
+    public static void init() {
+        var index = 0;
+        INSTANCE.registerMessage(index++, SkillPayload.class, SkillPayload::write, SkillPayload::read, SkillPayload::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        INSTANCE.registerMessage(index++, SkillParticlePayload.class, SkillParticlePayload::write, SkillParticlePayload::read, SkillParticlePayload::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        INSTANCE.registerMessage(index++, StaminaPayload.class, StaminaPayload::write, StaminaPayload::read, StaminaPayload::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 }

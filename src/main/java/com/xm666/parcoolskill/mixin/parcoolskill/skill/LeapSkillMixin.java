@@ -6,14 +6,14 @@ import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.xm666.parcoolskill.skill.LeapSkill;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 public class LeapSkillMixin {
-    @Mixin(CatLeap.class)
+    @Mixin(value = CatLeap.class,remap = false)
     private static class CatLeapMixin implements LeapSkill {
         @Unique
         private boolean parcoolskill$attackReady;

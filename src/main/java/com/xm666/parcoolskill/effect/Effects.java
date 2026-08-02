@@ -1,24 +1,24 @@
 package com.xm666.parcoolskill.effect;
 
 import com.xm666.parcoolskill.ParCoolSkill;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
+import net.minecraftforge.common.brewing.IBrewingRecipe;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
-@Mod(ParCoolSkill.MODID)
-@EventBusSubscriber(modid = ParCoolSkill.MODID)
+@Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class Effects {
     public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(
             Registries.MOB_EFFECT,
@@ -28,70 +28,88 @@ public class Effects {
             Registries.POTION,
             ParCoolSkill.MODID
     );
-    public static final DeferredHolder<MobEffect, Vulnerable> VULNERABLE = MOB_EFFECTS.register(
+    public static final RegistryObject<Vulnerable> VULNERABLE = MOB_EFFECTS.register(
             "vulnerable",
             () -> new Vulnerable(MobEffectCategory.HARMFUL, 0x736156)
     );
-    public static final Holder<Potion> VULNERABLE_POTION = POTIONS.register(
+    public static final RegistryObject<Potion> VULNERABLE_POTION = POTIONS.register(
             "vulnerable",
-            () -> new Potion(new MobEffectInstance(VULNERABLE, 420))
+            () -> new Potion(new MobEffectInstance(VULNERABLE.get(), 420))
     );
-    public static final Holder<Potion> LONG_VULNERABLE_POTION = POTIONS.register(
+    public static final RegistryObject<Potion> LONG_VULNERABLE_POTION = POTIONS.register(
             "long_vulnerable",
-            () -> new Potion(new MobEffectInstance(VULNERABLE, 600))
+            () -> new Potion(new MobEffectInstance(VULNERABLE.get(), 600))
     );
-    public static final DeferredHolder<MobEffect, Neutralized> NEUTRALIZED = MOB_EFFECTS.register(
+    public static final RegistryObject<Neutralized> NEUTRALIZED = MOB_EFFECTS.register(
             "neutralized",
             () -> new Neutralized(MobEffectCategory.HARMFUL, 0x484D48)
     );
-    public static final Holder<Potion> NEUTRALIZED_POTION = POTIONS.register(
+    public static final RegistryObject<Potion> NEUTRALIZED_POTION = POTIONS.register(
             "neutralized",
-            () -> new Potion(new MobEffectInstance(NEUTRALIZED, 420))
+            () -> new Potion(new MobEffectInstance(NEUTRALIZED.get(), 420))
     );
-
-    public static final Holder<Potion> LONG_NEUTRALIZED_POTION = POTIONS.register(
+    public static final RegistryObject<Potion> LONG_NEUTRALIZED_POTION = POTIONS.register(
             "long_neutralized",
-            () -> new Potion(new MobEffectInstance(NEUTRALIZED, 600))
+            () -> new Potion(new MobEffectInstance(NEUTRALIZED.get(), 600))
     );
 
-    public Effects(IEventBus modEventBus) {
+    public static void init(IEventBus modEventBus) {
         MOB_EFFECTS.register(modEventBus);
         POTIONS.register(modEventBus);
     }
 
-    @SubscribeEvent
-    public static void registerBrewingRecipes(RegisterBrewingRecipesEvent event) {
-        var builder = event.getBuilder();
-        builder.addMix(
+    public static void registerBrewingRecipes() {
+        addMix(
                 Potions.WEAKNESS,
                 Items.WITHER_ROSE,
-                VULNERABLE_POTION
+                VULNERABLE_POTION.get()
         );
-        builder.addMix(
+        addMix(
                 Potions.LONG_WEAKNESS,
                 Items.WITHER_ROSE,
-                LONG_VULNERABLE_POTION
+                LONG_VULNERABLE_POTION.get()
         );
-        builder.addMix(
-                VULNERABLE_POTION,
+        addMix(
+                VULNERABLE_POTION.get(),
                 Items.REDSTONE,
-                LONG_VULNERABLE_POTION
+                LONG_VULNERABLE_POTION.get()
         );
-        builder.addMix(
+        addMix(
                 Potions.WEAKNESS,
                 Items.COBWEB,
-                NEUTRALIZED_POTION
+                NEUTRALIZED_POTION.get()
         );
-        builder.addMix(
+        addMix(
                 Potions.LONG_WEAKNESS,
                 Items.COBWEB,
-                LONG_NEUTRALIZED_POTION
+                LONG_NEUTRALIZED_POTION.get()
         );
-        builder.addMix(
-                NEUTRALIZED_POTION,
+        addMix(
+                NEUTRALIZED_POTION.get(),
                 Items.REDSTONE,
-                LONG_NEUTRALIZED_POTION
+                LONG_NEUTRALIZED_POTION.get()
         );
+    }
+
+    private static void addMix(Potion input, Item ingredient, Potion output) {
+        BrewingRecipeRegistry.addRecipe(new IBrewingRecipe() {
+            @Override
+            public boolean isInput(ItemStack stack) {
+                return stack.is(Items.POTION) && PotionUtils.getPotion(stack) == input;
+            }
+
+            @Override
+            public boolean isIngredient(ItemStack stack) {
+                return stack.is(ingredient);
+            }
+
+            @Override
+            public ItemStack getOutput(ItemStack input, ItemStack ingredient) {
+                var potion = new ItemStack(Items.POTION);
+                PotionUtils.setPotion(potion, output);
+                return potion;
+            }
+        });
     }
 
     public static class Vulnerable extends MobEffect {

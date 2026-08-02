@@ -4,7 +4,7 @@ import com.alrex.parcool.api.SoundEvents;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.Dodge;
 import com.alrex.parcool.common.action.impl.Flipping;
-import com.alrex.parcool.common.attachment.common.Parkourability;
+import com.alrex.parcool.common.capability.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
@@ -27,15 +27,16 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
+import net.minecraftforge.event.entity.living.ShieldBlockEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.joml.Vector3f;
 
 import java.util.ArrayDeque;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-@EventBusSubscriber(modid = ParCoolSkill.MODID)
+@Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class FlickFlackHandler {
     public static final ArmAnimation ARM_ANIMATION = new ArmAnimation(
             new Vector3f(-0.25F, 0.35F, 0.05F),
@@ -43,9 +44,10 @@ public class FlickFlackHandler {
             0.2F,
             false
     );
-    private static final ResourceLocation MOVEMENT_SPEED_MODIFIER = ResourceLocation.fromNamespaceAndPath(
+    private static final String MOVEMENT_SPEED_MODIFIER_NAME = new ResourceLocation(
             ParCoolSkill.MODID, "modifier.movement_speed.flick_flack"
-    );
+    ).toString();
+    private static final UUID MOVEMENT_SPEED_MODIFIER = UUID.nameUUIDFromBytes(MOVEMENT_SPEED_MODIFIER_NAME.getBytes());
     private static ArrayDeque<LivingEntity> targets;
 
     @SubscribeEvent
@@ -89,8 +91,9 @@ public class FlickFlackHandler {
                 var flickFlackSpeedMultiplierAddition = Config.FLICK_FLACK_SPEED_MULTIPLIER_ADDITION.get();
                 movementSpeed.addTransientModifier(new AttributeModifier(
                         MOVEMENT_SPEED_MODIFIER,
+                        MOVEMENT_SPEED_MODIFIER_NAME,
                         flickFlackSpeedMultiplierAddition,
-                        AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+                        AttributeModifier.Operation.MULTIPLY_BASE
                 ));
             }
         }
@@ -112,7 +115,7 @@ public class FlickFlackHandler {
         var flickFlackNeutralizedDuration = Config.FLICK_FLACK_NEUTRALIZED_DURATION.get();
         var target = event.getTarget();
         if (target instanceof LivingEntity living) {
-            SkillHandler.addEffect(living, player, Effects.NEUTRALIZED, flickFlackNeutralizedDuration);
+            SkillHandler.addEffect(living, player, Effects.NEUTRALIZED.get(), flickFlackNeutralizedDuration);
         }
 
         var flickFlackParryDuration = Config.FLICK_FLACK_PARRY_DURATION.get();
@@ -126,7 +129,7 @@ public class FlickFlackHandler {
 
         if (player.isLocalPlayer()) return;
 
-        var weapon = player.getWeaponItem();
+        var weapon = player.getMainHandItem();
         var hitBox = weapon.getSweepHitBox(player, target);
         targets = target.level().getEntitiesOfClass(LivingEntity.class, hitBox).stream()
                 .filter(living -> canSweep(player, target, living))
@@ -134,21 +137,9 @@ public class FlickFlackHandler {
         attackTarget(player, event);
     }
 
-    @SubscribeEvent
-    public static void onLivingBlock(LivingShieldBlockEvent event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-
-        var parkourability = Parkourability.get(player);
-        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
-        if (flippingSkill.parcoolskill$getParryTime() == 0
-                || !SkillHandler.isDamageSourceBlocked(player, event.getDamageSource())) return;
-
-        event.setBlocked(true);
-    }
-
     public static boolean canJump(Parkourability parkourability) {
         var mc = Minecraft.getInstance();
-        var control = ParCoolConfig.Client.getInstance().FlipControl.get();
+        var control = ParCoolConfig.Client.FlipControl.get();
         var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         return mc.hitResult instanceof EntityHitResult && control.isInputDone(flippingSkill.parcoolskill$justJumped());
     }
@@ -171,7 +162,7 @@ public class FlickFlackHandler {
                 && living != target
                 && !player.isAlliedTo(living)
                 && (!(living instanceof ArmorStand armorStand) || !armorStand.isMarker())
-                && player.distanceToSqr(living) < Mth.square(player.entityInteractionRange());
+                && player.distanceToSqr(living) < Mth.square(player.getEntityReach());
     }
 
     private static boolean attackTarget(Player player, PlayerAttackEvent.Pre event) {
@@ -181,7 +172,7 @@ public class FlickFlackHandler {
         var target = targets.pop();
         player.attackStrengthTicker = (int) player.getCurrentItemAttackStrengthDelay();
         player.attack(target);
-        SkillHandler.addEffect(target, player, Effects.NEUTRALIZED, flickFlackNeutralizedDuration);
+        SkillHandler.addEffect(target, player, Effects.NEUTRALIZED.get(), flickFlackNeutralizedDuration);
 
         event.setDisableCrit(true);
         SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);

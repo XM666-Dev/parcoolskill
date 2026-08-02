@@ -4,42 +4,43 @@ import com.xm666.parcoolskill.ParCoolSkill;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
-@EventBusSubscriber(modid = ParCoolSkill.MODID)
-@Mod(ParCoolSkill.MODID)
+@Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class ParticleTypes {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(
-            BuiltInRegistries.PARTICLE_TYPE,
+            ForgeRegistries.PARTICLE_TYPES,
             ParCoolSkill.MODID
     );
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> IRONCLAD_HIT = PARTICLE_TYPES.register(
+    public static final RegistryObject<SimpleParticleType> IRONCLAD_HIT = PARTICLE_TYPES.register(
             "ironclad_hit",
             () -> new SimpleParticleType(false)
     );
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> IRONCLAD_EFFECT = PARTICLE_TYPES.register(
+    public static final RegistryObject<SimpleParticleType> IRONCLAD_EFFECT = PARTICLE_TYPES.register(
             "ironclad_effect",
             () -> new SimpleParticleType(false)
     );
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SILENT_HIT = PARTICLE_TYPES.register(
+    public static final RegistryObject<SimpleParticleType> SILENT_HIT = PARTICLE_TYPES.register(
             "silent_hit",
             () -> new SimpleParticleType(false)
     );
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SILENT_EFFECT = PARTICLE_TYPES.register(
+    public static final RegistryObject<SimpleParticleType> SILENT_EFFECT = PARTICLE_TYPES.register(
             "silent_effect",
             () -> new SimpleParticleType(false)
     );
     public static final int IRONCLAD_COLOR = 0xBF4D4D;
     public static final int SILENT_COLOR = 0x4DBF4D;
 
-    public ParticleTypes(IEventBus modEventBus) {
+    public static void init(IEventBus modEventBus) {
         PARTICLE_TYPES.register(modEventBus);
+        modEventBus.addListener(ParticleTypes::registerParticleProviders);
     }
 
     @SubscribeEvent

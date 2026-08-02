@@ -3,7 +3,7 @@ package com.xm666.parcoolskill.skill.handler;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.action.impl.Flipping;
-import com.alrex.parcool.common.attachment.common.Parkourability;
+import com.alrex.parcool.common.capability.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
@@ -13,11 +13,10 @@ import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.LeapSkill;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
-@EventBusSubscriber(modid = ParCoolSkill.MODID)
+@Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class LeapSkillHandler {
     @SubscribeEvent
     public static void onLeapTryToStart(ParCoolActionEvent.TryToStart event) {
@@ -73,18 +72,6 @@ public class LeapSkillHandler {
 
         var target = event.getTarget();
         SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
-    }
-
-    @SubscribeEvent
-    public static void onLivingBlock(LivingShieldBlockEvent event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-
-        var parkourability = Parkourability.get(player);
-        var leapSkill = (LeapSkill) parkourability.get(CatLeap.class);
-        if (leapSkill.parcoolskill$getParryTime() == 0
-                || !SkillHandler.isDamageSourceBlocked(player, event.getDamageSource())) return;
-
-        event.setBlocked(true);
     }
 
     private static boolean isAttackReady(Player player) {
