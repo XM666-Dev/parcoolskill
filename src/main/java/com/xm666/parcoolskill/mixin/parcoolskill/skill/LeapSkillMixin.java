@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.mixin.skill;
+package com.xm666.parcoolskill.mixin.parcoolskill.skill;
 
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.llamalad7.mixinextras.expression.Definition;

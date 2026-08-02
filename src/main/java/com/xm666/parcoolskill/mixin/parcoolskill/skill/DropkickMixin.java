@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.mixin.skill;
+package com.xm666.parcoolskill.mixin.parcoolskill.skill;
 
 import com.alrex.parcool.common.action.AdditionalProperties;
 import com.alrex.parcool.common.action.impl.CatLeap;

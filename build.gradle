@@ -147,6 +147,8 @@ dependencies {
     implementation "curse.maven:timescalelib-1542930:8551945"
     implementation "curse.maven:patchouli-306770:7730942"
     implementation "curse.maven:spartan-weaponry-unofficial-1450963:8423182"
+    implementation "curse.maven:official-epic-fight-x-parcool-1259252:7490217"
+    implementation "curse.maven:epic-fight-mod-405076:8175609"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

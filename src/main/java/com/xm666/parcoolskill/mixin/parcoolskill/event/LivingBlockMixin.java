@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.mixin.event;
+package com.xm666.parcoolskill.mixin.parcoolskill.event;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.xm666.parcoolskill.event.LivingBlockEvent;

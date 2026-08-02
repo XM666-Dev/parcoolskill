@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.mixin.skill;
+package com.xm666.parcoolskill.mixin.parcoolskill.skill;
 
 import com.alrex.parcool.client.animation.PlayerModelRotator;
 import com.alrex.parcool.client.animation.PlayerModelTransformer;
