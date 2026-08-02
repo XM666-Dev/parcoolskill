@@ -5,13 +5,17 @@ import com.xm666.parcoolskill.skill.SlideSkill;
 import com.xm666.parcoolskill.skill.handler.CleaveHandler;
 import com.xm666.parcoolskill.skill.handler.SlideSkillHandler;
 import net.minecraft.core.Holder;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -55,6 +59,20 @@ public class SkillHandler {
         var effectInstance = target.getEffect(effect);
         duration += effectInstance != null ? effectInstance.getDuration() : 0;
         target.addEffect(new MobEffectInstance(effect, duration, amplifier), source);
+    }
+
+    public static boolean isDamageSourceBlocked(LivingEntity living, DamageSource damageSource) {
+        var entity = damageSource.getDirectEntity();
+        if (damageSource.is(DamageTypeTags.BYPASSES_SHIELD)
+                || entity instanceof AbstractArrow arrow && arrow.getPierceLevel() > 0) return false;
+
+        var sourcePosition = damageSource.getSourcePosition();
+        if (sourcePosition == null) return false;
+
+        var viewVector = living.calculateViewVector(0.0F, living.getYHeadRot());
+        var difference = sourcePosition.vectorTo(living.position());
+        difference = new Vec3(difference.x, 0.0, difference.z).normalize();
+        return difference.dot(viewVector) < 0.0;
     }
 
     private static boolean tryHandleCleaveReady(SkillPayload.Type type, Player player) {

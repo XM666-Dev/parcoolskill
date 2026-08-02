@@ -4,7 +4,6 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "epicparcool.AnimationsMixin$ParCoolAnimationsMixin",
-    "parcoolskill.event.LivingBlockMixin$LivingEntityMixin",
     "parcoolskill.event.PlayerAttackMixin$PlayerMixin",
     "parcoolskill.skill.BackflipMixin$FlippingMixin",
     "parcoolskill.skill.BackflipMixin$ProjectileMixin",
