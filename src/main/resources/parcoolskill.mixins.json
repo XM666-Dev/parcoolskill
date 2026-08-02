@@ -3,15 +3,14 @@
   "package": "com.xm666.parcoolskill.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "event.LivingBlockMixin$LivingEntityMixin",
-    "event.PlayerAttackMixin$PlayerMixin",
-    "skill.BackflipMixin$FlippingMixin",
-    "skill.BackflipMixin$ProjectileMixin",
-    "skill.DodgeSkillMixin$DodgeMixin",
-    "skill.FlippingSkillMixin$FlippingMixin",
-    "skill.JumpSkillMixin$ChargeJumpMixin",
-    "skill.LeapSkillMixin$CatLeapMixin",
-    "skill.SlideSkillMixin$SlideMixin"
+    "parcoolskill.event.PlayerAttackMixin$PlayerMixin",
+    "parcoolskill.skill.BackflipMixin$FlippingMixin",
+    "parcoolskill.skill.BackflipMixin$ProjectileMixin",
+    "parcoolskill.skill.DodgeSkillMixin$DodgeMixin",
+    "parcoolskill.skill.FlippingSkillMixin$FlippingMixin",
+    "parcoolskill.skill.JumpSkillMixin$ChargeJumpMixin",
+    "parcoolskill.skill.LeapSkillMixin$CatLeapMixin",
+    "parcoolskill.skill.SlideSkillMixin$SlideMixin"
   ],
   "injectors": {
     "defaultRequire": 1
@@ -20,19 +19,19 @@
     "requireAnnotations": true
   },
   "client": [
-    "animation.AvatarRendererMixin",
-    "skill.BackflipMixin$ActionProcessorMixin",
-    "skill.BackflipMixin$PlayerModelRotatorMixin",
-    "skill.BackflipMixin$PlayerModelTransformerMixin",
-    "skill.BashMixin$ChargeJumpMixin",
-    "skill.CleaveMixin$ChargeJumpMixin",
-    "skill.CleaveMixin$ItemInHandRendererMixin",
-    "skill.CleaveMixin$MinecraftMixin",
-    "skill.DropkickMixin$SlideMixin",
-    "skill.FlickFlackMixin$DodgeMixin",
-    "skill.FlickFlackMixin$ItemInHandRendererMixin",
-    "skill.FlickFlackMixin$PlayerMixin",
-    "skill.SlideSkillMixin$MinecraftMixin"
+    "parcoolskill.animation.SwimAnimationMixin$AvatarRendererMixin",
+    "parcoolskill.skill.BackflipMixin$ActionProcessorMixin",
+    "parcoolskill.skill.BackflipMixin$PlayerModelRotatorMixin",
+    "parcoolskill.skill.BackflipMixin$PlayerModelTransformerMixin",
+    "parcoolskill.skill.BashMixin$ChargeJumpMixin",
+    "parcoolskill.skill.CleaveMixin$ChargeJumpMixin",
+    "parcoolskill.skill.CleaveMixin$ItemInHandRendererMixin",
+    "parcoolskill.skill.CleaveMixin$MinecraftMixin",
+    "parcoolskill.skill.DropkickMixin$SlideMixin",
+    "parcoolskill.skill.FlickFlackMixin$DodgeMixin",
+    "parcoolskill.skill.FlickFlackMixin$ItemInHandRendererMixin",
+    "parcoolskill.skill.FlickFlackMixin$PlayerMixin",
+    "parcoolskill.skill.SlideSkillMixin$MinecraftMixin"
   ],
   "mixinextras": {
     "minVersion": "0.5.0"

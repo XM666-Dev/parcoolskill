@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.mixin.event;
+package com.xm666.parcoolskill.mixin.parcoolskill.event;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;

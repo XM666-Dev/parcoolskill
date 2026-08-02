@@ -10,7 +10,6 @@ import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.animation.ArmAnimation;
 import com.xm666.parcoolskill.effect.Effects;
-import com.xm666.parcoolskill.event.LivingBlockEvent;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.handler.StaminaHandler;
@@ -34,6 +33,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import org.joml.Vector3f;
 
 import java.util.ArrayDeque;
@@ -139,15 +139,15 @@ public class FlickFlackHandler {
     }
 
     @SubscribeEvent
-    public static void onLivingBlock(LivingBlockEvent event) {
+    public static void onLivingBlock(LivingShieldBlockEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
         var parkourability = Parkourability.get(player);
         var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
-        if (flippingSkill.parcoolskill$getParryTime() == 0) return;
+        if (flippingSkill.parcoolskill$getParryTime() == 0
+                || !SkillHandler.isDamageSourceBlocked(player, event.getDamageSource())) return;
 
-        event.setItemBlockingWith(player.getWeaponItem());
-        event.setBlocksAttacks(Items.SHIELD.components().get(DataComponents.BLOCKS_ATTACKS));
+        event.setBlocked(true);
     }
 
     public static boolean canJump(Parkourability parkourability) {

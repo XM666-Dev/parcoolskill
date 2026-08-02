@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.compact;
+package com.xm666.parcoolskill.compat;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;

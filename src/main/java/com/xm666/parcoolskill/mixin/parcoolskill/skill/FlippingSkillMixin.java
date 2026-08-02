@@ -1,4 +1,4 @@
-package com.xm666.parcoolskill.mixin.skill;
+package com.xm666.parcoolskill.mixin.parcoolskill.skill;
 
 import com.alrex.parcool.common.action.impl.Flipping;
 import com.xm666.parcoolskill.skill.FlippingSkill;
