@@ -48,7 +48,6 @@ public class Effects {
             "neutralized",
             () -> new Potion("neutralized", new MobEffectInstance(NEUTRALIZED, 420))
     );
-
     public static final Holder<Potion> LONG_NEUTRALIZED_POTION = POTIONS.register(
             "long_neutralized",
             () -> new Potion("long_neutralized", new MobEffectInstance(NEUTRALIZED, 600))

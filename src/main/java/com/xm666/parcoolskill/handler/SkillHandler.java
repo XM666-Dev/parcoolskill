@@ -22,15 +22,15 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public class SkillHandler {
     public static void handlePayload(final SkillPayload payload, final IPayloadContext context) {
         var level = context.player().level();
-        var sourceEntity = level.getEntity(payload.sourceEntity());
-        var targetEntity = level.getEntity(payload.targetEntity());
+        var source = level.getEntity(payload.sourceEntity());
+        var target = level.getEntity(payload.targetEntity());
         var type = SkillPayload.Type.values()[payload.skillType()];
 
-        if (!(sourceEntity instanceof Player player)) return;
+        if (!(source instanceof Player player)) return;
 
         if (tryHandleCleaveReady(type, player)) return;
 
-        if (!(targetEntity instanceof Entity target)) return;
+        if (target == null) return;
 
         if (tryHandleSlideSkill(type, player, target)) return;
 
