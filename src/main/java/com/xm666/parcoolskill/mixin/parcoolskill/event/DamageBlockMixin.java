@@ -13,7 +13,7 @@ public class DamageBlockMixin {
         @ModifyExpressionValue(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isDamageSourceBlocked(Lnet/minecraft/world/damagesource/DamageSource;)Z"))
         private boolean modifyDamageSourceBlocked(boolean original) {
             var living = (LivingEntity) (Object) this;
-            var event = new DamageBlockEvent(living, living.damageContainers.peek(), original);
+            var event = new DamageBlockEvent(living, living.damageContainers.peek(), living.damageContainers.peek().getNewDamage(), original);
             NeoForge.EVENT_BUS.post(event);
 
             return original || event.getBlocked();
