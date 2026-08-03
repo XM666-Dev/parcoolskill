@@ -1,6 +1,7 @@
 package com.xm666.parcoolskill.mixin.parcoolskill.skill;
 
 import com.alrex.parcool.common.action.impl.Slide;
+import com.alrex.parcool.common.capability.Parkourability;
 import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.SlideSkill;
@@ -63,7 +64,8 @@ public class SlideSkillMixin {
         private void onHandleKeybinds(CallbackInfo ci) {
             var mc = Minecraft.getInstance();
             var player = mc.player;
-            if (player == null || !(mc.hitResult instanceof EntityHitResult entityHitResult)) return;
+            if (player == null || !(mc.hitResult instanceof EntityHitResult entityHitResult) || Parkourability.get(player) == null)
+                return;
 
             var readyType = SlideSkillHandler.getReadyType(player);
             if (readyType == SlideSkill.Type.NONE) return;
