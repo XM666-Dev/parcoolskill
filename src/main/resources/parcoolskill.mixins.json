@@ -3,6 +3,7 @@
   "package": "com.xm666.parcoolskill.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "parcoolskill.event.DamageBlockMixin$LivingEntityMixin",
     "parcoolskill.event.PlayerAttackMixin$PlayerMixin",
     "parcoolskill.skill.BackflipMixin$FlippingMixin",
     "parcoolskill.skill.BackflipMixin$ProjectileMixin",
@@ -11,7 +12,6 @@
     "parcoolskill.skill.FlippingSkillMixin$FlippingMixin",
     "parcoolskill.skill.JumpSkillMixin$ChargeJumpMixin",
     "parcoolskill.skill.LeapSkillMixin$CatLeapMixin",
-    "parcoolskill.skill.LeapSkillMixin$LivingEntityMixin",
     "parcoolskill.skill.SlideSkillMixin$SlideMixin"
   ],
   "injectors": {
@@ -32,7 +32,6 @@
     "parcoolskill.skill.DropkickMixin$SlideMixin",
     "parcoolskill.skill.FlickFlackMixin$DodgeMixin",
     "parcoolskill.skill.FlickFlackMixin$ItemInHandRendererMixin",
-    "parcoolskill.skill.FlickFlackMixin$LivingEntityMixin",
     "parcoolskill.skill.SlideSkillMixin$MinecraftMixin"
   ],
   "mixinextras": {
