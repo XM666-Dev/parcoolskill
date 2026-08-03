@@ -6,6 +6,7 @@ import com.alrex.parcool.common.action.impl.Flipping;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
+import com.xm666.parcoolskill.event.DamageBlockEvent;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.handler.StaminaHandler;
@@ -15,7 +16,6 @@ import com.xm666.parcoolskill.skill.LeapSkill;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class LeapSkillHandler {
@@ -76,7 +76,7 @@ public class LeapSkillHandler {
     }
 
     @SubscribeEvent
-    public static void onLivingBlock(LivingShieldBlockEvent event) {
+    public static void onDamageBlock(DamageBlockEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
         var parkourability = Parkourability.get(player);

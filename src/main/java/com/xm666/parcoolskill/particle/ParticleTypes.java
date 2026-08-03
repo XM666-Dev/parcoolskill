@@ -12,8 +12,8 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-@EventBusSubscriber(modid = ParCoolSkill.MODID)
 @Mod(ParCoolSkill.MODID)
+@EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class ParticleTypes {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(
             BuiltInRegistries.PARTICLE_TYPE,
@@ -44,9 +44,9 @@ public class ParticleTypes {
 
     @SubscribeEvent
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(ParticleTypes.IRONCLAD_HIT.get(), SkillParticleProvider.with(HitParticle::new, IRONCLAD_COLOR));
-        event.registerSpriteSet(ParticleTypes.IRONCLAD_EFFECT.get(), SkillParticleProvider.with(EffectParticle::new, IRONCLAD_COLOR));
-        event.registerSpriteSet(ParticleTypes.SILENT_HIT.get(), SkillParticleProvider.with(HitParticle::new, SILENT_COLOR));
-        event.registerSpriteSet(ParticleTypes.SILENT_EFFECT.get(), SkillParticleProvider.with(EffectParticle::new, SILENT_COLOR));
+        event.registerSpriteSet(IRONCLAD_HIT.get(), SkillParticleProvider.with(HitParticle::new, IRONCLAD_COLOR));
+        event.registerSpriteSet(IRONCLAD_EFFECT.get(), SkillParticleProvider.with(EffectParticle::new, IRONCLAD_COLOR));
+        event.registerSpriteSet(SILENT_HIT.get(), SkillParticleProvider.with(HitParticle::new, SILENT_COLOR));
+        event.registerSpriteSet(SILENT_EFFECT.get(), SkillParticleProvider.with(EffectParticle::new, SILENT_COLOR));
     }
 }

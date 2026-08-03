@@ -10,6 +10,7 @@ import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.animation.ArmAnimation;
 import com.xm666.parcoolskill.effect.Effects;
+import com.xm666.parcoolskill.event.DamageBlockEvent;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.handler.StaminaHandler;
@@ -29,7 +30,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import org.joml.Vector3f;
 
 import java.util.ArrayDeque;
@@ -135,7 +135,7 @@ public class FlickFlackHandler {
     }
 
     @SubscribeEvent
-    public static void onLivingBlock(LivingShieldBlockEvent event) {
+    public static void onDamageBlock(DamageBlockEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
         var parkourability = Parkourability.get(player);
