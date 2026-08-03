@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @OnlyIn(Dist.CLIENT)
 public class FlickFlackMixin {
-    @Mixin(value = Dodge.class,remap = false)
+    @Mixin(value = Dodge.class, remap = false)
     private static class DodgeMixin {
         @ModifyArg(method = "onStartInLocalClient", at = @At(value = "INVOKE", target = "Lcom/alrex/parcool/common/action/BehaviorEnforcer;addMarkerCancellingJump(Lcom/alrex/parcool/common/action/BehaviorEnforcer$ID;Lcom/alrex/parcool/common/action/BehaviorEnforcer$Marker;)V"), index = 1)
         private BehaviorEnforcer.Marker modifyJumpCancelMarker(BehaviorEnforcer.Marker marker, @Local(argsOnly = true) Parkourability parkourability) {

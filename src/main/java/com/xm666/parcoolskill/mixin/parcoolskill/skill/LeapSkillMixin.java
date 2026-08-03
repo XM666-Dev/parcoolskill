@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 public class LeapSkillMixin {
-    @Mixin(value = CatLeap.class,remap = false)
+    @Mixin(value = CatLeap.class, remap = false)
     private static class CatLeapMixin implements LeapSkill {
         @Unique
         private boolean parcoolskill$attackReady;

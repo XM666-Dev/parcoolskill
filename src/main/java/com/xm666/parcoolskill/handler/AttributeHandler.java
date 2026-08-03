@@ -1,6 +1,5 @@
 package com.xm666.parcoolskill.handler;
 
-import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -9,7 +8,7 @@ import java.util.Arrays;
 import java.util.function.Predicate;
 
 public class AttributeHandler {
-    public static double calculateAttribute(LivingEntity living,Attribute attribute, Predicate<AttributeModifier> predicate) {
+    public static double calculateAttribute(LivingEntity living, Attribute attribute, Predicate<AttributeModifier> predicate) {
         var baseValue = living.getAttributeBaseValue(attribute);
         var modifiers = getAttributeModifiers(living, attribute, predicate);
         return calculateAttribute(baseValue, modifiers, attribute);

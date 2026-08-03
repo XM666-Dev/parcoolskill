@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @OnlyIn(Dist.CLIENT)
 public class DropkickMixin {
-    @Mixin(value = Slide.class,remap = false)
+    @Mixin(value = Slide.class, remap = false)
     private static class SlideMixin {
         @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;onGround()Z"))
         private boolean modifyOnGround(boolean original, Player player) {

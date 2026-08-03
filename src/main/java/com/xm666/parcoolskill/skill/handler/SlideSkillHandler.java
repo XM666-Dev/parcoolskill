@@ -21,7 +21,6 @@ import com.xm666.parcoolskill.skill.LeapSkill;
 import com.xm666.parcoolskill.skill.SlideSkill;
 import com.xm666.timescalelib.handler.TimeScaleHandler;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;

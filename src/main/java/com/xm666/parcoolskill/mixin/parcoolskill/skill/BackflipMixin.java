@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.nio.ByteBuffer;
 
 public class BackflipMixin {
-    @Mixin(value = Flipping.class,remap = false)
+    @Mixin(value = Flipping.class, remap = false)
     private static class FlippingMixin {
         @OnlyIn(Dist.CLIENT)
         @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isShiftKeyDown()Z"))
@@ -93,7 +93,7 @@ public class BackflipMixin {
     }
 
     @OnlyIn(Dist.CLIENT)
-    @Mixin(value = ActionProcessor.class,remap = false)
+    @Mixin(value = ActionProcessor.class, remap = false)
     private static class ActionProcessorMixin {
         @WrapMethod(method = "onTick$doPreprocessInClient")
         private void wrapAnimationTick(TickEvent.PlayerTickEvent event, Parkourability parkourability, Operation<Void> original) {
@@ -105,7 +105,7 @@ public class BackflipMixin {
     }
 
     @OnlyIn(Dist.CLIENT)
-    @Mixin(value = PlayerModelTransformer.class,remap = false)
+    @Mixin(value = PlayerModelTransformer.class, remap = false)
     private static class PlayerModelTransformerMixin {
         @Shadow
         @Final
@@ -120,7 +120,7 @@ public class BackflipMixin {
     }
 
     @OnlyIn(Dist.CLIENT)
-    @Mixin(value = PlayerModelRotator.class,remap = false)
+    @Mixin(value = PlayerModelRotator.class, remap = false)
     private static class PlayerModelRotatorMixin {
         @Shadow
         @Final

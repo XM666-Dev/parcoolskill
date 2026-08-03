@@ -17,12 +17,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import java.util.HashSet;
 
 public class JumpSkillMixin {
-    @Mixin(value = ChargeJump.class,remap = false)
+    @Mixin(value = ChargeJump.class, remap = false)
     private static class ChargeJumpMixin implements JumpSkill {
-        @Shadow
-        private int notChargeTick;
         @Unique
         private final HashSet<Entity> parcoolskill$entityHits = new HashSet<>();
+        @Shadow
+        private int notChargeTick;
         @Unique
         private boolean parcoolskill$attackReady;
         @Unique

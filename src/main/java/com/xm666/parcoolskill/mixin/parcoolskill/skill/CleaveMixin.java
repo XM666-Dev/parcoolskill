@@ -64,13 +64,13 @@ public class CleaveMixin {
             var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
             var parkourability = Parkourability.get(player);
             var jump = parkourability.get(ChargeJump.class);
-            var finalPartialTick = ((JumpSkill)jump).getNotChargingTick() == 0 ? partialTick : -partialTick;
+            var finalPartialTick = ((JumpSkill) jump).getNotChargingTick() == 0 ? partialTick : -partialTick;
             var tick = jump.getChargingTick() + CleaveHandler.animationTick;
             CleaveHandler.ARM_ANIMATION.apply(player, finalPartialTick, hand, poseStack, tick, cleaveChargeDuration);
         }
     }
 
-    @Mixin(value = ChargeJump.class,remap = false)
+    @Mixin(value = ChargeJump.class, remap = false)
     private static class ChargeJumpMixin {
         @Inject(method = "onClientTick", at = @At(value = "FIELD", target = "Lcom/alrex/parcool/common/action/impl/ChargeJump;chargeTick:I", opcode = Opcodes.PUTFIELD, ordinal = 1))
         private void onChargeDoing(Player player, Parkourability parkourability, IStamina stamina, CallbackInfo ci) {

@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @OnlyIn(Dist.CLIENT)
 public class BashMixin {
-    @Mixin(value = ChargeJump.class,remap = false)
+    @Mixin(value = ChargeJump.class, remap = false)
     private static class ChargeJumpMixin {
         @ModifyConstant(method = "onJump", constant = @Constant(doubleValue = 0.5))
         private double modifyJumpThreshold(double constant, Player player, Parkourability parkourability) {
