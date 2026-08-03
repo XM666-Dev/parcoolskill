@@ -45,9 +45,9 @@ public class ParticleTypes {
 
     @SubscribeEvent
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(ParticleTypes.IRONCLAD_HIT.get(), SkillParticleProvider.with(HitParticle::new, IRONCLAD_COLOR));
-        event.registerSpriteSet(ParticleTypes.IRONCLAD_EFFECT.get(), SkillParticleProvider.with(EffectParticle::new, IRONCLAD_COLOR));
-        event.registerSpriteSet(ParticleTypes.SILENT_HIT.get(), SkillParticleProvider.with(HitParticle::new, SILENT_COLOR));
-        event.registerSpriteSet(ParticleTypes.SILENT_EFFECT.get(), SkillParticleProvider.with(EffectParticle::new, SILENT_COLOR));
+        event.registerSpriteSet(IRONCLAD_HIT.get(), SkillParticleProvider.with(HitParticle::new, IRONCLAD_COLOR));
+        event.registerSpriteSet(IRONCLAD_EFFECT.get(), SkillParticleProvider.with(EffectParticle::new, IRONCLAD_COLOR));
+        event.registerSpriteSet(SILENT_HIT.get(), SkillParticleProvider.with(HitParticle::new, SILENT_COLOR));
+        event.registerSpriteSet(SILENT_EFFECT.get(), SkillParticleProvider.with(EffectParticle::new, SILENT_COLOR));
     }
 }

@@ -6,6 +6,7 @@ import com.alrex.parcool.common.action.impl.Flipping;
 import com.alrex.parcool.common.capability.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
+import com.xm666.parcoolskill.event.DamageBlockEvent;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.handler.StaminaHandler;
@@ -72,6 +73,18 @@ public class LeapSkillHandler {
 
         var target = event.getTarget();
         SkillParticleHandler.emit(SkillParticlePayload.Type.IRONCLAD_HIT, target);
+    }
+
+    @SubscribeEvent
+    public static void onDamageBlock(DamageBlockEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        var parkourability = Parkourability.get(player);
+        var leapSkill = (LeapSkill) parkourability.get(CatLeap.class);
+        if (leapSkill.parcoolskill$getParryTime() == 0
+                || !SkillHandler.isDamageSourceBlocked(player, event.getDamageSource())) return;
+
+        event.setBlocked(true);
     }
 
     private static boolean isAttackReady(Player player) {

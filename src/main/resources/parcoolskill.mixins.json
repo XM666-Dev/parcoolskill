@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "epicparcool.AnimationsMixin$ParCoolAnimationsMixin",
+    "parcoolskill.event.DamageBlockMixin$LivingEntityMixin",
     "parcoolskill.event.PlayerAttackMixin$PlayerMixin",
     "parcoolskill.skill.BackflipMixin$FlippingMixin",
     "parcoolskill.skill.BackflipMixin$ProjectileMixin",

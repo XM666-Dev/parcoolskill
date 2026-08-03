@@ -10,6 +10,7 @@ import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.animation.ArmAnimation;
 import com.xm666.parcoolskill.effect.Effects;
+import com.xm666.parcoolskill.event.DamageBlockEvent;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.handler.StaminaHandler;
@@ -135,6 +136,18 @@ public class FlickFlackHandler {
                 .filter(living -> canSweep(player, target, living))
                 .collect(Collectors.toCollection(ArrayDeque::new));
         attackTarget(player, event);
+    }
+
+    @SubscribeEvent
+    public static void onDamageBlock(DamageBlockEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        var parkourability = Parkourability.get(player);
+        var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
+        if (flippingSkill.parcoolskill$getParryTime() == 0
+                || !SkillHandler.isDamageSourceBlocked(player, event.getDamageSource())) return;
+
+        event.setBlocked(true);
     }
 
     public static boolean canJump(Parkourability parkourability) {
