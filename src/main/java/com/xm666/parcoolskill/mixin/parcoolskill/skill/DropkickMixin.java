@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public class DropkickMixin {
     @Mixin(value = Slide.class, remap = false)
     private static class SlideMixin {
-        @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;onGround()Z"))
+        @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;onGround()Z", remap = true))
         private boolean modifyOnGround(boolean original, Player player) {
             if (original) return true;
 
@@ -33,13 +33,13 @@ public class DropkickMixin {
             return parkourability.get(CatLeap.class).isDoing() ? parkourability.get(Slide.class).getNotDoingTick() : original.call(instance, properties);
         }
 
-        @WrapOperation(method = "onWorkingTickInLocalClient", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;scale(D)Lnet/minecraft/world/phys/Vec3;", ordinal = 1))
+        @WrapOperation(method = "onWorkingTickInLocalClient", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;scale(D)Lnet/minecraft/world/phys/Vec3;", ordinal = 1, remap = true))
         private Vec3 wrapVecScale(Vec3 instance, double factor, Operation<Vec3> original, Player player) {
             var parkourability = Parkourability.get(player);
             return parkourability.get(CatLeap.class).isDoing() ? instance : original.call(instance, factor);
         }
 
-        @ModifyExpressionValue(method = "onWorkingTickInLocalClient", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;y()D"))
+        @ModifyExpressionValue(method = "onWorkingTickInLocalClient", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;y()D", remap = true))
         private double modifyMovementY(double original, Player player) {
             var parkourability = Parkourability.get(player);
             return parkourability.get(CatLeap.class).isDoing() ? Math.max(original * 0.9, original) : original;

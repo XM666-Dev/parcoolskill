@@ -37,7 +37,7 @@ public class BackflipMixin {
     @Mixin(value = Flipping.class, remap = false)
     private static class FlippingMixin {
         @OnlyIn(Dist.CLIENT)
-        @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isShiftKeyDown()Z"))
+        @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isShiftKeyDown()Z", remap = true))
         private boolean modifyShiftKeyDown(boolean original, @Local(argsOnly = true) Parkourability parkourability, @Local(argsOnly = true) ByteBuffer startInfo, @Local(name = "fDirection") Flipping.Direction fDirection) {
             if (!original) return false;
 
