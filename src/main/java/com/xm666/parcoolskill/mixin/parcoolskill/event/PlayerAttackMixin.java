@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class PlayerAttackMixin {
-    @Mixin(value = Player.class, remap = false)
+    @Mixin(Player.class)
     private static class PlayerMixin {
         @ModifyExpressionValue(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/common/ForgeHooks;getCriticalHit(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;ZF)Lnet/minecraftforge/event/entity/player/CriticalHitEvent;"))
         private CriticalHitEvent modifyCriticalHit(CriticalHitEvent critEvent, Entity target, @Share("disableCrit") LocalBooleanRef disableCrit) {
