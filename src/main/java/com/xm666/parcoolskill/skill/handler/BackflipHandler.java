@@ -140,7 +140,7 @@ public class BackflipHandler {
     }
 
     private static Optional<Float> getPower(ItemStack stack, LivingEntity shooter) {
-        if (ModList.get().isLoaded("spartan_weaponry_unofficial")) {
+        if (ModList.get().isLoaded("spartanweaponry")) {
             var result = SpartanWeaponryHandler.getPower(stack, shooter);
             if (result.isPresent()) return result;
         }
