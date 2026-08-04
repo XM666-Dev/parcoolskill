@@ -19,6 +19,8 @@
     "minecraft:mob_projectile",
     "minecraft:sonic_boom",
     "minecraft:in_wall",
-    "minecraft:generic"
+    "minecraft:generic",
+    "parcoolskill:kick_attack",
+    "parcoolskill:twist_attack"
   ]
 }
