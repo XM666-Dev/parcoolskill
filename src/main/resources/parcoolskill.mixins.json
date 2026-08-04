@@ -7,6 +7,7 @@
     "epicparcool.AnimationsMixin$ParCoolAnimationsMixin",
     "parcoolskill.event.DamageBlockMixin$LivingEntityMixin",
     "parcoolskill.event.PlayerAttackMixin$PlayerMixin",
+    "parcoolskill.event.SweepAttackMixin$PlayerMixin",
     "parcoolskill.skill.BackflipMixin$FlippingMixin",
     "parcoolskill.skill.BackflipMixin$ProjectileMixin",
     "parcoolskill.skill.DodgeSkillMixin$DodgeMixin",

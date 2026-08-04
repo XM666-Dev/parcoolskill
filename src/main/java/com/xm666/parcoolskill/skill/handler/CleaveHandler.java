@@ -8,6 +8,7 @@ import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.animation.ArmAnimation;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
+import com.xm666.parcoolskill.event.SweepAttackEvent;
 import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.handler.StaminaHandler;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
@@ -111,13 +112,20 @@ public class CleaveHandler {
         var player = event.getEntity();
         if (!isAttacking(player)) return;
 
-        event.setCriticalHit(true);
-        event.setDisableCrit(true);
-
         var sweepingDamageRatio = EnchantmentHelper.getSweepingDamageRatio(player);
         if (sweepingDamageRatio == 0.0F) return;
 
+        event.setCriticalHit(true);
         event.setDamageMultiplier(event.getDamageMultiplier() * (1.0F + sweepingDamageRatio));
+        event.setDisableCrit(true);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerAttack(SweepAttackEvent event) {
+        var player = event.getEntity();
+        if (!isAttacking(player)) return;
+
+        event.setCanceled(true);
     }
 
     public static void handleReady(Player player) {

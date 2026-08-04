@@ -2,7 +2,7 @@ package com.xm666.parcoolskill.effect;
 
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
-import net.minecraft.tags.DamageTypeTags;
+import com.xm666.parcoolskill.damage.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -14,7 +14,7 @@ public class EffectHandler {
     @SubscribeEvent
     public static void onLivingIncomingDamage(LivingHurtEvent event) {
         var source = event.getSource();
-        if (source.is(DamageTypeTags.BYPASSES_SHIELD)) return;
+        if (!source.is(DamageTypes.IS_PHYSICAL) && !source.is(DamageTypes.IS_MAGIC)) return;
 
         var damageMultiplier = 1.0F;
         var targetEntity = event.getEntity();
