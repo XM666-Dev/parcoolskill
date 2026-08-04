@@ -21,6 +21,10 @@
     "minecraft:in_wall",
     "minecraft:generic",
     "parcoolskill:kick_attack",
-    "parcoolskill:twist_attack"
+    "parcoolskill:twist_attack",
+    "spartanweaponry:thrown_weapon_player",
+    "spartanweaponry:thrown_weapon_mob",
+    "spartanweaponry:armor_piercing_melee",
+    "spartanweaponry:armor_piercing_bolt"
   ]
 }
