@@ -61,7 +61,7 @@ public class PlayerAttackMixin {
             return !disableCrit.get();
         }
 
-        @Definition(id = "flag2", local = @Local(name = "flag2"))
+        @Definition(id = "flag2", local = @Local(name = "flag2", type = boolean.class))
         @Expression("flag2")
         @ModifyExpressionValue(method = "attack", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 4))
         private boolean modifyCanSweep(boolean doCrit, @Share("disableSweep") LocalBooleanRef disableSweep) {
