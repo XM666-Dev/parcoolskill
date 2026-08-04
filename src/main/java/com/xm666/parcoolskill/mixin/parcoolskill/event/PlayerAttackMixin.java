@@ -1,5 +1,7 @@
 package com.xm666.parcoolskill.mixin.parcoolskill.event;
 
+import com.llamalad7.mixinextras.expression.Definition;
+import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -19,7 +21,7 @@ public class PlayerAttackMixin {
     @Mixin(Player.class)
     private static class PlayerMixin {
         @ModifyExpressionValue(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/common/ForgeHooks;getCriticalHit(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;ZF)Lnet/minecraftforge/event/entity/player/CriticalHitEvent;"))
-        private CriticalHitEvent modifyCriticalHit(CriticalHitEvent critEvent, Entity target, @Share("disableCrit") LocalBooleanRef disableCrit) {
+        private CriticalHitEvent modifyCriticalHit(CriticalHitEvent critEvent, Entity target, @Share("disableCrit") LocalBooleanRef disableCrit, @Share("disableSweep") LocalBooleanRef disableSweep) {
             if (critEvent == null) {
                 var player = (Player) (Object) this;
                 critEvent = new CriticalHitEvent(player, target, 1.0F, false);
@@ -37,6 +39,7 @@ public class PlayerAttackMixin {
                 throw new RuntimeException(e);
             }
             disableCrit.set(playerAttackEvent.disableCrit());
+            disableSweep.set(playerAttackEvent.disableSweep());
             return critEvent;
         }
 
@@ -56,6 +59,13 @@ public class PlayerAttackMixin {
         @WrapWithCondition(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;crit(Lnet/minecraft/world/entity/Entity;)V"))
         private boolean wrapCrit(Player instance, Entity entityHit, @Share("disableCrit") LocalBooleanRef disableCrit) {
             return !disableCrit.get();
+        }
+
+        @Definition(id = "flag2", local = @Local(name = "flag2"))
+        @Expression("flag2")
+        @ModifyExpressionValue(method = "attack", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 4))
+        private boolean modifyCanSweep(boolean doCrit, @Share("disableSweep") LocalBooleanRef disableSweep) {
+            return doCrit && disableSweep.get();
         }
     }
 }
