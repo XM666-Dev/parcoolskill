@@ -34,10 +34,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.nio.ByteBuffer;
 
 public class BackflipMixin {
-    @Mixin(value = Flipping.class, remap = false)
+    @Mixin(Flipping.class)
     private static class FlippingMixin {
         @OnlyIn(Dist.CLIENT)
-        @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isShiftKeyDown()Z", remap = true))
+        @ModifyExpressionValue(method = "canStart", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isShiftKeyDown()Z"))
         private boolean modifyShiftKeyDown(boolean original, @Local(argsOnly = true) Parkourability parkourability, @Local(argsOnly = true) ByteBuffer startInfo, @Local(name = "fDirection") Flipping.Direction fDirection) {
             if (!original) return false;
 
@@ -48,13 +48,13 @@ public class BackflipMixin {
         }
 
         @OnlyIn(Dist.CLIENT)
-        @Inject(method = "onStartInLocalClient", at = @At("TAIL"))
+        @Inject(method = "onStartInLocalClient", at = @At("TAIL"), remap = false)
         private void onStartInLocalClient(Player player, Parkourability parkourability, IStamina stamina, ByteBuffer startData, CallbackInfo ci) {
             BackflipHandler.tryStart((FlippingSkill) this, player, startData);
         }
 
         @OnlyIn(Dist.CLIENT)
-        @Inject(method = "onStartInOtherClient", at = @At("TAIL"))
+        @Inject(method = "onStartInOtherClient", at = @At("TAIL"), remap = false)
         private void onStartInOtherClient(Player player, Parkourability parkourability, ByteBuffer startData, CallbackInfo ci) {
             BackflipHandler.tryStart((FlippingSkill) this, player, startData);
         }
