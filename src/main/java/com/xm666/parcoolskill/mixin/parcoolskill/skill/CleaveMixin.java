@@ -36,7 +36,7 @@ public class CleaveMixin {
         private void onHandleKeybinds(CallbackInfo ci) {
             var mc = Minecraft.getInstance();
             var player = mc.player;
-            if (player == null || !CleaveHandler.isAttacking(player)) return;
+            if (player == null || Parkourability.get(player) == null || !CleaveHandler.isAttacking(player)) return;
 
             var range = PickHandler.getHitRange(player, player.getEntityReach());
             var count = CleaveHandler.getHitCount(player);
