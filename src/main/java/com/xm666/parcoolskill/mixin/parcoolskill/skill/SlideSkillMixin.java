@@ -7,6 +7,7 @@ import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.SlideSkill;
 import com.xm666.parcoolskill.skill.handler.SlideSkillHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -64,8 +65,11 @@ public class SlideSkillMixin {
         private void onHandleKeybinds(CallbackInfo ci) {
             var mc = Minecraft.getInstance();
             var player = mc.player;
-            if (player == null || !(mc.hitResult instanceof EntityHitResult entityHitResult) || Parkourability.get(player) == null)
+            if (player == null || !(mc.hitResult instanceof EntityHitResult entityHitResult)|| Parkourability.get(player) == null) {
+                if(Parkourability.get(player) == null)return;
+                SlideSkillHandler.tryPushBlock((BlockHitResult) mc.hitResult);
                 return;
+            }
 
             var readyType = SlideSkillHandler.getReadyType(player);
             if (readyType == SlideSkill.Type.NONE) return;

@@ -20,9 +20,11 @@ import com.xm666.parcoolskill.skill.DodgeSkill;
 import com.xm666.parcoolskill.skill.LeapSkill;
 import com.xm666.parcoolskill.skill.SlideSkill;
 import com.xm666.timescalelib.handler.TimeScaleHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -30,6 +32,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.state.properties.DoorHingeSide;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -150,6 +161,37 @@ public class SlideSkillHandler {
         var readyType = slideSkill.parcoolskill$getReadyType();
         slideSkill.parcoolskill$setReadyType(SlideSkill.Type.NONE);
         return readyType;
+    }
+
+    public static void tryPushBlock(BlockHitResult hitResult) {
+        if (hitResult.getType() == HitResult.Type.MISS) return;
+
+        var mc = Minecraft.getInstance();
+        var player = mc.player;
+        var parkourability = Parkourability.get(player);
+        var slideSkill = (SlideSkill) parkourability.get(Slide.class);
+        var readyType = slideSkill.parcoolskill$getReadyType();
+        if (readyType == SlideSkill.Type.NONE) return;
+
+        var level = mc.level;
+        var blockPos = hitResult.getBlockPos();
+        var blockState = level.getBlockState(blockPos);
+        var block = blockState.getBlock();
+        if (!(block instanceof DoorBlock doorBlock) || !doorBlock.type().canOpenByHand()) return;
+
+        var direction = blockState.getValue(DoorBlock.FACING);
+        var open = blockState.getValue(DoorBlock.OPEN);
+        var openDirection = direction.getOpposite();
+        if (open) {
+            var hinge = blockState.getValue(DoorBlock.HINGE);
+            openDirection = hinge == DoorHingeSide.LEFT ? openDirection.getClockWise() : openDirection.getCounterClockWise();
+        }
+        if (openDirection != hitResult.getDirection()) return;
+
+        var sound = readyType == SlideSkill.Type.DROPKICK ? SoundEvents.PLAYER_ATTACK_KNOCKBACK : SoundEvents.PLAYER_ATTACK_STRONG;
+        mc.gameMode.useItemOn(player, InteractionHand.MAIN_HAND, hitResult);
+        level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, blockPos, Block.getId(blockState));
+        level.playLocalSound(player, sound, player.getSoundSource(), 1.0F, 1.0F);
     }
 
     private static boolean canUseDropKick(Parkourability parkourability) {

@@ -26,6 +26,8 @@ public class JumpSkillMixin {
         @Unique
         private boolean parcoolskill$attackReady;
         @Unique
+        private boolean parcoolskill$fullCharged;
+        @Unique
         private int parcoolskill$attackTime;
         @Unique
         private boolean parcoolskill$coolingDown;
@@ -38,6 +40,16 @@ public class JumpSkillMixin {
         @Override
         public void parcoolskill$setAttackReady(boolean attackReady) {
             parcoolskill$attackReady = attackReady;
+        }
+
+        @Override
+        public boolean parcoolskill$isFullCharged() {
+            return parcoolskill$fullCharged;
+        }
+
+        @Override
+        public void parcoolskill$setFullCharged(boolean fullCharged) {
+            parcoolskill$fullCharged = fullCharged;
         }
 
         @Override

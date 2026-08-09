@@ -7,6 +7,10 @@ public interface JumpSkill {
 
     void parcoolskill$setAttackReady(boolean attackReady);
 
+    boolean parcoolskill$isFullCharged();
+
+    void parcoolskill$setFullCharged(boolean fullCharged);
+
     int parcoolskill$getAttackTime();
 
     void parcoolskill$setAttackTime(int attackTime);

@@ -7,6 +7,7 @@ import net.minecraftforge.fml.config.ConfigTracker;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -104,6 +105,9 @@ public class Config {
 
     public static final ForgeConfigSpec.IntValue BASH_VULNERABLE_DURATION = BUILDER
             .defineInRange("bash_vulnerable_duration", 120, 0, Integer.MAX_VALUE);
+
+    public static final ForgeConfigSpec.IntValue BASH_EXTRA_VULNERABLE_DURATION = BUILDER
+            .defineInRange("bash_extra_vulnerable_duration", 60, 0, Integer.MAX_VALUE);
 
     public static final ForgeConfigSpec.IntValue BACKFLIP_SKILL_DURATION = BUILDER
             .defineInRange("backflip_skill_duration", 60, 0, Integer.MAX_VALUE);

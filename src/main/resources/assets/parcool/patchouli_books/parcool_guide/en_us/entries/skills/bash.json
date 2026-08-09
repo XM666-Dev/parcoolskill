@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "After a $(thing)ChargeJump$(), your next downward strike triggers $(thing)Bash$(), applying $(thing)Vulnerable$() to the target."
+      "text": "After a $(thing)ChargeJump$(), your next downward strike triggers $(thing)Bash$(), applying $(thing)Vulnerable$() to the target.$(br)If fully charged, the duration of the $(thing)Vulnerable$() effect will be additionally added."
     }
   ]
 }

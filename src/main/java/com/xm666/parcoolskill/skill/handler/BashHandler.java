@@ -53,7 +53,13 @@ public class BashHandler {
         var target = event.getTarget();
         if (target instanceof LivingEntity living) {
             var bashVulnerableDuration = Config.BASH_VULNERABLE_DURATION.get();
-            SkillHandler.addEffect(living, player, Effects.VULNERABLE.get(), bashVulnerableDuration);
+            var jumpSkill = (JumpSkill) parkourability.get(ChargeJump.class);
+            var duration = bashVulnerableDuration;
+            if (jumpSkill.parcoolskill$isFullCharged()) {
+                var bashExtraVulnerableDuration = Config.BASH_EXTRA_VULNERABLE_DURATION.get();
+                duration += bashExtraVulnerableDuration;
+            }
+            SkillHandler.addEffect(living, player, Effects.VULNERABLE.get(), duration);
         }
 
         event.setDisableCrit(true);

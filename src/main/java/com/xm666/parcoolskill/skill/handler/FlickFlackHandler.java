@@ -112,24 +112,17 @@ public class FlickFlackHandler {
         var flickFlackStaminaConsumption = Config.FLICK_FLACK_STAMINA_CONSUMPTION.get();
         StaminaHandler.consume(player, flickFlackStaminaConsumption);
 
-        var flickFlackNeutralizedDuration = Config.FLICK_FLACK_NEUTRALIZED_DURATION.get();
-        var target = event.getTarget();
-        if (target instanceof LivingEntity living) {
-            SkillHandler.addEffect(living, player, Effects.NEUTRALIZED.get(), flickFlackNeutralizedDuration);
-        }
-
         var flickFlackParryDuration = Config.FLICK_FLACK_PARRY_DURATION.get();
         var parkourability = Parkourability.get(player);
         var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         flippingSkill.parcoolskill$setParryTime(flickFlackParryDuration);
 
-        event.setDisableCrit(true);
-        SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
         player.sweepAttack();
 
         if (player.isLocalPlayer()) return;
 
         var weapon = player.getMainHandItem();
+        var target = event.getTarget();
         var hitBox = weapon.getSweepHitBox(player, target);
         targets = target.level().getEntitiesOfClass(LivingEntity.class, hitBox).stream()
                 .filter(living -> canSweep(player, target, living))
@@ -178,16 +171,23 @@ public class FlickFlackHandler {
     }
 
     private static boolean attackTarget(Player player, PlayerAttackEvent.Pre event) {
-        if (player.isLocalPlayer() || targets == null || targets.isEmpty()) return false;
+        if (player.isLocalPlayer() || targets == null) return false;
 
         var flickFlackNeutralizedDuration = Config.FLICK_FLACK_NEUTRALIZED_DURATION.get();
-        var target = targets.pop();
-        player.attackStrengthTicker = (int) player.getCurrentItemAttackStrengthDelay();
-        player.attack(target);
-        SkillHandler.addEffect(target, player, Effects.NEUTRALIZED.get(), flickFlackNeutralizedDuration);
+        var target = event.getTarget();
+        if (target instanceof LivingEntity living) {
+            SkillHandler.addEffect(living, player, Effects.NEUTRALIZED.get(), flickFlackNeutralizedDuration);
+        }
 
         event.setDisableCrit(true);
         SkillParticleHandler.emit(SkillParticlePayload.Type.SILENT_HIT, target);
+
+        if (targets.isEmpty()) {
+            targets = null;
+        } else {
+            player.attackStrengthTicker = (int) player.getCurrentItemAttackStrengthDelay();
+            player.attack(targets.pop());
+        }
         return true;
     }
 }
