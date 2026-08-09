@@ -1,5 +1,6 @@
 package com.xm666.parcoolskill.handler;
 
+import com.alrex.parcool.common.capability.Parkourability;
 import com.xm666.parcoolskill.network.PayloadHandler;
 import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.SlideSkill;
@@ -21,6 +22,8 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class SkillHandler {
+    private static final Parkourability emptyParkourability = new Parkourability();
+
     public static void handlePayload(final SkillPayload payload, final Supplier<NetworkEvent.Context> context) {
         var level = context.get().getSender().level();
         var source = level.getEntity(payload.sourceEntity());
@@ -74,6 +77,11 @@ public class SkillHandler {
         var difference = sourcePosition.vectorTo(living.position());
         difference = new Vec3(difference.x, 0.0, difference.z).normalize();
         return difference.dot(viewVector) < 0.0;
+    }
+
+    public static Parkourability getParkourability(Player player) {
+        var parkourability = Parkourability.get(player);
+        return parkourability != null ? parkourability : emptyParkourability;
     }
 
     private static boolean tryHandleCleaveReady(SkillPayload.Type type, Player player) {

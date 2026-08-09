@@ -56,8 +56,6 @@ public class FlickFlackMixin {
             if (!ClientConfig.FLICK_FLACK_ANIMATION_ENABLED.get() || hand != InteractionHand.MAIN_HAND) return;
 
             var parkourability = Parkourability.get(player);
-            if (parkourability == null) return;
-
             var flipping = parkourability.get(Flipping.class);
             var flippingSkill = (FlippingSkill) flipping;
             if (!flippingSkill.parcoolskill$isAttackReady()) return;
