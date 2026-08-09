@@ -62,6 +62,8 @@
   "parcoolskill.configuration.heel_hook_slowdown_amplifier.tooltip": "足跟勾施加的减速效果等级",
   "parcoolskill.configuration.bash_vulnerable_duration": "痛击易伤时间",
   "parcoolskill.configuration.bash_vulnerable_duration.tooltip": "痛击施加的易伤效果时间（刻）",
+  "parcoolskill.configuration.bash_extra_vulnerable_duration": "痛击额外易伤时间",
+  "parcoolskill.configuration.bash_extra_vulnerable_duration.tooltip": "痛击完全蓄力时额外施加的易伤效果时间（刻）",
   "parcoolskill.configuration.backflip_skill_duration": "后空翻技能时间",
   "parcoolskill.configuration.backflip_skill_duration.tooltip": "后空翻获得的技能效果时间（刻）",
   "parcoolskill.configuration.backflip_cooldown_duration": "后空翻冷却时间",

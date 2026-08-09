@@ -100,6 +100,9 @@ public class Config {
     public static final ModConfigSpec.IntValue BASH_VULNERABLE_DURATION = BUILDER
             .defineInRange("bash_vulnerable_duration", 120, 0, Integer.MAX_VALUE);
 
+    public static final ModConfigSpec.IntValue BASH_EXTRA_VULNERABLE_DURATION = BUILDER
+            .defineInRange("bash_extra_vulnerable_duration", 60, 0, Integer.MAX_VALUE);
+
     public static final ModConfigSpec.IntValue BACKFLIP_SKILL_DURATION = BUILDER
             .defineInRange("backflip_skill_duration", 60, 0, Integer.MAX_VALUE);
 
