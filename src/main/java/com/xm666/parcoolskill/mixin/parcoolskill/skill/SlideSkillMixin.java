@@ -64,7 +64,9 @@ public class SlideSkillMixin {
         private void onHandleKeybinds(CallbackInfo ci) {
             var mc = Minecraft.getInstance();
             var player = mc.player;
-            if (player == null || !(mc.hitResult instanceof EntityHitResult entityHitResult)) {
+            if (player == null) return;
+
+            if (!(mc.hitResult instanceof EntityHitResult entityHitResult)) {
                 SlideSkillHandler.tryPushBlock((BlockHitResult) mc.hitResult);
                 return;
             }
