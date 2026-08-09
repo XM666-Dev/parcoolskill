@@ -3,7 +3,6 @@ package com.xm666.parcoolskill.skill.handler;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.action.impl.Flipping;
-import com.alrex.parcool.common.capability.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.event.DamageBlockEvent;
@@ -24,7 +23,7 @@ public class LeapSkillHandler {
         if (!(event.getAction() instanceof CatLeap)) return;
 
         var player = event.getPlayer();
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         if (!parkourability.get(Flipping.class).isDoing()) return;
 
         event.setCanceled(true);
@@ -64,7 +63,7 @@ public class LeapSkillHandler {
 
         var wildStrikeDamageMultiplier = Config.WILD_STRIKE_DAMAGE_MULTIPLIER.get().floatValue();
         var wildStrikeParryDuration = Config.WILD_STRIKE_PARRY_DURATION.get();
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var leapSkill = (LeapSkill) parkourability.get(CatLeap.class);
         event.setCriticalHit(true);
         event.setDamageMultiplier(event.getDamageMultiplier() * wildStrikeDamageMultiplier);
@@ -79,7 +78,7 @@ public class LeapSkillHandler {
     public static void onDamageBlock(DamageBlockEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var leapSkill = (LeapSkill) parkourability.get(CatLeap.class);
         if (leapSkill.parcoolskill$getParryTime() == 0
                 || !SkillHandler.isDamageSourceBlocked(player, event.getDamageSource())) return;
@@ -88,7 +87,7 @@ public class LeapSkillHandler {
     }
 
     private static boolean isAttackReady(Player player) {
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var leapSkill = (LeapSkill) parkourability.get(CatLeap.class);
         if (!leapSkill.parcoolskill$isAttackReady()) return false;
 

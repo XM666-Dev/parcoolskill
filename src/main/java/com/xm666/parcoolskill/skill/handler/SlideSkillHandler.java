@@ -54,7 +54,7 @@ public class SlideSkillHandler {
 
         var slideSkill = (SlideSkill) slide;
         var player = event.getPlayer();
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         SlideSkill.Type readyType;
         if (canUseDropKick(parkourability)) {
             readyType = SlideSkill.Type.DROPKICK;
@@ -79,7 +79,7 @@ public class SlideSkillHandler {
         if (!(event.getAction() instanceof SlideSkill)) return;
 
         var player = event.getPlayer();
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var catLeap = parkourability.get(CatLeap.class);
         if (catLeap.isDoing() || catLeap.getNotDoingTick() > 0) return;
 
@@ -109,7 +109,7 @@ public class SlideSkillHandler {
         if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
             return;
 
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var slideSkill = (SlideSkill) parkourability.get(Slide.class);
         if (slideSkill.parcoolskill$getInvulnerableTime() == 0) return;
 
@@ -153,7 +153,7 @@ public class SlideSkillHandler {
     }
 
     public static SlideSkill.Type getReadyType(Player player) {
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var slideSkill = (SlideSkill) parkourability.get(Slide.class);
         var readyType = slideSkill.parcoolskill$getReadyType();
         slideSkill.parcoolskill$setReadyType(SlideSkill.Type.NONE);
@@ -165,7 +165,7 @@ public class SlideSkillHandler {
 
         var mc = Minecraft.getInstance();
         var player = mc.player;
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var slideSkill = (SlideSkill) parkourability.get(Slide.class);
         var readyType = slideSkill.parcoolskill$getReadyType();
         if (readyType == SlideSkill.Type.NONE) return;
@@ -212,7 +212,7 @@ public class SlideSkillHandler {
     }
 
     private static boolean isAttackReady(Player player, SlideSkill.Type type) {
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var slideSkill = (SlideSkill) parkourability.get(Slide.class);
         var readyType = slideSkill.parcoolskill$getReadyType();
         if (readyType != type) return false;

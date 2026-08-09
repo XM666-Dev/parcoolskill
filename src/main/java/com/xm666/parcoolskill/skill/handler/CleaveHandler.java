@@ -1,9 +1,7 @@
 package com.xm666.parcoolskill.skill.handler;
 
-import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.ChargeJump;
-import com.alrex.parcool.common.capability.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.animation.ArmAnimation;
@@ -93,7 +91,7 @@ public class CleaveHandler {
 
         if (!event.isAttack() || !isCharging(player)) return;
 
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var jump = parkourability.get(ChargeJump.class);
         var jumpSkill = (JumpSkill) jump;
         jumpSkill.parcoolskill$setCoolingDown(true);
@@ -135,7 +133,7 @@ public class CleaveHandler {
         var cleaveAttackDuration = Config.CLEAVE_ATTACK_DURATION.get();
         var cleaveBulletTimeScale = Config.CLEAVE_BULLET_TIME_SCALE.get().floatValue();
         var cleaveBulletTimeDuration = Config.CLEAVE_BULLET_TIME_DURATION.get();
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var jump = parkourability.get(ChargeJump.class);
         var jumpSkill = (JumpSkill) jump;
         jumpSkill.parcoolskill$setAttackTime(cleaveAttackDuration);
@@ -148,7 +146,7 @@ public class CleaveHandler {
 
         if (!player.canReach(target, 1.0)) return;
 
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var jumpSkill = (JumpSkill) parkourability.get(ChargeJump.class);
         if (!jumpSkill.parcoolskill$addEntityHit(target)) return;
 
@@ -161,7 +159,7 @@ public class CleaveHandler {
     public static boolean isAttacking(Player player) {
         if (!canUseCleave(player)) return false;
 
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var jumpSkill = (JumpSkill) parkourability.get(ChargeJump.class);
         return jumpSkill.parcoolskill$getAttackTime() > 0;
     }
@@ -169,11 +167,11 @@ public class CleaveHandler {
     public static boolean isCharging(Player player) {
         if (!canUseCleave(player)) return false;
 
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var jump = parkourability.get(ChargeJump.class);
         if (((JumpSkill) jump).getNotChargingTick() > 0) return false;
 
-        var stamina = Stamina.get(player);
+        var stamina = SkillHandler.getStamina(player);
         return !stamina.isExhausted();
     }
 
@@ -188,7 +186,7 @@ public class CleaveHandler {
         if (!isCharging(player)) return false;
 
         var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var jump = parkourability.get(ChargeJump.class);
         if (jump.getChargingTick() < cleaveChargeDuration) return false;
 

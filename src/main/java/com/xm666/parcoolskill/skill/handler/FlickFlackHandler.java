@@ -55,7 +55,7 @@ public class FlickFlackHandler {
         if (!Config.FLICK_FLACK_ENABLED.get() || !(event.getAction() instanceof FlippingSkill flippingSkill)) return;
 
         var player = event.getPlayer();
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var dodge = parkourability.get(Dodge.class);
         if (!dodge.isDoing()) return;
 
@@ -113,7 +113,7 @@ public class FlickFlackHandler {
         StaminaHandler.consume(player, flickFlackStaminaConsumption);
 
         var flickFlackParryDuration = Config.FLICK_FLACK_PARRY_DURATION.get();
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         flippingSkill.parcoolskill$setParryTime(flickFlackParryDuration);
 
@@ -134,7 +134,7 @@ public class FlickFlackHandler {
     public static void onDamageBlock(DamageBlockEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         if (flippingSkill.parcoolskill$getParryTime() == 0
                 || !SkillHandler.isDamageSourceBlocked(player, event.getDamageSource())) return;
@@ -150,7 +150,7 @@ public class FlickFlackHandler {
     }
 
     private static boolean isAttackReady(Player player) {
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         if (!flippingSkill.parcoolskill$isAttackReady()) return false;
 

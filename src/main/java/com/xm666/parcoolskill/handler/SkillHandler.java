@@ -1,5 +1,6 @@
 package com.xm666.parcoolskill.handler;
 
+import com.alrex.parcool.common.capability.IStamina;
 import com.alrex.parcool.common.capability.Parkourability;
 import com.xm666.parcoolskill.network.PayloadHandler;
 import com.xm666.parcoolskill.network.SkillPayload;
@@ -23,6 +24,47 @@ import java.util.function.Supplier;
 
 public class SkillHandler {
     private static final Parkourability emptyParkourability = new Parkourability();
+    private static final IStamina emptyStamina = new IStamina() {
+        @Override
+        public int getActualMaxStamina() {
+            return 0;
+        }
+
+        @Override
+        public int get() {
+            return 0;
+        }
+
+        @Override
+        public int getOldValue() {
+            return 0;
+        }
+
+        @Override
+        public void consume(int i) {
+        }
+
+        @Override
+        public void recover(int i) {
+        }
+
+        @Override
+        public boolean isExhausted() {
+            return true;
+        }
+
+        @Override
+        public void setExhaustion(boolean b) {
+        }
+
+        @Override
+        public void tick() {
+        }
+
+        @Override
+        public void set(int i) {
+        }
+    };
 
     public static void handlePayload(final SkillPayload payload, final Supplier<NetworkEvent.Context> context) {
         var level = context.get().getSender().level();
@@ -82,6 +124,11 @@ public class SkillHandler {
     public static Parkourability getParkourability(Player player) {
         var parkourability = Parkourability.get(player);
         return parkourability != null ? parkourability : emptyParkourability;
+    }
+
+    public static IStamina getStamina(Player player) {
+        var stamina = IStamina.get(player);
+        return stamina != null ? stamina : emptyStamina;
     }
 
     private static boolean tryHandleCleaveReady(SkillPayload.Type type, Player player) {

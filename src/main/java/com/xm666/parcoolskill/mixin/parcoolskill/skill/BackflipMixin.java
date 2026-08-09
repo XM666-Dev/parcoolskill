@@ -12,6 +12,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.xm666.parcoolskill.Config;
+import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.skill.FlippingSkill;
 import com.xm666.parcoolskill.skill.handler.BackflipHandler;
 import com.xm666.timescalelib.handler.TimeScaleHandler;
@@ -84,7 +85,7 @@ public class BackflipMixin {
         private Vec3 wrapKnownMovement(Entity instance, Operation<Vec3> original) {
             if (!(instance instanceof Player player)) return original.call(instance);
 
-            var parkourability = Parkourability.get(player);
+            var parkourability = SkillHandler.getParkourability(player);
             var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
             if (flippingSkill.parcoolskill$getSkillTime() == 0) return original.call(instance);
 

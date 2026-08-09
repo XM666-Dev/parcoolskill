@@ -9,6 +9,7 @@ import com.alrex.parcool.config.ParCoolConfig;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.compat.SpartanWeaponryHandler;
+import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.handler.StaminaHandler;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.particle.SkillParticleHandler;
@@ -61,7 +62,7 @@ public class BackflipHandler {
     public static void onUseItemTick(LivingEntityUseItemEvent.Tick event) {
         if (releaseUsingItem || !(event.getEntity() instanceof Player player)) return;
 
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         if (flippingSkill.parcoolskill$getSkillTime() == 0) return;
 
@@ -84,7 +85,7 @@ public class BackflipHandler {
         if (!(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
             return;
 
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         if (flippingSkill.parcoolskill$getSkillTime() == 0) return;
 

@@ -9,6 +9,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.xm666.parcoolskill.ClientConfig;
 import com.xm666.parcoolskill.Config;
+import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.skill.FlippingSkill;
 import com.xm666.parcoolskill.skill.handler.FlickFlackHandler;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -40,7 +41,7 @@ public class FlickFlackMixin {
         @ModifyReturnValue(method = "getFlyingSpeed", at = @At("RETURN"))
         private float modifyFlyingSpeed(float original) {
             var player = (Player) (Object) this;
-            var parkourability = Parkourability.get(player);
+            var parkourability = SkillHandler.getParkourability(player);
             var flipping = parkourability.get(Flipping.class);
             var flippingSkill = (FlippingSkill) flipping;
             if (!flippingSkill.parcoolskill$isAccelerated()) return original;
@@ -55,7 +56,7 @@ public class FlickFlackMixin {
         private void onApplyItemArmTransform(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
             if (!ClientConfig.FLICK_FLACK_ANIMATION_ENABLED.get() || hand != InteractionHand.MAIN_HAND) return;
 
-            var parkourability = Parkourability.get(player);
+            var parkourability = SkillHandler.getParkourability(player);
             var flipping = parkourability.get(Flipping.class);
             var flippingSkill = (FlippingSkill) flipping;
             if (!flippingSkill.parcoolskill$isAttackReady()) return;

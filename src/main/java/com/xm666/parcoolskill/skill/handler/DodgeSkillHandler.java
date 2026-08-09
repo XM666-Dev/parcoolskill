@@ -1,16 +1,15 @@
 package com.xm666.parcoolskill.skill.handler;
 
-import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.action.impl.Dodge;
 import com.alrex.parcool.common.action.impl.Flipping;
-import com.alrex.parcool.common.capability.Parkourability;
 import com.alrex.parcool.config.ParCoolConfig;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
+import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.DodgeSkill;
@@ -57,7 +56,7 @@ public class DodgeSkillHandler {
         if (!Config.SNEAKY_STRIKE_ENABLED.get() || !(event.getEntity() instanceof Player player) || event.getSource().is(DamageTypeTags.BYPASSES_ARMOR))
             return;
 
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         if (!parkourability.getServerLimitation().get(ParCoolConfig.Server.Booleans.DodgeProvideInvulnerableFrame))
             return;
 
@@ -72,7 +71,7 @@ public class DodgeSkillHandler {
     @SubscribeEvent
     public static void onPlayerAttack(PlayerAttackEvent.Pre event) {
         var player = event.getEntity();
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var dodgeSkill = (DodgeSkill) parkourability.get(Dodge.class);
         dodgeSkill.parcoolskill$setAttackReady(false);
 
@@ -97,17 +96,17 @@ public class DodgeSkillHandler {
     }
 
     private static boolean isAttackReady(Player player) {
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var dodgeSkill = (DodgeSkill) parkourability.get(Dodge.class);
         if (dodgeSkill.parcoolskill$getAttackReadyTime() == 0) return false;
 
         dodgeSkill.parcoolskill$setAttackReadyTime(0);
 
-        var stamina = Stamina.get(player);
-        if (stamina.getMaxValue() == 1) return true;
+        var stamina = SkillHandler.getStamina(player);
+        if (stamina.getActualMaxStamina() == 1) return true;
 
         var sneakyStrikeStaminaConsumption = Config.SNEAKY_STRIKE_STAMINA_CONSUMPTION.get();
-        return stamina.getValue() >= sneakyStrikeStaminaConsumption;
+        return stamina.get() >= sneakyStrikeStaminaConsumption;
     }
 
     private static boolean isBehindTarget(Player player, Entity target) {

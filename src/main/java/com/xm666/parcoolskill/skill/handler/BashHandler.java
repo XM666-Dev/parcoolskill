@@ -4,7 +4,6 @@ import com.alrex.parcool.api.unstable.action.ParCoolActionEvent;
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.action.impl.Flipping;
-import com.alrex.parcool.common.capability.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.effect.Effects;
@@ -33,7 +32,7 @@ public class BashHandler {
     public static void onLivingFall(LivingFallEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
 
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var jumpSkill = (JumpSkill) parkourability.get(ChargeJump.class);
         jumpSkill.parcoolskill$setAttackReady(false);
     }
@@ -41,7 +40,7 @@ public class BashHandler {
     @SubscribeEvent
     public static void onPlayerAttack(PlayerAttackEvent.Post event) {
         var player = event.getEntity();
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         if (parkourability.get(CatLeap.class).isDoing()
                 || parkourability.get(Flipping.class).isDoing()
                 || !isAttackReady(player)
@@ -67,7 +66,7 @@ public class BashHandler {
     }
 
     private static boolean isAttackReady(Player player) {
-        var parkourability = Parkourability.get(player);
+        var parkourability = SkillHandler.getParkourability(player);
         var jumpSkill = (JumpSkill) parkourability.get(ChargeJump.class);
         if (!jumpSkill.parcoolskill$isAttackReady()) return false;
 
