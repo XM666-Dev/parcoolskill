@@ -2,12 +2,13 @@ package com.xm666.parcoolskill.mixin.parcoolskill.skill;
 
 import com.alrex.parcool.common.action.impl.CatLeap;
 import com.alrex.parcool.common.action.impl.ChargeJump;
+import com.alrex.parcool.common.capability.IStamina;
 import com.alrex.parcool.common.capability.Parkourability;
-import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -36,7 +37,7 @@ public class BashMixin {
         }
 
         @Inject(method = "canStart", at = @At("TAIL"))
-        public void onCanStart(Player player, Parkourability parkourability, ByteBuffer startInfo, CallbackInfoReturnable<Boolean> cir) {
+        public void onCanStart(Player player, Parkourability parkourability, IStamina stamina, ByteBuffer startInfo, CallbackInfoReturnable<Boolean> cir) {
             startInfo.putInt(lastChargeTick == JUMP_MAX_CHARGE_TICK ? 1 : 0);
         }
 
