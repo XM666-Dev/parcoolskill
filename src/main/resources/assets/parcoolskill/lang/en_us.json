@@ -62,6 +62,8 @@
   "parcoolskill.configuration.heel_hook_slowdown_amplifier.tooltip": "Amplifier level of slowdown applied by Heel Hook",
   "parcoolskill.configuration.bash_vulnerable_duration": "Bash Vulnerable Duration",
   "parcoolskill.configuration.bash_vulnerable_duration.tooltip": "Duration of Vulnerable effect applied by Bash (ticks)",
+  "parcoolskill.configuration.bash_extra_vulnerable_duration": "Bash Extra Vulnerable Duration",
+  "parcoolskill.configuration.bash_extra_vulnerable_duration.tooltip": "Duration of Vulnerable effect additionally applied when Bash is fully charged (ticks)",
   "parcoolskill.configuration.backflip_skill_duration": "Backflip Skill Duration",
   "parcoolskill.configuration.backflip_skill_duration.tooltip": "Duration of skill effect granted by Backflip (ticks)",
   "parcoolskill.configuration.backflip_cooldown_duration": "Backflip Cooldown Duration",

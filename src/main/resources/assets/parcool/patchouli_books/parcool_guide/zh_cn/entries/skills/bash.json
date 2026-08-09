@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "进行一次$(thing)蓄力跳（ChargeJump）$()后，下一次下劈攻击触发$(thing)痛击（Bash）$()，对目标施加$(thing)易伤（Vulnerable）$()。"
+      "text": "进行一次$(thing)蓄力跳（ChargeJump）$()后，下一次下劈攻击触发$(thing)痛击（Bash）$()，对目标施加$(thing)易伤（Vulnerable）$()。$(br)如果进行了完全蓄力，则额外增加$(thing)易伤（Vulnerable）$()效果时长。"
     }
   ]
 }
