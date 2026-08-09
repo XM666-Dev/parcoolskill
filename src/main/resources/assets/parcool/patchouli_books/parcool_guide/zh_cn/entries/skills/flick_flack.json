@@ -1,6 +1,6 @@
 {
   "name": "翻越撑击",
-  "icon": "minecraft:mace",
+  "icon": "parcoolskill:textures/gui/iron_battle_hammer.png",
   "category": "parcool:category_skills",
   "sortnum": 7,
   "pages": [
