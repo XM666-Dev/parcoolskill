@@ -1,6 +1,7 @@
 package com.xm666.parcoolskill.mixin.parcoolskill.skill;
 
 import com.alrex.parcool.common.action.impl.Slide;
+import com.xm666.parcoolskill.client.SlideSkillClientHandler;
 import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.SlideSkill;
@@ -67,7 +68,7 @@ public class SlideSkillMixin {
             if (player == null) return;
 
             if (!(mc.hitResult instanceof EntityHitResult entityHitResult)) {
-                SlideSkillHandler.tryPushBlock((BlockHitResult) mc.hitResult);
+                SlideSkillClientHandler.tryPushBlock((BlockHitResult) mc.hitResult);
                 return;
             }
 

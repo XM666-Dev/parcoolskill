@@ -8,14 +8,11 @@ import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.animation.ArmAnimation;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
-import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.handler.StaminaHandler;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
-import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.JumpSkill;
 import com.xm666.timescalelib.handler.TimeScaleHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
@@ -23,11 +20,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import org.joml.Vector3f;
@@ -70,37 +64,6 @@ public class CleaveHandler {
         if (attackTime == 0) return;
 
         jumpSkill.parcoolskill$setAttackTime(attackTime - 1);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent
-    public static void onClickInput(InputEvent.InteractionKeyMappingTriggered event) {
-        if (event.isPickBlock()) return;
-
-        var mc = Minecraft.getInstance();
-        var player = mc.player;
-        if (player == null) return;
-
-        if (isAttacking(player)) {
-            event.setCanceled(true);
-            event.setSwingHand(false);
-            return;
-        }
-
-        if (!event.isAttack() || !isCharging(player)) return;
-
-        var parkourability = Parkourability.get(player);
-        var jump = parkourability.get(ChargeJump.class);
-        var jumpSkill = (JumpSkill) jump;
-        jumpSkill.parcoolskill$setCoolingDown(true);
-
-        if (!isAttackReady(player)) return;
-
-        var cleaveAttackDuration = Config.CLEAVE_ATTACK_DURATION.get();
-        SkillHandler.use(SkillPayload.Type.CLEAVE_READY, player);
-        jumpSkill.parcoolskill$setAttackTime(cleaveAttackDuration);
-        jumpSkill.parcoolskill$clearEntityHits();
-        event.setCanceled(true);
     }
 
     @SubscribeEvent
@@ -181,7 +144,7 @@ public class CleaveHandler {
         return cleaveHitCountBase + player.getWeaponItem().getEnchantmentLevel(sweepingEdge);
     }
 
-    private static boolean isAttackReady(Player player) {
+    public static boolean isAttackReady(Player player) {
         if (!isCharging(player)) return false;
 
         var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
