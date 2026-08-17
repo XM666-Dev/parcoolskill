@@ -15,8 +15,8 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class SlideSkillClientHandler {
-    @OnlyIn(Dist.CLIENT)
     public static void tryPushBlock(BlockHitResult hitResult) {
         if (hitResult.getType() == HitResult.Type.MISS) return;
 
