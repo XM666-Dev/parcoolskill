@@ -43,6 +43,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class SlideSkillHandler {
@@ -160,6 +162,7 @@ public class SlideSkillHandler {
         return readyType;
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static void tryPushBlock(BlockHitResult hitResult) {
         if (hitResult.getType() == HitResult.Type.MISS) return;
 
