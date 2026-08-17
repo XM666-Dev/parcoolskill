@@ -40,6 +40,8 @@ import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.properties.DoorHingeSide;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -161,6 +163,7 @@ public class SlideSkillHandler {
         return readyType;
     }
 
+    @OnlyIn(Dist.CLIENT)
     public static void tryPushBlock(BlockHitResult hitResult) {
         if (hitResult.getType() == HitResult.Type.MISS) return;
 
