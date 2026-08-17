@@ -7,6 +7,7 @@ import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.animation.ArmAnimation;
+import com.xm666.parcoolskill.client.CleaveClientHandler;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.handler.StaminaHandler;
 import com.xm666.parcoolskill.network.SkillParticlePayload;
@@ -20,12 +21,17 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import org.joml.Vector3f;
 
+@Mod(ParCoolSkill.MODID)
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class CleaveHandler {
     public static final ArmAnimation ARM_ANIMATION = new ArmAnimation(
@@ -38,6 +44,12 @@ public class CleaveHandler {
             ParCoolSkill.MODID, "modifier.entity_interaction_range.cleave"
     );
     public static int animationTick;
+
+    public CleaveHandler() {
+        if (FMLEnvironment.getDist() != Dist.CLIENT) return;
+
+        NeoForge.EVENT_BUS.addListener(CleaveClientHandler::onClickInput);
+    }
 
     @SubscribeEvent
     public static void onJumpTick(ParCoolActionEvent.Tick.Pre event) {

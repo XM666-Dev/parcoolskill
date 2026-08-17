@@ -3,7 +3,6 @@ package com.xm666.parcoolskill.client;
 import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.Config;
-import com.xm666.parcoolskill.ParCoolSkill;
 import com.xm666.parcoolskill.handler.SkillHandler;
 import com.xm666.parcoolskill.network.SkillPayload;
 import com.xm666.parcoolskill.skill.JumpSkill;
@@ -12,11 +11,9 @@ import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class CleaveClientHandler {
     @SubscribeEvent
     public static void onClickInput(InputEvent.InteractionKeyMappingTriggered event) {
