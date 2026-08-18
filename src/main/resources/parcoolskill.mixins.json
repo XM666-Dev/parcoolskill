@@ -2,6 +2,7 @@
   "required": true,
   "package": "com.xm666.parcoolskill.mixin",
   "refmap": "parcoolskill.mixins.refmap.json",
+  "plugin": "com.xm666.parcoolskill.MixinConfigPlugin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "epicparcool.AnimationsMixin$ParCoolAnimationsMixin",
