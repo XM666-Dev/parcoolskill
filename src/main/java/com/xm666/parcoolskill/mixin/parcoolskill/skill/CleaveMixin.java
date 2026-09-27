@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
-import net.neoforged.neoforge.common.Tags;
+import net.minecraftforge.common.Tags;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -63,7 +64,8 @@ public class CleaveMixin {
                 return;
 
             var weapon = player.getMainHandItem();
-            if (!weapon.is(Tags.Items.MELEE_WEAPON_TOOLS)) return;
+            if (!weapon.is(ItemTags.SWORDS) && !weapon.is(ItemTags.AXES) && !weapon.is(Tags.Items.TOOLS_TRIDENTS))
+                return;
 
             var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
             var parkourability = SkillHandler.getParkourability(player);
