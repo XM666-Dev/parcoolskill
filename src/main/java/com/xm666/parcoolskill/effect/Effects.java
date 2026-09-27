@@ -11,14 +11,16 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
-import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-@Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
+import javax.annotation.Nullable;
+import java.util.stream.Stream;
+
 public class Effects {
     public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(
             Registries.MOB_EFFECT,
@@ -53,12 +55,13 @@ public class Effects {
             () -> new Potion(new MobEffectInstance(NEUTRALIZED.get(), 600))
     );
 
-    public static void init(IEventBus modEventBus) {
-        MOB_EFFECTS.register(modEventBus);
-        POTIONS.register(modEventBus);
+    public static void init(IEventBus eventBus) {
+        MOB_EFFECTS.register(eventBus);
+        POTIONS.register(eventBus);
+        eventBus.addListener(Effects::registerBrewingRecipes);
     }
 
-    public static void registerBrewingRecipes() {
+    public static void registerBrewingRecipes(FMLCommonSetupEvent event) {
         addMix(
                 Potions.WEAKNESS,
                 Items.WITHER_ROSE,
@@ -92,24 +95,17 @@ public class Effects {
     }
 
     private static void addMix(Potion input, Item ingredient, Potion output) {
-        BrewingRecipeRegistry.addRecipe(new IBrewingRecipe() {
-            @Override
-            public boolean isInput(ItemStack stack) {
-                return stack.is(Items.POTION) && PotionUtils.getPotion(stack) == input;
-            }
-
-            @Override
-            public boolean isIngredient(ItemStack stack) {
-                return stack.is(ingredient);
-            }
-
-            @Override
-            public ItemStack getOutput(ItemStack input, ItemStack ingredient) {
-                var potion = new ItemStack(Items.POTION);
-                PotionUtils.setPotion(potion, output);
-                return potion;
-            }
-        });
+        for (var item : new Item[]{Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION}) {
+            var inputIngredient = new Ingredient(Stream.of()) {
+                @Override
+                public boolean test(@Nullable ItemStack stack) {
+                    return stack.is(item) && PotionUtils.getPotion(stack) == input;
+                }
+            };
+            var itemIngredient = Ingredient.of(ingredient);
+            var outputStack = PotionUtils.setPotion(new ItemStack(item), output);
+            BrewingRecipeRegistry.addRecipe(inputIngredient, itemIngredient, outputStack);
+        }
     }
 
     public static class Vulnerable extends MobEffect {

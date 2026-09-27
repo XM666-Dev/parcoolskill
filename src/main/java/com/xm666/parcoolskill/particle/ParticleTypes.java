@@ -39,11 +39,11 @@ public class ParticleTypes {
     public static final int IRONCLAD_COLOR = 0xBF4D4D;
     public static final int SILENT_COLOR = 0x4DBF4D;
 
-    public static void init(IEventBus modEventBus) {
-        PARTICLE_TYPES.register(modEventBus);
+    public static void init(IEventBus eventBus) {
+        PARTICLE_TYPES.register(eventBus);
         if (FMLEnvironment.dist != Dist.CLIENT) return;
 
-        modEventBus.addListener(ParticleTypes::registerParticleProviders);
+        eventBus.addListener(ParticleTypes::registerParticleProviders);
     }
 
     @OnlyIn(Dist.CLIENT)
