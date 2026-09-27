@@ -25,6 +25,7 @@
     "spartanweaponry:thrown_weapon_player",
     "spartanweaponry:thrown_weapon_mob",
     "spartanweaponry:armor_piercing_melee",
-    "spartanweaponry:armor_piercing_bolt"
+    "spartanweaponry:armor_piercing_bolt",
+    "epicfight:is_melee"
   ]
 }
