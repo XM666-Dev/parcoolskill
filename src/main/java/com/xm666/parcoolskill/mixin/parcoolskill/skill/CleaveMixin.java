@@ -22,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.Tags;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -60,6 +61,9 @@ public class CleaveMixin {
         private void onApplyItemArmTransform(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand, float swingProgress, ItemStack stack, float equippedProgress, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, CallbackInfo ci) {
             if (!ClientConfig.CLEAVE_ANIMATION_ENABLED.get() || hand != InteractionHand.MAIN_HAND || !CleaveHandler.isCharging(player))
                 return;
+
+            var weapon = player.getMainHandItem();
+            if (!weapon.is(Tags.Items.MELEE_WEAPON_TOOLS)) return;
 
             var cleaveChargeDuration = Config.CLEAVE_CHARGE_DURATION.get();
             var parkourability = SkillHandler.getParkourability(player);
