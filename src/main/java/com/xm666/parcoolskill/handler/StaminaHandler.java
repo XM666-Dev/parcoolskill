@@ -3,6 +3,7 @@ package com.xm666.parcoolskill.handler;
 import com.alrex.parcool.common.action.Action;
 import com.xm666.parcoolskill.network.PayloadHandler;
 import com.xm666.parcoolskill.network.StaminaPayload;
+import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
@@ -12,7 +13,8 @@ import java.util.function.Supplier;
 
 public class StaminaHandler {
     public static void handlePayload(final StaminaPayload payload, final Supplier<NetworkEvent.Context> context) {
-        var player = context.get().getSender();
+        var mc = Minecraft.getInstance();
+        var player = mc.player;
         var stamina = SkillHandler.getStamina(player);
         var value = payload.value();
         if (value < 0) {

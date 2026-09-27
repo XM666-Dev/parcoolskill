@@ -1,6 +1,6 @@
 package com.xm666.parcoolskill.handler;
 
-import com.alrex.parcool.common.capability.IStamina;
+import com.alrex.parcool.api.Stamina;
 import com.alrex.parcool.common.capability.Parkourability;
 import com.xm666.parcoolskill.network.PayloadHandler;
 import com.xm666.parcoolskill.network.SkillPayload;
@@ -24,47 +24,7 @@ import java.util.function.Supplier;
 
 public class SkillHandler {
     private static final Parkourability emptyParkourability = new Parkourability();
-    private static final IStamina emptyStamina = new IStamina() {
-        @Override
-        public int getActualMaxStamina() {
-            return 0;
-        }
-
-        @Override
-        public int get() {
-            return 0;
-        }
-
-        @Override
-        public int getOldValue() {
-            return 0;
-        }
-
-        @Override
-        public void consume(int i) {
-        }
-
-        @Override
-        public void recover(int i) {
-        }
-
-        @Override
-        public boolean isExhausted() {
-            return true;
-        }
-
-        @Override
-        public void setExhaustion(boolean b) {
-        }
-
-        @Override
-        public void tick() {
-        }
-
-        @Override
-        public void set(int i) {
-        }
-    };
+    private static final EmptyStamina emptyStamina = new EmptyStamina();
 
     public static void handlePayload(final SkillPayload payload, final Supplier<NetworkEvent.Context> context) {
         var level = context.get().getSender().level();
@@ -126,9 +86,9 @@ public class SkillHandler {
         return parkourability != null ? parkourability : emptyParkourability;
     }
 
-    public static IStamina getStamina(Player player) {
-        var stamina = IStamina.get(player);
-        return stamina != null ? stamina : emptyStamina;
+    public static NullableStamina getStamina(Player player) {
+        var stamina = Stamina.get(player);
+        return stamina != null ? new ParCoolStamina(stamina) : emptyStamina;
     }
 
     private static boolean tryHandleCleaveReady(SkillPayload.Type type, Player player) {
@@ -151,5 +111,75 @@ public class SkillHandler {
 
         CleaveHandler.handleAttack(player, target);
         return true;
+    }
+
+    public static abstract class NullableStamina {
+        public abstract int getMaxValue();
+
+        public abstract int getValue();
+
+        public abstract boolean isExhausted();
+
+        public abstract void consume(int value);
+
+        public abstract void recover(int value);
+    }
+
+    private static class ParCoolStamina extends NullableStamina {
+        private final Stamina stamina;
+
+        public ParCoolStamina(Stamina stamina) {
+            this.stamina = stamina;
+        }
+
+        @Override
+        public int getMaxValue() {
+            return stamina.getMaxValue();
+        }
+
+        @Override
+        public int getValue() {
+            return stamina.getValue();
+        }
+
+        @Override
+        public boolean isExhausted() {
+            return stamina.isExhausted();
+        }
+
+        @Override
+        public void consume(int value) {
+            stamina.consume(value);
+        }
+
+        @Override
+        public void recover(int value) {
+            stamina.recover(value);
+        }
+    }
+
+    private static class EmptyStamina extends NullableStamina {
+        @Override
+        public int getMaxValue() {
+            return 0;
+        }
+
+        @Override
+        public int getValue() {
+            return 0;
+        }
+
+        @Override
+        public boolean isExhausted() {
+            return true;
+        }
+
+        @Override
+        public void consume(int value) {
+        }
+
+        @Override
+        public void recover(int value) {
+        }
     }
 }

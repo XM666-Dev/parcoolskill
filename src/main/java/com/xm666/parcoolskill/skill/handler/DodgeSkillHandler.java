@@ -103,10 +103,10 @@ public class DodgeSkillHandler {
         dodgeSkill.parcoolskill$setAttackReadyTime(0);
 
         var stamina = SkillHandler.getStamina(player);
-        if (stamina.getActualMaxStamina() == 1) return true;
+        if (stamina.getMaxValue() == 1) return true;
 
         var sneakyStrikeStaminaConsumption = Config.SNEAKY_STRIKE_STAMINA_CONSUMPTION.get();
-        return stamina.get() >= sneakyStrikeStaminaConsumption;
+        return stamina.getValue() >= sneakyStrikeStaminaConsumption;
     }
 
     private static boolean isBehindTarget(Player player, Entity target) {
