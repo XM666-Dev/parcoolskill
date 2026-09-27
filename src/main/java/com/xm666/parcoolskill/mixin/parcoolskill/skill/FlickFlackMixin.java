@@ -15,12 +15,13 @@ import com.xm666.parcoolskill.skill.handler.FlickFlackHandler;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.Tags;
+import net.minecraftforge.common.Tags;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -58,7 +59,8 @@ public class FlickFlackMixin {
             if (!ClientConfig.FLICK_FLACK_ANIMATION_ENABLED.get() || hand != InteractionHand.MAIN_HAND) return;
 
             var weapon = player.getMainHandItem();
-            if (!weapon.is(Tags.Items.MELEE_WEAPON_TOOLS)) return;
+            if (!weapon.is(ItemTags.SWORDS) && !weapon.is(ItemTags.AXES) && !weapon.is(Tags.Items.TOOLS_TRIDENTS))
+                return;
 
             var parkourability = SkillHandler.getParkourability(player);
             var flipping = parkourability.get(Flipping.class);
