@@ -155,7 +155,7 @@ dependencies {
         jarJar.ranged(it, "[0.5.4,)")
     }
     implementation fg.deobf("curse.maven:parcool-482378:7760589")
-    implementation fg.deobf("curse.maven:timescalelib-1542930:8552182")
+    implementation fg.deobf("curse.maven:timescalelib-1542930:8912203")
     implementation fg.deobf("curse.maven:patchouli-306770:7731017")
     implementation fg.deobf("curse.maven:spartan-weaponry-278141:6842571")
     compileOnly fg.deobf("curse.maven:official-epic-fight-x-parcool-1259252:6870242")
