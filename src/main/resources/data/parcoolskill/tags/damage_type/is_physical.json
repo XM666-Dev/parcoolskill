@@ -22,10 +22,21 @@
     "minecraft:generic",
     "parcoolskill:kick_attack",
     "parcoolskill:twist_attack",
-    "spartanweaponry:thrown_weapon_player",
-    "spartanweaponry:thrown_weapon_mob",
-    "spartanweaponry:armor_piercing_melee",
-    "spartanweaponry:armor_piercing_bolt",
-    "epicfight:is_melee"
+    {
+      "id": "spartanweaponry:thrown_weapon_player",
+      "required": false
+    },
+    {
+      "id": "spartanweaponry:thrown_weapon_mob",
+      "required": false
+    },
+    {
+      "id": "spartanweaponry:armor_piercing_melee",
+      "required": false
+    },
+    {
+      "id": "spartanweaponry:armor_piercing_bolt",
+      "required": false
+    }
   ]
 }

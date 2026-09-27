@@ -4,7 +4,6 @@
     "minecraft:indirect_magic",
     "minecraft:thorns",
     "minecraft:dragon_breath",
-    "minecraft:wither",
-    "epicfight:is_magic"
+    "minecraft:wither"
   ]
 }
