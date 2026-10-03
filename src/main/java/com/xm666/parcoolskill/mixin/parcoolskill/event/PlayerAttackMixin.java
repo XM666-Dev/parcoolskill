@@ -1,12 +1,15 @@
 package com.xm666.parcoolskill.mixin.parcoolskill.event;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
@@ -14,9 +17,7 @@ import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class PlayerAttackMixin {
     @Mixin(Player.class)
@@ -36,13 +37,15 @@ public class PlayerAttackMixin {
             return critEvent;
         }
 
-        @Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurtOrSimulate(Lnet/minecraft/world/damagesource/DamageSource;F)Z", shift = At.Shift.AFTER))
-        private void onHurt(Entity target, CallbackInfo ci, @Local CriticalHitEvent critEvent, @Share("disableCrit") LocalBooleanRef disableCrit) {
-            var playerAttackEvent = new PlayerAttackEvent.Post(critEvent);
+        @WrapOperation(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurtOrSimulate(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
+        private boolean onHurt(Entity instance, DamageSource source, float amount, Operation<Boolean> original, @Local CriticalHitEvent critEvent, @Share("disableCrit") LocalBooleanRef disableCrit) {
+            var flag = original.call(instance, source, amount);
+            var playerAttackEvent = new PlayerAttackEvent.Post(critEvent, source);
             playerAttackEvent.setDisableCrit(disableCrit.get());
             NeoForge.EVENT_BUS.post(playerAttackEvent);
 
             disableCrit.set(playerAttackEvent.disableCrit());
+            return flag;
         }
 
         @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;attackVisualEffects(Lnet/minecraft/world/entity/Entity;ZZZZF)V"), index = 1)

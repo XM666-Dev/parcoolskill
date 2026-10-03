@@ -15,7 +15,7 @@ import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.FlippingSkill;
 import com.xm666.timescalelib.handler.TimeScaleHandler;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,7 +35,7 @@ import java.util.Optional;
 public class BackflipHandler {
     private static final TagKey<Item> AVOIDS_RAPID_USE = TagKey.create(
             Registries.ITEM,
-            ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "avoids_rapid_use")
+            Identifier.fromNamespaceAndPath(ParCoolSkill.MODID, "avoids_rapid_use")
     );
     private static boolean releaseUsingItem = false;
 
