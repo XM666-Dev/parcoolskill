@@ -24,4 +24,8 @@ public class DamageTypes {
             Registries.DAMAGE_TYPE,
             new ResourceLocation(ParCoolSkill.MODID, "is_magic")
     );
+    public static final TagKey<DamageType> IS_AFFECTED = TagKey.create(
+            Registries.DAMAGE_TYPE,
+            ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "is_affected")
+    );
 }

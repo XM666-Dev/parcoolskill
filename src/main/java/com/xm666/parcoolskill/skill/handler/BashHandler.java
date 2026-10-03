@@ -6,6 +6,7 @@ import com.alrex.parcool.common.action.impl.ChargeJump;
 import com.alrex.parcool.common.action.impl.Flipping;
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
+import com.xm666.parcoolskill.compat.EpicFightHandler;
 import com.xm666.parcoolskill.effect.Effects;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
 import com.xm666.parcoolskill.handler.SkillHandler;
@@ -44,7 +45,8 @@ public class BashHandler {
         if (parkourability.get(CatLeap.class).isDoing()
                 || parkourability.get(Flipping.class).isDoing()
                 || !isAttackReady(player)
-                || !event.isVanillaCritical()) return;
+                || !event.isVanillaCritical()
+                && !EpicFightHandler.isEpicFightAttack(event.getSource())) return;
 
         var bashStaminaConsumption = Config.BASH_STAMINA_CONSUMPTION.get();
         StaminaHandler.consume(player, bashStaminaConsumption);

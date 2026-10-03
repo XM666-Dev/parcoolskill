@@ -15,13 +15,13 @@ import com.xm666.parcoolskill.network.SkillParticlePayload;
 import com.xm666.parcoolskill.particle.SkillParticleHandler;
 import com.xm666.parcoolskill.skill.FlippingSkill;
 import com.xm666.timescalelib.handler.TimeScaleHandler;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BowItem;
-import net.minecraft.world.item.CrossbowItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TridentItem;
+import net.minecraft.world.item.*;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -34,6 +34,10 @@ import java.util.Optional;
 
 @Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class BackflipHandler {
+    private static final TagKey<Item> AVOIDS_RAPID_USE = TagKey.create(
+            Registries.ITEM,
+            ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "avoids_rapid_use")
+    );
     private static boolean releaseUsingItem = false;
 
     @SubscribeEvent
@@ -66,12 +70,14 @@ public class BackflipHandler {
         var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);
         if (flippingSkill.parcoolskill$getSkillTime() == 0) return;
 
+        var stack = event.getItem();
+        if (stack.is(AVOIDS_RAPID_USE)) return;
+
         var duration = event.getDuration() - 1;
         event.setDuration(duration);
 
         if (player.level().isClientSide()) return;
 
-        var stack = event.getItem();
         player.useItemRemaining = duration;
         if (!isCharged(stack, player)) return;
 

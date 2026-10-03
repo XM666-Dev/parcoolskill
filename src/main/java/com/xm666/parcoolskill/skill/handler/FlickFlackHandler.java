@@ -143,6 +143,9 @@ public class FlickFlackHandler {
     }
 
     public static boolean canJump(Parkourability parkourability) {
+        var dodge = parkourability.get(Dodge.class);
+        if (dodge.getNotDoingTick() > 0) return false;
+
         var mc = Minecraft.getInstance();
         var control = ParCoolConfig.Client.FlipControl.get();
         var flippingSkill = (FlippingSkill) parkourability.get(Flipping.class);

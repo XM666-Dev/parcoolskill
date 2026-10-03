@@ -26,7 +26,7 @@ public class EffectHandler {
     }
 
     private static boolean isDamageSourceAffected(DamageSource source) {
-        return source.is(DamageTypes.IS_PHYSICAL) || source.is(DamageTypes.IS_MAGIC);
+        return source.is(DamageTypes.IS_AFFECTED);
     }
 
     private static float applyVulnerable(float damageMultiplier, LivingEntity target, Entity source) {
