@@ -2,12 +2,12 @@ package com.xm666.parcoolskill.effect;
 
 import com.xm666.parcoolskill.Config;
 import com.xm666.parcoolskill.ParCoolSkill;
+import com.xm666.parcoolskill.damage.DamageTypes;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
@@ -26,7 +26,7 @@ public class EffectHandler {
     }
 
     private static boolean isDamageSourceAffected(DamageSource source) {
-        return source.is(Tags.DamageTypes.IS_PHYSICAL) || source.is(Tags.DamageTypes.IS_MAGIC);
+        return source.is(DamageTypes.IS_AFFECTED);
     }
 
     private static float applyVulnerable(float damageMultiplier, LivingEntity target, Entity source) {

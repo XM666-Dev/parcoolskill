@@ -1,5 +1,6 @@
 package com.xm666.parcoolskill.event;
 
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
@@ -85,8 +86,15 @@ public class PlayerAttackEvent extends PlayerEvent {
     }
 
     public static class Post extends PlayerAttackEvent {
-        public Post(CriticalHitEvent critEvent) {
+        private final DamageSource source;
+
+        public Post(CriticalHitEvent critEvent, DamageSource source) {
             super(critEvent);
+            this.source = source;
+        }
+
+        public DamageSource getSource() {
+            return this.source;
         }
     }
 }
