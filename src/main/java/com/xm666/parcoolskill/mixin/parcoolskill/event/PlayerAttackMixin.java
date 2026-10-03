@@ -4,18 +4,19 @@ import com.llamalad7.mixinextras.expression.Definition;
 import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.xm666.parcoolskill.event.PlayerAttackEvent;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class PlayerAttackMixin {
     @Mixin(Player.class)
@@ -43,17 +44,19 @@ public class PlayerAttackMixin {
             return critEvent;
         }
 
-        @Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z", shift = At.Shift.AFTER))
-        private void onHurt(Entity target, CallbackInfo ci, @Local CriticalHitEvent critEvent, @Share("disableCrit") LocalBooleanRef disableCrit) {
+        @WrapOperation(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
+        private boolean onHurt(Entity instance, DamageSource source, float amount, Operation<Boolean> original, @Local CriticalHitEvent critEvent, @Share("disableCrit") LocalBooleanRef disableCrit) {
+            var flag = original.call(instance, source, amount);
             if (critEvent == null) {
                 var player = (Player) (Object) this;
-                critEvent = new CriticalHitEvent(player, target, 1.0F, false);
+                critEvent = new CriticalHitEvent(player, instance, 1.0F, false);
             }
-            var playerAttackEvent = new PlayerAttackEvent.Post(critEvent);
+            var playerAttackEvent = new PlayerAttackEvent.Post(critEvent, source);
             playerAttackEvent.setDisableCrit(disableCrit.get());
             MinecraftForge.EVENT_BUS.post(playerAttackEvent);
 
             disableCrit.set(playerAttackEvent.disableCrit());
+            return flag;
         }
 
         @WrapWithCondition(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;crit(Lnet/minecraft/world/entity/Entity;)V"))
