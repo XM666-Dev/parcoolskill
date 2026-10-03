@@ -1,10 +1,10 @@
 {
   "values": [
     {
-      "id": "#neoforge:is_physical"
+      "id": "#parcoolskill:is_physical"
     },
     {
-      "id": "#neoforge:is_magic"
+      "id": "#parcoolskill:is_magic"
     }
   ]
 }

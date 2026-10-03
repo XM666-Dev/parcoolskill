@@ -16,14 +16,6 @@ public class DamageTypes {
             Registries.DAMAGE_TYPE,
             new ResourceLocation(ParCoolSkill.MODID, "twist_attack")
     );
-    public static final TagKey<DamageType> IS_PHYSICAL = TagKey.create(
-            Registries.DAMAGE_TYPE,
-            new ResourceLocation(ParCoolSkill.MODID, "is_physical")
-    );
-    public static final TagKey<DamageType> IS_MAGIC = TagKey.create(
-            Registries.DAMAGE_TYPE,
-            new ResourceLocation(ParCoolSkill.MODID, "is_magic")
-    );
     public static final TagKey<DamageType> IS_AFFECTED = TagKey.create(
             Registries.DAMAGE_TYPE,
             ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "is_affected")
