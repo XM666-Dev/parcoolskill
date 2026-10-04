@@ -1,10 +1,6 @@
 {
   "values": [
-    {
-      "id": "#neoforge:is_physical"
-    },
-    {
-      "id": "#neoforge:is_magic"
-    }
+    "#neoforge:is_physical",
+    "#neoforge:is_magic"
   ]
 }
