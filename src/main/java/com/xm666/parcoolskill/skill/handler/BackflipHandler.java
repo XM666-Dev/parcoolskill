@@ -36,7 +36,7 @@ import java.util.Optional;
 public class BackflipHandler {
     private static final TagKey<Item> AVOIDS_RAPID_USE = TagKey.create(
             Registries.ITEM,
-            ResourceLocation.fromNamespaceAndPath(ParCoolSkill.MODID, "avoids_rapid_use")
+            new ResourceLocation(ParCoolSkill.MODID, "avoids_rapid_use")
     );
     private static boolean releaseUsingItem = false;
 

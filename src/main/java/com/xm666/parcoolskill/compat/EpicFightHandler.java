@@ -9,7 +9,7 @@ import net.minecraft.world.damagesource.DamageType;
 public class EpicFightHandler {
     private static final TagKey<DamageType> IS_MELEE = TagKey.create(
             Registries.DAMAGE_TYPE,
-            ResourceLocation.fromNamespaceAndPath("epicfight", "is_melee")
+            new ResourceLocation("epicfight", "is_melee")
     );
 
     public static boolean isEpicFightAttack(DamageSource source) {
