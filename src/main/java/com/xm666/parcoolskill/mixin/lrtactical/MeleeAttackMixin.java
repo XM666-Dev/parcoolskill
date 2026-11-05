@@ -12,32 +12,45 @@ import me.xjqsh.lrtactical.api.item.IMeleeWeapon;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 public class MeleeAttackMixin {
     @Mixin(IMeleeWeapon.class)
     private interface IMeleeWeaponMixin {
-        @ModifyExpressionValue(method = "performAttack", at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/common/CommonHooks;fireCriticalHit(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;ZF)Lnet/neoforged/neoforge/event/entity/player/CriticalHitEvent;"))
-        private CriticalHitEvent modifyCriticalHit(CriticalHitEvent critEvent, @Share("disableCrit") LocalBooleanRef disableCrit) {
+        @ModifyExpressionValue(method = "performAttack", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/common/ForgeHooks;getCriticalHit(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;ZF)Lnet/minecraftforge/event/entity/player/CriticalHitEvent;", remap = false))
+        private CriticalHitEvent modifyCriticalHit(CriticalHitEvent critEvent, Player player, Entity target, @Share("disableCrit") LocalBooleanRef disableCrit, @Share("disableSweep") LocalBooleanRef disableSweep) {
+            if (critEvent == null) {
+                critEvent = new CriticalHitEvent(player, target, 1.0F, false);
+            }
             var playerAttackEvent = new PlayerAttackEvent.Pre(critEvent);
-            NeoForge.EVENT_BUS.post(playerAttackEvent);
+            MinecraftForge.EVENT_BUS.post(playerAttackEvent);
+            if (!playerAttackEvent.isCriticalHit()) return null;
 
-            critEvent.setDamageMultiplier(playerAttackEvent.getDamageMultiplier());
-            critEvent.setCriticalHit(playerAttackEvent.isCriticalHit());
-            critEvent.setDisableSweep(playerAttackEvent.disableSweep());
+            critEvent.setDamageModifier(playerAttackEvent.getDamageMultiplier());
+            try {
+                var field = CriticalHitEvent.class.getDeclaredField("vanillaCritical");
+                field.setAccessible(true);
+                field.set(critEvent, true);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
             disableCrit.set(playerAttackEvent.disableCrit());
+            disableSweep.set(playerAttackEvent.disableSweep());
             return critEvent;
         }
 
         @WrapOperation(method = "performAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
-        private boolean onHurt(Entity instance, DamageSource source, float amount, Operation<Boolean> original, @Local(name = "hitResult") CriticalHitEvent critEvent, @Share("disableCrit") LocalBooleanRef disableCrit) {
+        private boolean onHurt(Entity instance, DamageSource source, float amount, Operation<Boolean> original, Player player, Entity target, @Local(name = "hitResult") CriticalHitEvent critEvent, @Share("disableCrit") LocalBooleanRef disableCrit) {
             var flag = original.call(instance, source, amount);
+            if (critEvent == null) {
+                critEvent = new CriticalHitEvent(player, instance, 1.0F, false);
+            }
             var playerAttackEvent = new PlayerAttackEvent.Post(critEvent, source);
             playerAttackEvent.setDisableCrit(disableCrit.get());
-            NeoForge.EVENT_BUS.post(playerAttackEvent);
+            MinecraftForge.EVENT_BUS.post(playerAttackEvent);
 
             disableCrit.set(playerAttackEvent.disableCrit());
             return flag;
