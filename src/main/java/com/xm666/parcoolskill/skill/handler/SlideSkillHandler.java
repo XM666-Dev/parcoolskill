@@ -39,6 +39,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 @EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class SlideSkillHandler {
     private static final BehaviorEnforcer.ID ID_DESCEND_EDGE = BehaviorEnforcer.newID();
+    private static boolean pushesBlock;
 
     @SubscribeEvent
     public static void onSlideStart(ParCoolActionEvent.Start.Pre event) {
@@ -64,6 +65,9 @@ public class SlideSkillHandler {
         slideSkill.parcoolskill$setReadyType(readyType);
         slideSkill.parcoolskill$setInvulnerableTime(slideSkillExtraInvulnerableDuration);
         slideSkill.parcoolskill$setInvulnerable(true);
+        if (!player.isLocalPlayer()) return;
+
+        pushesBlock = true;
     }
 
     @SubscribeEvent
@@ -151,6 +155,39 @@ public class SlideSkillHandler {
         var readyType = slideSkill.parcoolskill$getReadyType();
         slideSkill.parcoolskill$setReadyType(SlideSkill.Type.NONE);
         return readyType;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static void tryPushBlock(BlockHitResult hitResult) {
+        if (hitResult.getType() == HitResult.Type.MISS) return;
+
+        var mc = Minecraft.getInstance();
+        var player = mc.player;
+        var parkourability = Parkourability.get(player);
+        var slideSkill = (SlideSkill) parkourability.get(Slide.class);
+        var readyType = slideSkill.parcoolskill$getReadyType();
+        if (readyType == SlideSkill.Type.NONE) return;
+
+        var level = mc.level;
+        var blockPos = hitResult.getBlockPos();
+        var blockState = level.getBlockState(blockPos);
+        var block = blockState.getBlock();
+        if (!(block instanceof DoorBlock doorBlock) || !doorBlock.type().canOpenByHand()) return;
+
+        var direction = blockState.getValue(DoorBlock.FACING);
+        var open = blockState.getValue(DoorBlock.OPEN);
+        var openDirection = direction.getOpposite();
+        if (open) {
+            var hinge = blockState.getValue(DoorBlock.HINGE);
+            openDirection = hinge == DoorHingeSide.LEFT ? openDirection.getClockWise() : openDirection.getCounterClockWise();
+        }
+        if (openDirection != hitResult.getDirection() || !pushesBlock) return;
+
+        var sound = readyType == SlideSkill.Type.DROPKICK ? SoundEvents.PLAYER_ATTACK_KNOCKBACK : SoundEvents.PLAYER_ATTACK_STRONG;
+        mc.gameMode.useItemOn(player, InteractionHand.MAIN_HAND, hitResult);
+        level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, blockPos, Block.getId(blockState));
+        level.playLocalSound(player, sound, player.getSoundSource(), 1.0F, 1.0F);
+        pushesBlock = false;
     }
 
     private static boolean canUseDropKick(Parkourability parkourability) {
