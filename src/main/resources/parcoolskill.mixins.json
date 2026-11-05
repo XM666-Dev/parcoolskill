@@ -6,6 +6,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "epicparcool.AnimationsMixin$ParCoolAnimationsMixin",
+    "lrtactical.MeleeAttackMixin$IMeleeWeaponMixin",
     "parcoolskill.event.DamageBlockMixin$LivingEntityMixin",
     "parcoolskill.event.PlayerAttackMixin$PlayerMixin",
     "parcoolskill.event.SweepAttackMixin$PlayerMixin",

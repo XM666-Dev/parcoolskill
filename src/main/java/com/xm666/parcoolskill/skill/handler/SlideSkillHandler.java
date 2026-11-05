@@ -49,6 +49,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = ParCoolSkill.MODID)
 public class SlideSkillHandler {
     private static final BehaviorEnforcer.ID ID_DESCEND_EDGE = BehaviorEnforcer.newID();
+    private static boolean pushesBlock;
 
     @SubscribeEvent
     public static void onSlideStart(ParCoolActionEvent.Start.Pre event) {
@@ -74,6 +75,9 @@ public class SlideSkillHandler {
         slideSkill.parcoolskill$setReadyType(readyType);
         slideSkill.parcoolskill$setInvulnerableTime(slideSkillExtraInvulnerableDuration);
         slideSkill.parcoolskill$setInvulnerable(true);
+        if (!player.isLocalPlayer()) return;
+
+        pushesBlock = true;
     }
 
     @SubscribeEvent
@@ -186,12 +190,13 @@ public class SlideSkillHandler {
             var hinge = blockState.getValue(DoorBlock.HINGE);
             openDirection = hinge == DoorHingeSide.LEFT ? openDirection.getClockWise() : openDirection.getCounterClockWise();
         }
-        if (openDirection != hitResult.getDirection()) return;
+        if (openDirection != hitResult.getDirection() || !pushesBlock) return;
 
         var sound = readyType == SlideSkill.Type.DROPKICK ? SoundEvents.PLAYER_ATTACK_KNOCKBACK : SoundEvents.PLAYER_ATTACK_STRONG;
         mc.gameMode.useItemOn(player, InteractionHand.MAIN_HAND, hitResult);
         level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, blockPos, Block.getId(blockState));
         level.playLocalSound(player.getX(), player.getY(), player.getZ(), sound, player.getSoundSource(), 1.0F, 1.0F, false);
+        pushesBlock = false;
     }
 
     private static boolean canUseDropKick(Parkourability parkourability) {
