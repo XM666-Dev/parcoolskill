@@ -3,6 +3,7 @@ package com.xm666.parcoolskill.client;
 import com.alrex.parcool.common.action.impl.Slide;
 import com.alrex.parcool.common.attachment.common.Parkourability;
 import com.xm666.parcoolskill.skill.SlideSkill;
+import com.xm666.parcoolskill.skill.handler.SlideSkillHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -40,11 +41,12 @@ public class SlideSkillClientHandler {
             var hinge = blockState.getValue(DoorBlock.HINGE);
             openDirection = hinge == DoorHingeSide.LEFT ? openDirection.getClockWise() : openDirection.getCounterClockWise();
         }
-        if (openDirection != hitResult.getDirection()) return;
+        if (openDirection != hitResult.getDirection() || !SlideSkillHandler.pushesBlock) return;
 
         var sound = readyType == SlideSkill.Type.DROPKICK ? SoundEvents.PLAYER_ATTACK_KNOCKBACK : SoundEvents.PLAYER_ATTACK_STRONG;
         mc.gameMode.useItemOn(player, InteractionHand.MAIN_HAND, hitResult);
         level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, blockPos, Block.getId(blockState));
         level.playLocalSound(player, sound, player.getSoundSource(), 1.0F, 1.0F);
+        SlideSkillHandler.pushesBlock = false;
     }
 }
