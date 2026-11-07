@@ -25,7 +25,6 @@
     "requireAnnotations": true
   },
   "client": [
-    "parcoolskill.animation.SwimAnimationMixin$PlayerRendererMixin",
     "parcoolskill.skill.BackflipMixin$ActionProcessorMixin",
     "parcoolskill.skill.BackflipMixin$PlayerModelRotatorMixin",
     "parcoolskill.skill.BackflipMixin$PlayerModelTransformerMixin",
